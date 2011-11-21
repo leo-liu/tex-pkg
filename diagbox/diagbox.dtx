@@ -1,0 +1,424 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2011 by Leo Liu <leoliu.pku@gmail.com>
+% ---------------------------------------------------------------------------
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Leo Liu.
+%
+% This work consists of the files diagbox.dtx and diagbox.ins
+% and the derived filebase diagbox.sty.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{diagbox.dtx}
+%</driver>
+%<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%<package>\ProvidesPackage{diagbox}
+%<*package>
+    [2011/11/21 v1.0 Making table heads with diagonal lines]
+%</package>
+%
+%<*driver>
+\documentclass[a4paper]{ltxdoc}
+\AtBeginDocument{
+  \DeleteShortVerb{\|}
+  \MakeShortVerb{\"}}
+\usepackage{diagbox}
+\usepackage{geometry}
+\usepackage{fvrb-ex}
+\usepackage[UTF8,hyperref]{ctex}
+\usepackage[pdfstartview=FitH]{hyperref}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{diagbox.dtx}
+  \PrintChanges
+  \PrintIndex
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{201}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+%
+% \changes{v1.0}{2011/11/21}{初始版本}
+%
+% \DoNotIndex{\newcommand, \newenvironment, \@nameuse, \@pkgextension,
+% \@reserveda, \@tfor, \begin, \begingroup, \box, \csname, \def, \define@key,
+% \dimexpr, \do, \dp, \edef, \else, \end, \endcsname, \endgroup, \endinput,
+% \expandafter, \fi, \hbox, \ht, \ifcsname, \ifdim, \ifx, \Line, \makebox,
+% \newbox, \newdimen, \p@, \PackageError, \pkg, \put, \relax, \RequirePackage,
+% \setbox, \setkeys, \setlength, \strip@pt, \unexpanded, \unitlength,
+% \vcenter, \wd, \xdef, \z@}
+%
+% \providecommand*{\pkg}{\textsf}
+% \GetFileInfo{diagbox.dtx}
+% \title{\hypertarget{English}{\pkg{diagbox} Package (\fileversion)}
+%    \makebox[0pt]{\hspace{5cm}\hyperlink{Chinese}{\textsf{中文版}}}\\
+%    Making Table Heads with Diagonal Lines}
+% \author{Leo Liu \\ \path{leoliu.pku@gmail.com}}
+% \date{\filedate}
+%
+% \maketitle
+%
+% \section{Introduction}
+%
+% \pkg{diagbox} is a replacement of old \pkg{slashbox} package. I write this
+% package simply because that \pkg{slashbox} is not available in \TeX\ Live
+% for licening problems. \pkg{slashbox} has no explicit license information
+% available, but \pkg{diagbox} is under LPPL.
+%
+% \pkg{diagbox} is a modern alternative of \pkg{slashbox}. I changed the
+% user interface to use a key-value syntax, get rid of some restrictions of
+% \pkg{slashbox}, use \pkg{pict2e} to draw diagonal lines. \pkg{diagbox}
+% package also provides compatible macros of \pkg{slashbox}, but the result is
+% a little different.
+%
+% To use \pkg{diagbox}, \eTeX{} is needed. And \pkg{diagbox} requires
+% \pkg{pict2e} package.
+%
+% \section{Usage}
+%
+%
+% \DescribeMacro{\diagbox}
+% "\diagbox" is the main command. It takes two arguments, to produce a box
+% with a diagonal line from north west to south east.
+%
+% For example:\\
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|l|ccc|}
+% \hline
+% \diagbox{Time}{Day} & Mon & Tue & Wed \\
+% \hline
+% Morning   & used & used &      \\
+% Afternoon &      & used & used \\
+% \hline
+% \end{tabular}
+% \end{SideBySideExample}
+%
+% \medskip
+% "\diagbox" can take an optional argument in key-value syntax to specify the
+% width and height of the box, the direction of the diagonal line, and the
+% trimming margin:
+% \begin{description}
+% \item[width] Specify the width of the box explicitly.
+% \item[height] Specify the height of the box explicitly.
+% \item[dir] Specify the direction of the diagonal line. The value can be "SE"
+% and "NE". Default value is "SE" (from north west to south east).
+% \item[trim] Specify the margin to be trimmed. The value can be "l", "r", and
+% "lr", "rl".
+% \end{description}
+%
+% Here is a more complex example:
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|@{}l|c|c|c@{}|}
+% \hline
+% \diagbox[width=5em,trim=l]{Time}{Day} & Mon & Tue & Wed\\
+% \hline
+% Morning   & used & used & used\\
+% \hline
+% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+% \bigskip
+% \DescribeMacro{\backslashbox}
+% "\backslashbox" works as "\diagbox", but it takes two optional arguments to
+% specify the "width" and "trim" options.
+%
+% \DescribeMacro{\slashbox}
+% "\slashbox" works as "\diagbox[dir=NE]", and takes two optional arguments to
+% specify the "width" and "trim" options.
+%
+% The syntax of "\slashbox" and "\backslashbox" comes from \pkg{slashbox}
+% packages. \pkg{diagbox} package emulates \pkg{slashbox} and also prevents
+% \pkg{slashbox} to be loaded. However, the results of the two packages are
+% a little different. These two commands are for compatibility only, it is
+% better to use "\diagbox" instead.
+%
+%
+% \section{Bugs and TODO}
+%
+% I will provide a new command to produce a three-part box with two diagonal
+% lines in later version.
+%
+%
+%
+%
+% \title{\hypertarget{Chinese}{\pkg{diagbox} 宏包（\fileversion）}
+%    \makebox[0pt]{\hspace{5cm}\hyperlink{English}{\textsf{English Version}}}\\
+%    制做斜线表头}
+% \author{刘海洋 \\ \path{leoliu.pku@gmail.com}}
+% \date{\filedate}
+%
+% \maketitle
+%
+%
+% \section{简介}
+%
+% \pkg{diagbox} 设计用来代替旧的 \pkg{slashbox} 宏包。编写这个宏包的缘起是
+% \pkg{slashbox} 因为缺少明确的自由许可信息，被 \TeX\ Live 排除。这个宏包是在
+% LPPL 协议下发行的。
+%
+% \pkg{diagbox} 是 \pkg{slashbox} 宏包的一个较现代的版本。这里我采用了新的
+% key-value 式语法参数，去除了 \pkg{slashbox} 原有的一些长度限制，并调用
+% \pkg{pict2e} 宏包画斜线。\pkg{diagbox} 除了提供自己的新命令，也提供了
+% \pkg{slashbox} 原有的两个命令，语法不变，编译结果略有区别。
+%
+% \pkg{diagbox} 依赖 \eTeX{} 扩展（这在目前总是可用的），依赖 \pkg{pict2e} 宏
+% 包。
+%
+% \section{用法说明}
+%
+% \DescribeMacro{\diagbox}
+% "\diagbox" 是宏包提供的主要命令。它带有两个必选参数，表示要生成斜线表头的两
+% 部分内容。默认斜线是从西北到东南方向的。
+%
+% 例如：\\
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|l|ccc|}
+% \hline
+% \diagbox{Time}{Day} & Mon & Tue & Wed \\
+% \hline
+% Morning   & used & used &      \\
+% Afternoon &      & used & used \\
+% \hline
+% \end{tabular}
+% \end{SideBySideExample}
+%
+% \medskip
+% "\diagbox" 还可以带一个可选参数，里面用 key-value 的语法设置宽度、方向等更多
+% 的选项：
+% \begin{description}
+% \item[width] 明确指定盒子的总宽度。
+% \item[height] 明确指定盒子的总高度。
+% \item[dir] 指定斜线方向。可以取 "NE"（划向东北）和 "SE"（划向东南）两个值，
+% 默认值是 "SE"。
+% \item[trim] 设置左边界或右边界不计算额外的空白，可以取值为 "l", "r", "lr" 或
+% "rl"。这个选项在列格式包含 "@{}" 时将会有用。
+% \end{description}
+%
+% 一个更繁杂的例子：
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|@{}l|c|c|c@{}|}
+% \hline
+% \diagbox[width=5em,trim=l]{Time}{Day} & Mon & Tue & Wed\\
+% \hline
+% Morning   & used & used & used\\
+% \hline
+% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+% \bigskip
+% \DescribeMacro{\backslashbox}
+% "\backslashbox" 基本功能与 "\diagbox" 类似。它带有两个可选参数，分别表示
+% "\diagbox" 中的 "width" 与 "trim" 选项。
+%
+% \DescribeMacro{\slashbox}
+% "\slashbox" 基本功能与 "\diagbox[dir=NE]" 类似。它也带有两个可选参数，表示
+% "\diagbox" 中的 "width" 和 "tirm" 选项。
+%
+% "\slashbox" 与 "\backslashbox" 的语法来自 \pkg{slashbox} 宏包。\pkg{diagbox}
+% 宏包模拟了 \pkg{slashbox} 宏包的功能，并禁止 \pkg{slashbox} 再被调用。这两个
+% 命令仅在旧文档中作为兼容命令使用。实际中使用 "\diagbox" 更为方便。
+%
+%
+% \section{已知问题和未来版本}
+%
+% 未来版本会增加带有两条斜线的表头命令。这部分代码是以前写过的，正在整理中。
+%
+% \StopEventually{}
+%
+%
+% \clearpage
+% \section{Implementation / 代码实现}
+%
+% \iffalse
+%<*package>
+% \fi
+%
+%
+% 使用 key-value 界面。
+%    \begin{macrocode}
+\RequirePackage{keyval}
+%    \end{macrocode}
+% 绘图依赖 \pkg{pict2e} 宏包。
+%    \begin{macrocode}
+\RequirePackage{pict2e}
+\newbox\diagbox@boxa
+\newbox\diagbox@boxb
+\newdimen\diagbox@wd
+\newdimen\diagbox@ht
+\newdimen\diagbox@sepl
+\newdimen\diagbox@sepr
+\define@key{diagbox}{width}{%
+  \setlength{\diagbox@wd}{#1}}
+\define@key{diagbox}{height}{%
+  \setlength{\diagbox@ht}{#1}}
+\define@key{diagbox}{trim}{%
+  \@tfor\@reserveda:=#1\do{%
+    \setlength{\csname diagbox@sep\@reserveda\endcsname}{\z@}}}
+\define@key{diagbox}{dir}{%
+  \ifcsname diagbox@pict@#1\endcsname
+    \def\diagbox@pict@content{\@nameuse{diagbox@pict@#1}}%
+  \else
+    \PackageError{diagbox}{Unknown direction `#1'.}{SE and NE is supported.}%
+  \fi}
+%    \end{macrocode}
+%
+% \begin{macro}{\diagbox@pict}
+% 这是带斜线的盒子本身。由一个 "picture" 环境实现。
+%    \begin{macrocode}
+\def\diagbox@pict{%
+  \unitlength\p@
+  \begin{picture}
+    (\strip@pt\dimexpr\diagbox@wd-\diagbox@sepl-\diagbox@sepr\relax,\strip@pt\diagbox@ht)
+    (\strip@pt\diagbox@sepl,0)
+      \diagbox@pict@content
+  \end{picture}}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@pict@SE}
+% 方向为 "SE" 的斜线盒子内容。
+%    \begin{macrocode}
+\def\diagbox@pict@SE{%
+  \put(0,0) {\makebox(0,0)[bl]{\box\diagbox@boxa}}
+  \put(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \Line(0,\strip@pt\diagbox@ht)(\strip@pt\diagbox@wd,0)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@pict@NE}
+% 方向为 "NE" 的斜线盒子内容。
+%    \begin{macrocode}
+\def\diagbox@pict@NE{%
+  \put(0,\strip@pt\diagbox@ht) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
+  \put(\strip@pt\diagbox@wd,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \Line(0,0)(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox}
+% 主要的用户命令。三个参数，分别为 key-value 格式的可选项、左半边内容、右半边
+% 内容。这个命令的主要内容是读入参数并计算斜线盒子的大小。
+%    \begin{macrocode}
+\newcommand\diagbox[3][]{%
+  \begingroup
+  \diagbox@wd=\z@
+  \diagbox@ht=\z@
+  \diagbox@sepl=\tabcolsep
+  \diagbox@sepr=\tabcolsep
+  \setkeys{diagbox}{dir=SE,#1}%
+  \setbox\diagbox@boxa=\hbox{%
+    \begin{tabular}{l@{}}#2\end{tabular}}%
+  \setbox\diagbox@boxb=\hbox{%
+    \begin{tabular}{@{}r}#3\end{tabular}}%
+  \ifdim\diagbox@wd=\z@
+    \ifdim\wd\diagbox@boxa>\wd\diagbox@boxb
+      \diagbox@wd=\dimexpr2\wd\diagbox@boxa+\diagbox@sepl+\diagbox@sepr\relax
+    \else
+      \diagbox@wd=\dimexpr2\wd\diagbox@boxb+\diagbox@sepl+\diagbox@sepr\relax
+    \fi
+  \fi
+  \ifdim\diagbox@ht=\z@
+    \diagbox@ht=\dimexpr\ht\diagbox@boxa+\dp\diagbox@boxa+\ht\diagbox@boxb+\dp\diagbox@boxb\relax
+  \fi
+  $\vcenter{\hbox{\diagbox@pict}}$%
+  \endgroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% 以下代码用来模拟 \pkg{slashbox} 宏包的功能。
+%
+% 禁止读入 \pkg{slashbox}。
+%    \begin{macrocode}
+\expandafter\xdef\csname ver@slashbox.\@pkgextension\endcsname{9999/99/99}
+%    \end{macrocode}
+%
+%
+% \begin{macro}{\slashbox}
+% 模拟 "\slashbox"。
+%    \begin{macrocode}
+\def\slashbox{%
+  \def\diagbox@slashbox@options{dir=NE,}%
+  \slashbox@}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\backslashbox}
+% 模拟 "\backslashbox"。
+%    \begin{macrocode}
+\def\backslashbox{%
+  \def\diagbox@slashbox@options{dir=SE,}%
+  \slashbox@}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\slashbox@}
+%    \begin{macrocode}
+\newcommand\slashbox@[1][]{%
+  \ifx\relax#1\relax\else
+    \edef\diagbox@slashbox@options{%
+      \unexpanded\expandafter{\diagbox@slashbox@options}%
+      \unexpanded{width=#1,}}%
+  \fi
+  \slashbox@@}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\slashbox@@}
+%    \begin{macrocode}
+\newcommand\slashbox@@[3][]{%
+  \edef\diagbox@slashbox@options{%
+    \unexpanded\expandafter{\diagbox@slashbox@options}%
+    \unexpanded{trim=#1,}}%
+  \expandafter\diagbox\expandafter[\diagbox@slashbox@options]{#2}{#3}}
+\endinput
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \iffalse
+%</package>
+% \fi
+%
+% \Finale
+\endinput
