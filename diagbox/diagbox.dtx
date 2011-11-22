@@ -133,8 +133,9 @@
 % \begin{description}
 % \item[width] Specify the width of the box explicitly.
 % \item[height] Specify the height of the box explicitly.
-% \item[dir] Specify the direction of the diagonal line. The value can be "SE"
-% and "NE". Default value is "SE" (from north west to south east).
+% \item[dir] Specify the direction of the diagonal line. The value can be
+% "NW", "NE", "SW" and "SE". Default value is "NW" (from north west to south
+% east).
 % \item[trim] Specify the margin to be trimmed. The value can be "l", "r", and
 % "lr", "rl".
 % \end{description}
@@ -147,7 +148,7 @@
 % \hline
 % Morning   & used & used & used\\
 % \hline
-% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
+% Afternoon &      & used & \diagbox[dir=SW,height=2em,trim=r]{A}{B} \\
 % \hline
 % \end{tabular}
 % \end{Example}
@@ -158,7 +159,7 @@
 % specify the "width" and "trim" options.
 %
 % \DescribeMacro{\slashbox}
-% "\slashbox" works as "\diagbox[dir=NE]", and takes two optional arguments to
+% "\slashbox" works as "\diagbox[dir=SW]", and takes two optional arguments to
 % specify the "width" and "trim" options.
 %
 % The syntax of "\slashbox" and "\backslashbox" comes from \pkg{slashbox}
@@ -242,28 +243,28 @@
 % \item[width] 明确指定盒子的总宽度。如果省略，则会自动计算能够放下所有内容的
 % 宽度。
 % \item[height] 明确指定盒子的总高度。
-% \item[dir] 指定斜线方向。可以取 "NE"（划向东北）、"SE"（划向东南）、"NW"（划
-% 向西北）、"SW"（划向西南）四种方向。在只有一条斜线的表头中，"NE" 与 "SW"、
-% "SE" 与 "NW" 是等价的。斜线方向的默认值是 "SE"。
+% \item[dir] 指定斜线方向。可以取 "NW"（西北）、"NE"（东北）、"SW"（西南）、
+% "SE"（东南）四种方向。在只有一条斜线的表头中，"NE" 与 "SW"、 "SE" 与 "NW" 是
+% 等价的。斜线方向的默认值是 "NW"。
 %
 % "\diagbox[dir="\meta{方向}"]{A}{B}" 在表格中的效果：\\
 % \begin{tabular}{llll}
-% "SE" 或 "NW"：&
+% "NW" 或 "SE"：&
 % \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{B} \\\hline \end{tabular} &
-% "NE" 或 "SW"：&
+% "SW" 或 "NE"：&
 % \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{B} \\\hline \end{tabular}
 % \end{tabular}
 %
 % "\diagbox[dir="\meta{方向}"]{A}{M}{B}" 在表格中的效果：\\
 % \begin{tabular}{*4{ll}}
-% "SE"&
-% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{M}{B} \\\hline \end{tabular}&
 % "NW"&
 % \begin{tabular}{|c|} \hline \diagbox[dir=NW]{A}{M}{B} \\\hline \end{tabular}&
+% "NE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{M}{B} \\\hline \end{tabular}&
 % "SW"&
 % \begin{tabular}{|c|} \hline \diagbox[dir=SW]{A}{M}{B} \\\hline \end{tabular}&
-% "NE"&
-% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{M}{B} \\\hline \end{tabular}
+% "SE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{M}{B} \\\hline \end{tabular}
 % \end{tabular}
 %
 % \item[trim] 设置左边界或右边界不计算额外的空白，可以取值为 "l", "r", "lr" 或
@@ -278,7 +279,7 @@
 % \hline
 % Morning   & used & used & used\\
 % \hline
-% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
+% Afternoon &      & used & \diagbox[dir=SW,height=2em,trim=r]{A}{B} \\
 % \hline
 % \end{tabular}
 % \end{Example}
@@ -309,7 +310,7 @@
 % "\diagbox" 中的 "width" 与 "trim" 选项。
 %
 % \DescribeMacro{\slashbox}
-% "\slashbox" 基本功能与 "\diagbox[dir=NE]" 类似。它也带有两个可选参数，表示
+% "\slashbox" 基本功能与 "\diagbox[dir=SW]" 类似。它也带有两个可选参数，表示
 % "\diagbox" 中的 "width" 和 "tirm" 选项。
 %
 % 例如：\\
@@ -382,8 +383,8 @@
 \define@key{diagbox}{dir}{%
   \def\diagbox@dir{#1}%
   \unless\ifcsname diagbox@dir@#1\endcsname
-    \PackageError{diagbox}{Unknown direction `#1'.}{SE, SW, NE, NW are supported.}%
-    \def\diagbox@dia{SE}%
+    \PackageError{diagbox}{Unknown direction `#1'.}{NW, NE, SW, SE are supported.}%
+    \def\diagbox@dia{NW}%
   \fi}
 \let\diagbox@dir@SE\relax
 \let\diagbox@dir@SW\relax
@@ -453,7 +454,7 @@
   \diagbox@sepl=\tabcolsep
   \diagbox@sepr=\tabcolsep
   \def\diagbox@part{double}%
-  \setkeys{diagbox}{dir=SE,#1}%
+  \setkeys{diagbox}{dir=NW,#1}%
   \setbox\diagbox@boxa=\hbox{%
     \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
@@ -473,31 +474,13 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\diagbox@triple@setbox@SE}
-%    \begin{macrocode}
-\def\diagbox@triple@setbox@SE#1#2#3{%
-  \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
-  \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
-  \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\diagbox@triple@setbox@NE}
-%    \begin{macrocode}
-\let\diagbox@triple@setbox@NE\diagbox@triple@setbox@SE
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\diagbox@triple@setbox@NW}
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@NW#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
     \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#2\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
     \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
 %    \end{macrocode}
@@ -509,10 +492,28 @@
 %    \end{macrocode}
 % \end{macro}
 %
-%
-% \begin{macro}{\diagbox@triple@pict@SE}
+% \begin{macro}{\diagbox@triple@setbox@NW}
 %    \begin{macrocode}
-\def\diagbox@triple@pict@SE{%
+\def\diagbox@triple@setbox@SE#1#2#3{%
+  \setbox\diagbox@boxa=\hbox{%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
+  \setbox\diagbox@boxm=\hbox{%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#2\end{tabular}}%
+  \setbox\diagbox@boxb=\hbox{%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\diagbox@triple@setbox@NE}
+%    \begin{macrocode}
+\let\diagbox@triple@setbox@NE\diagbox@triple@setbox@SE
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triple@pict@NW}
+%    \begin{macrocode}
+\def\diagbox@triple@pict@NW{%
   \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxm}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
@@ -522,9 +523,9 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\diagbox@triple@pict@SW}
+% \begin{macro}{\diagbox@triple@pict@NE}
 %    \begin{macrocode}
-\def\diagbox@triple@pict@SW{%
+\def\diagbox@triple@pict@NE{%
   \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxm}}
   \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxb}}
@@ -534,9 +535,9 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\diagbox@triple@pict@NE}
+% \begin{macro}{\diagbox@triple@pict@SW}
 %    \begin{macrocode}
-\def\diagbox@triple@pict@NE{%
+\def\diagbox@triple@pict@SW{%
   \put(0,\y) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(0,0)  {\makebox(0,0)[bl]{\box\diagbox@boxm}}
   \put(\x,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
@@ -546,9 +547,9 @@
 % \end{macro}
 %
 %
-% \begin{macro}{\diagbox@triple@pict@NW}
+% \begin{macro}{\diagbox@triple@pict@SE}
 %    \begin{macrocode}
-\def\diagbox@triple@pict@NW{%
+\def\diagbox@triple@pict@SE{%
   \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxm}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
@@ -570,7 +571,7 @@
   \diagbox@sepl=\tabcolsep
   \diagbox@sepr=\tabcolsep
   \def\diagbox@part{triple}%
-  \setkeys{diagbox}{dir=SE,#1}%
+  \setkeys{diagbox}{dir=NW,#1}%
   \@nameuse{diagbox@triple@setbox@\diagbox@dir}{#2}{#3}{#4}%
 %    \end{macrocode}
 % 取长宽
@@ -643,7 +644,7 @@
 % 模拟 "\slashbox"。
 %    \begin{macrocode}
 \def\slashbox{%
-  \def\diagbox@slashbox@options{dir=NE,}%
+  \def\diagbox@slashbox@options{dir=SW,}%
   \slashbox@}
 %    \end{macrocode}
 % \end{macro}
@@ -653,7 +654,7 @@
 % 模拟 "\backslashbox"。
 %    \begin{macrocode}
 \def\backslashbox{%
-  \def\diagbox@slashbox@options{dir=SE,}%
+  \def\diagbox@slashbox@options{dir=NW,}%
   \slashbox@}
 %    \end{macrocode}
 % \end{macro}
