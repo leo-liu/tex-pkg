@@ -30,12 +30,12 @@
 %</package>
 %
 %<*driver>
-\documentclass[a4paper]{ltxdoc}
+\documentclass[letterpaper]{ltxdoc}
 \AtBeginDocument{
   \DeleteShortVerb{\|}
   \MakeShortVerb{\"}}
 \usepackage{diagbox}
-\usepackage{geometry}
+\usepackage[left=1.7in,top=1in,bottom=1in]{geometry}
 \usepackage{fvrb-ex}
 \usepackage[UTF8,hyperref]{ctex}
 \usepackage[pdfstartview=FitH]{hyperref}
@@ -50,7 +50,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{498}
+% \CheckSum{521}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -79,7 +79,7 @@
 % \newbox, \newdimen, \p@, \PackageError, \pkg, \put, \relax, \RequirePackage,
 % \setbox, \setkeys, \setlength, \strip@pt, \unexpanded, \unitlength,
 % \vcenter, \wd, \xdef, \z@, \@ifnextchar, \bgroup, \FPadd, \FPmul, \FPneg,
-% \FPsub, \FPupn, \let, \unless}
+% \FPsub, \FPupn, \let, \unless, \hspace}
 %
 % \providecommand*{\pkg}{\textsf}
 % \GetFileInfo{diagbox.dtx}
@@ -141,7 +141,7 @@
 %
 % Here is a more complex example:
 % \begin{Example}[frame=single,numbers=left]
-% \begin{tabular}{|@{}l|c|c|c@{}|}
+% \begin{tabular}{|@{}l|c|c|r@{}|}
 % \hline
 % \diagbox[width=5em,trim=l]{Time}{Day} & Mon & Tue & Wed\\
 % \hline
@@ -191,9 +191,11 @@
 % \pkg{slashbox} 因为缺少明确的自由许可信息，被 \TeX\ Live 排除。这个宏包是在
 % LPPL 协议下发行的。
 %
-% \pkg{diagbox} 是 \pkg{slashbox} 宏包的一个较现代的版本。这里我采用了新的
-% key-value 式语法参数，去除了 \pkg{slashbox} 原有的一些长度限制，并调用
-% \pkg{pict2e} 宏包画斜线。\pkg{diagbox} 除了提供自己的新命令，也提供了
+% \pkg{diagbox} 是 \pkg{slashbox} 宏包的一个现代的版本。它采用了新的 key-value
+% 式语法参数，去除了 \pkg{slashbox} 原有的一些长度限制，并调用 \pkg{pict2e} 宏
+% 包画斜线；特别还添加了绘制两条斜线的表头的新功能。
+%
+% 作为 \pkg{slashbox} 的代替，\pkg{diagbox} 除了提供自己的新命令，也提供了
 % \pkg{slashbox} 原有的两个命令，语法不变，编译结果略有区别。
 %
 % \pkg{diagbox} 依赖 \eTeX{} 扩展（这在目前总是可用的），依赖 \pkg{pict2e},
@@ -201,9 +203,11 @@
 %
 % \section{用法说明}
 %
+% \subsection{基本用法}
+%
 % \DescribeMacro{\diagbox}
-% "\diagbox" 是宏包提供的主要命令。它带有两个必选参数，表示要生成斜线表头的两
-% 部分内容。默认斜线是从西北到东南方向的。
+% "\diagbox" 是宏包提供的主要命令。它可以带有两个必选参数，表示要生成斜线表头的
+% 两部分内容。默认斜线是从西北到东南方向的。
 %
 % 例如：\\
 % \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
@@ -216,35 +220,9 @@
 % \hline
 % \end{tabular}
 % \end{SideBySideExample}
-%
 % \medskip
-% "\diagbox" 还可以带一个可选参数，里面用 key-value 的语法设置宽度、方向等更多
-% 的选项：
-% \begin{description}
-% \item[width] 明确指定盒子的总宽度。
-% \item[height] 明确指定盒子的总高度。
-% \item[dir] 指定斜线方向。可以取 "NE"（划向东北）和 "SE"（划向东南）两个值，
-% 默认值是 "SE"。
-% \item[trim] 设置左边界或右边界不计算额外的空白，可以取值为 "l", "r", "lr" 或
-% "rl"。这个选项在列格式包含 "@{}" 时将会有用。
-% \end{description}
 %
-% 一个更繁杂的例子：
-% \begin{Example}[frame=single,numbers=left]
-% \begin{tabular}{|@{}l|c|c|c@{}|}
-% \hline
-% \diagbox[width=5em,trim=l]{Time}{Day} & Mon & Tue & Wed\\
-% \hline
-% Morning   & used & used & used\\
-% \hline
-% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
-% \hline
-% \end{tabular}
-% \end{Example}
-%
-% \bigskip
-
-% 也可以接受三个参数，例如：
+% "\diagbox" 也可以接受三个参数，这样就会生成带有两条斜线的表头，例如：
 % \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|l|ccc|}
 % \hline
@@ -256,6 +234,75 @@
 % \end{tabular}
 % \end{Example}
 %
+% \subsection{更多参数设置}
+%
+% "\diagbox" 还可以在前面带一个可选参数，里面用 key-value 的语法设置宽度、方向
+% 等更多的选项：
+% \begin{description}
+% \item[width] 明确指定盒子的总宽度。如果省略，则会自动计算能够放下所有内容的
+% 宽度。
+% \item[height] 明确指定盒子的总高度。
+% \item[dir] 指定斜线方向。可以取 "NE"（划向东北）、"SE"（划向东南）、"NW"（划
+% 向西北）、"SW"（划向西南）四种方向。在只有一条斜线的表头中，"NE" 与 "SW"、
+% "SE" 与 "NW" 是等价的。斜线方向的默认值是 "SE"。
+%
+% "\diagbox[dir="\meta{方向}"]{A}{B}" 在表格中的效果：\\
+% \begin{tabular}{llll}
+% "SE" 或 "NW"：&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{B} \\\hline \end{tabular} &
+% "NE" 或 "SW"：&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{B} \\\hline \end{tabular}
+% \end{tabular}
+%
+% "\diagbox[dir="\meta{方向}"]{A}{M}{B}" 在表格中的效果：\\
+% \begin{tabular}{*4{ll}}
+% "SE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{M}{B} \\\hline \end{tabular}&
+% "NW"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NW]{A}{M}{B} \\\hline \end{tabular}&
+% "SW"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SW]{A}{M}{B} \\\hline \end{tabular}&
+% "NE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{M}{B} \\\hline \end{tabular}
+% \end{tabular}
+%
+% \item[trim] 设置左边界或右边界不计算额外的空白，可以取值为 "l", "r", "lr" 或
+% "rl"。这个选项在列格式包含 "@{}" 时将会有用。
+% \end{description}
+%
+% 一个更复杂的例子：
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|@{}l|c|c|r@{}|}
+% \hline
+% \diagbox[width=5em,trim=l]{Time}{Day} & Mon & Tue & Wed\\
+% \hline
+% Morning   & used & used & used\\
+% \hline
+% Afternoon &      & used & \diagbox[dir=NE,height=2em,trim=r]{A}{B} \\
+% \hline
+% \end{tabular}
+% \end{Example}
+% \bigskip
+%
+% 此外，"\diagbox" 的表头内容还可以用 "\\" 手工换行。此时通常需要对自动计算的
+% 表头高度进行手工调整。例如：
+% \begin{Example}
+% \begin{tabular}{|c|}
+% \hline
+% \diagbox[height=45pt]{line\\heads}{column\\heads} \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+% \subsection{对 \pkg{slashbox} 宏包的兼容性}
+%
+% 在使用 \pkg{diagbox} 宏包时，会模拟 \pkg{slashbox} 宏包的功能，并禁止
+% \pkg{slashbox} 再被调用。
+%
+% \pkg{diagbox} 宏包提供了与 \pkg{slashbox} 大致相同的 "\slashbox" 与
+% "\backslashbox" 两个命令。 "\slashbox" 与 "\backslashbox" 的语法来自
+% \pkg{slashbox} 宏包，排版效果略有区别。这两个命令仅在旧文档中作为兼容命令使
+% 用。实际中使用 "\diagbox" 更为方便。
 %
 % \DescribeMacro{\backslashbox}
 % "\backslashbox" 基本功能与 "\diagbox" 类似。它带有两个可选参数，分别表示
@@ -265,14 +312,21 @@
 % "\slashbox" 基本功能与 "\diagbox[dir=NE]" 类似。它也带有两个可选参数，表示
 % "\diagbox" 中的 "width" 和 "tirm" 选项。
 %
-% "\slashbox" 与 "\backslashbox" 的语法来自 \pkg{slashbox} 宏包。\pkg{diagbox}
-% 宏包模拟了 \pkg{slashbox} 宏包的功能，并禁止 \pkg{slashbox} 再被调用。这两个
-% 命令仅在旧文档中作为兼容命令使用。实际中使用 "\diagbox" 更为方便。
-%
+% 例如：\\
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|c|c|c|} \hline
+% \backslashbox{num}{alpha} & A & B\\\hline
+% 1 & A1 & B1 \\\hline
+% 2 & A2 & B2 \\\hline
+% \end{tabular}
+% \end{SideBySideExample}
 %
 % \section{已知问题和未来版本}
 %
-% 更新整理双斜线表头的文档。更新代码说明。
+% "\diagbox" 生成的单元格必须是表列中最宽的一个。如果不能达到最宽，则画出的斜
+% 线不能保证在正确的位置。
+%
+% 需要更新整理双斜线表头的文档。更新代码说明。
 %
 % \StopEventually{}
 %
@@ -296,20 +350,35 @@
 % 计算依赖 \pkg{fp} 宏包。
 %    \begin{macrocode}
 \RequirePackage{fp}
+%    \end{macrocode}
+% 
+% 分配用到的盒子寄存器。它们分别对应于 "\diagbox" 三个必选参数的内容。
+%    \begin{macrocode}
 \newbox\diagbox@boxa
 \newbox\diagbox@boxb
 \newbox\diagbox@boxm
+%    \end{macrocode}
+% 分配长度变量。
+%    \begin{macrocode}
 \newdimen\diagbox@wd
 \newdimen\diagbox@ht
 \newdimen\diagbox@sepl
 \newdimen\diagbox@sepr
+%    \end{macrocode}
+% 
+% 定义 "\diagbox" 的键值选项。
+%    \begin{macrocode}
 \define@key{diagbox}{width}{%
   \setlength{\diagbox@wd}{#1}}
 \define@key{diagbox}{height}{%
   \setlength{\diagbox@ht}{#1}}
 \define@key{diagbox}{trim}{%
   \@tfor\@reserveda:=#1\do{%
-    \setlength{\csname diagbox@sep\@reserveda\endcsname}{\z@}}}
+    \ifcsname diagbox@sep\@reserveda\endcsname
+      \setlength{\csname diagbox@sep\@reserveda\endcsname}{\z@}%
+    \else
+      \PackageError{diagbox}{Unknown trim option `#1'.}{l, r, lr and rl are supported.}%
+    \fi}}
 \define@key{diagbox}{dir}{%
   \def\diagbox@dir{#1}%
   \unless\ifcsname diagbox@dir@#1\endcsname
@@ -372,6 +441,8 @@
 %
 %
 % \begin{macro}{\diagbox@double}
+% \changes{v2.0}{2011/11/22}{在使用 "trim" 选项时去掉内容与盒子边界的间距。这
+% 与 \pkg{slashbox} 的行为不同。}
 % 分成两部分的盒子。三个参数，分别为 key-value 格式的可选项、左半边内容、右半边
 % 内容。这里的主要工作是读入参数并计算斜线盒子的大小。
 %    \begin{macrocode}
@@ -384,9 +455,9 @@
   \def\diagbox@part{double}%
   \setkeys{diagbox}{dir=SE,#1}%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{l@{}}#2\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r}#3\end{tabular}}%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}%
   \ifdim\diagbox@wd=\z@
     \ifdim\wd\diagbox@boxa>\wd\diagbox@boxb
       \diagbox@wd=\dimexpr2\wd\diagbox@boxa+\diagbox@sepl+\diagbox@sepr\relax
@@ -406,11 +477,11 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@SE#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{l@{}}#1\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{l@{}}#2\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r}#3\end{tabular}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -424,11 +495,11 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@NW#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{l@{}}#1\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{}r}#2\end{tabular}}%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r}#3\end{tabular}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -482,7 +553,7 @@
   \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxm}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
   \Line(0,\y)(\xxm,0)
-  \Line(0,\y)(0,\yym)}
+  \Line(0,\y)(\x,\ym)}
 %    \end{macrocode}
 % \end{macro}
 %
