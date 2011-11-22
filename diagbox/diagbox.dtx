@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{diagbox}
 %<*package>
-    [2011/11/21 v1.0 Making table heads with diagonal lines]
+    [2011/11/22 v2.0 Making table heads with diagonal lines]
 %</package>
 %
 %<*driver>
@@ -50,7 +50,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{201}
+% \CheckSum{498}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -69,7 +69,8 @@
 %   Right brace   \}     Tilde         \~}
 %
 %
-% \changes{v1.0}{2011/11/21}{初始版本}
+% \changes{v1.0}{2011/11/21}{初始版本。}
+% \changes{v2.0}{2011/11/22}{增加有三部分、双斜线的表头格式。}
 %
 % \DoNotIndex{\newcommand, \newenvironment, \@nameuse, \@pkgextension,
 % \@reserveda, \@tfor, \begin, \begingroup, \box, \csname, \def, \define@key,
@@ -77,7 +78,8 @@
 % \expandafter, \fi, \hbox, \ht, \ifcsname, \ifdim, \ifx, \Line, \makebox,
 % \newbox, \newdimen, \p@, \PackageError, \pkg, \put, \relax, \RequirePackage,
 % \setbox, \setkeys, \setlength, \strip@pt, \unexpanded, \unitlength,
-% \vcenter, \wd, \xdef, \z@}
+% \vcenter, \wd, \xdef, \z@, \@ifnextchar, \bgroup, \FPadd, \FPmul, \FPneg,
+% \FPsub, \FPupn, \let, \unless}
 %
 % \providecommand*{\pkg}{\textsf}
 % \GetFileInfo{diagbox.dtx}
@@ -103,7 +105,7 @@
 % a little different.
 %
 % To use \pkg{diagbox}, \eTeX{} is needed. And \pkg{diagbox} requires
-% \pkg{pict2e} package.
+% \pkg{pict2e}, \pkg{keyval} and \pkg{fp} packages.
 %
 % \section{Usage}
 %
@@ -194,8 +196,8 @@
 % \pkg{pict2e} 宏包画斜线。\pkg{diagbox} 除了提供自己的新命令，也提供了
 % \pkg{slashbox} 原有的两个命令，语法不变，编译结果略有区别。
 %
-% \pkg{diagbox} 依赖 \eTeX{} 扩展（这在目前总是可用的），依赖 \pkg{pict2e} 宏
-% 包。
+% \pkg{diagbox} 依赖 \eTeX{} 扩展（这在目前总是可用的），依赖 \pkg{pict2e},
+% \pkg{keyval} 和 \pkg{fp} 宏包。
 %
 % \section{用法说明}
 %
@@ -241,6 +243,20 @@
 % \end{Example}
 %
 % \bigskip
+
+% 也可以接受三个参数，例如：
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|l|ccc|}
+% \hline
+% \diagbox{Time}{Room}{Day} & Mon & Tue & Wed \\
+% \hline
+% Morning   & used & used &      \\
+% Afternoon &      & used & used \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+%
 % \DescribeMacro{\backslashbox}
 % "\backslashbox" 基本功能与 "\diagbox" 类似。它带有两个可选参数，分别表示
 % "\diagbox" 中的 "width" 与 "trim" 选项。
@@ -256,7 +272,7 @@
 %
 % \section{已知问题和未来版本}
 %
-% 未来版本会增加带有两条斜线的表头命令。这部分代码是以前写过的，正在整理中。
+% 更新整理双斜线表头的文档。更新代码说明。
 %
 % \StopEventually{}
 %
@@ -276,8 +292,13 @@
 % 绘图依赖 \pkg{pict2e} 宏包。
 %    \begin{macrocode}
 \RequirePackage{pict2e}
+%    \end{macrocode}
+% 计算依赖 \pkg{fp} 宏包。
+%    \begin{macrocode}
+\RequirePackage{fp}
 \newbox\diagbox@boxa
 \newbox\diagbox@boxb
+\newbox\diagbox@boxm
 \newdimen\diagbox@wd
 \newdimen\diagbox@ht
 \newdimen\diagbox@sepl
@@ -290,11 +311,15 @@
   \@tfor\@reserveda:=#1\do{%
     \setlength{\csname diagbox@sep\@reserveda\endcsname}{\z@}}}
 \define@key{diagbox}{dir}{%
-  \ifcsname diagbox@pict@#1\endcsname
-    \def\diagbox@pict@content{\@nameuse{diagbox@pict@#1}}%
-  \else
-    \PackageError{diagbox}{Unknown direction `#1'.}{SE and NE is supported.}%
+  \def\diagbox@dir{#1}%
+  \unless\ifcsname diagbox@dir@#1\endcsname
+    \PackageError{diagbox}{Unknown direction `#1'.}{SE, SW, NE, NW are supported.}%
+    \def\diagbox@dia{SE}%
   \fi}
+\let\diagbox@dir@SE\relax
+\let\diagbox@dir@SW\relax
+\let\diagbox@dir@NE\relax
+\let\diagbox@dir@NW\relax
 %    \end{macrocode}
 %
 % \begin{macro}{\diagbox@pict}
@@ -305,44 +330,58 @@
   \begin{picture}
     (\strip@pt\dimexpr\diagbox@wd-\diagbox@sepl-\diagbox@sepr\relax,\strip@pt\diagbox@ht)
     (\strip@pt\diagbox@sepl,0)
-      \diagbox@pict@content
+      \@nameuse{diagbox@\diagbox@part @pict@\diagbox@dir}
   \end{picture}}
 %    \end{macrocode}
 % \end{macro}
 %
 %
-% \begin{macro}{\diagbox@pict@SE}
+% \begin{macro}{\diagbox@double@pict@SE}
 % 方向为 "SE" 的斜线盒子内容。
 %    \begin{macrocode}
-\def\diagbox@pict@SE{%
+\def\diagbox@double@pict@SE{%
   \put(0,0) {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
   \Line(0,\strip@pt\diagbox@ht)(\strip@pt\diagbox@wd,0)}
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\diagbox@double@pict@NW}
+% 方向 "NW" 与 "SE" 相同。
+%    \begin{macrocode}
+\let\diagbox@double@pict@NW\diagbox@double@pict@SE
+%    \end{macrocode}
+% \end{macro}
 %
-% \begin{macro}{\diagbox@pict@NE}
+% \begin{macro}{\diagbox@double@pict@NE}
 % 方向为 "NE" 的斜线盒子内容。
 %    \begin{macrocode}
-\def\diagbox@pict@NE{%
+\def\diagbox@double@pict@NE{%
   \put(0,\strip@pt\diagbox@ht) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(\strip@pt\diagbox@wd,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
   \Line(0,0)(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht)}
 %    \end{macrocode}
 % \end{macro}
 %
-%
-% \begin{macro}{\diagbox}
-% 主要的用户命令。三个参数，分别为 key-value 格式的可选项、左半边内容、右半边
-% 内容。这个命令的主要内容是读入参数并计算斜线盒子的大小。
+% \begin{macro}{\diagbox@double@pict@NE}
+% 方向 "NE" 与 "SW" 相同。
 %    \begin{macrocode}
-\newcommand\diagbox[3][]{%
+\let\diagbox@double@pict@NE\diagbox@double@pict@SW
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@double}
+% 分成两部分的盒子。三个参数，分别为 key-value 格式的可选项、左半边内容、右半边
+% 内容。这里的主要工作是读入参数并计算斜线盒子的大小。
+%    \begin{macrocode}
+\def\diagbox@double#1#2#3{%
   \begingroup
   \diagbox@wd=\z@
   \diagbox@ht=\z@
   \diagbox@sepl=\tabcolsep
   \diagbox@sepr=\tabcolsep
+  \def\diagbox@part{double}%
   \setkeys{diagbox}{dir=SE,#1}%
   \setbox\diagbox@boxa=\hbox{%
     \begin{tabular}{l@{}}#2\end{tabular}}%
@@ -360,6 +399,164 @@
   \fi
   $\vcenter{\hbox{\diagbox@pict}}$%
   \endgroup}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\diagbox@triple@setbox@SE}
+%    \begin{macrocode}
+\def\diagbox@triple@setbox@SE#1#2#3{%
+  \setbox\diagbox@boxa=\hbox{%
+    \begin{tabular}{l@{}}#1\end{tabular}}%
+  \setbox\diagbox@boxm=\hbox{%
+    \begin{tabular}{l@{}}#2\end{tabular}}%
+  \setbox\diagbox@boxb=\hbox{%
+    \begin{tabular}{@{}r}#3\end{tabular}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\diagbox@triple@setbox@NE}
+%    \begin{macrocode}
+\let\diagbox@triple@setbox@NE\diagbox@triple@setbox@SE
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\diagbox@triple@setbox@NW}
+%    \begin{macrocode}
+\def\diagbox@triple@setbox@NW#1#2#3{%
+  \setbox\diagbox@boxa=\hbox{%
+    \begin{tabular}{l@{}}#1\end{tabular}}%
+  \setbox\diagbox@boxm=\hbox{%
+    \begin{tabular}{@{}r}#2\end{tabular}}%
+  \setbox\diagbox@boxb=\hbox{%
+    \begin{tabular}{@{}r}#3\end{tabular}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\diagbox@triple@setbox@SW}
+%    \begin{macrocode}
+\let\diagbox@triple@setbox@SW\diagbox@triple@setbox@NW
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triple@pict@SE}
+%    \begin{macrocode}
+\def\diagbox@triple@pict@SE{%
+  \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
+  \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxm}}
+  \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \Line(0,\yym)(\x,0)
+  \Line(\xm,\y)(\x,0)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triple@pict@SW}
+%    \begin{macrocode}
+\def\diagbox@triple@pict@SW{%
+  \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxa}}
+  \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxm}}
+  \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \Line(0,0)(\xxm,\y)
+  \Line(0,0)(\x,\yym)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triple@pict@NE}
+%    \begin{macrocode}
+\def\diagbox@triple@pict@NE{%
+  \put(0,\y) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
+  \put(0,0)  {\makebox(0,0)[bl]{\box\diagbox@boxm}}
+  \put(\x,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \Line(0,\ym)(\x,\y)
+  \Line(\xm,0)(\x,\y)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triple@pict@NW}
+%    \begin{macrocode}
+\def\diagbox@triple@pict@NW{%
+  \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
+  \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxm}}
+  \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \Line(0,\y)(\xxm,0)
+  \Line(0,\y)(0,\yym)}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox@triplebox}
+% \changes{v2.0}{2011/11/22}{新增三部分双斜线的盒子}
+% 分成三部分的盒子。四个参数，分别为 key-value 格式的可选项、左半边内容、中间
+% 内容、右半边内容。
+%    \begin{macrocode}
+\def\diagbox@triple#1#2#3#4{%
+  \begingroup
+  \diagbox@wd=\z@
+  \diagbox@ht=\z@
+  \diagbox@sepl=\tabcolsep
+  \diagbox@sepr=\tabcolsep
+  \def\diagbox@part{triple}%
+  \setkeys{diagbox}{dir=SE,#1}%
+  \@nameuse{diagbox@triple@setbox@\diagbox@dir}{#2}{#3}{#4}%
+%    \end{macrocode}
+% 取长宽
+%    \begin{macrocode}
+  \edef\xa{\strip@pt\wd\diagbox@boxa}%
+  \edef\ya{\strip@pt\dimexpr\ht\diagbox@boxa+\dp\diagbox@boxa\relax}%
+  \edef\xb{\strip@pt\wd\diagbox@boxb}%
+  \edef\yb{\strip@pt\dimexpr\ht\diagbox@boxb+\dp\diagbox@boxb\relax}%
+  \edef\xm{\strip@pt\wd\diagbox@boxm}%
+  \edef\ym{\strip@pt\dimexpr\ht\diagbox@boxm+\dp\diagbox@boxm\relax}%
+%    \end{macrocode}
+% 列方程，求方程系数
+%    \begin{macrocode}
+  \FPneg\bi\yb
+  \FPadd\ci\xb\xm  \FPneg\ci\ci
+  \FPmul\di\xm\yb
+  \FPadd\bj\ya\ym  \FPneg\bj\bj
+  \FPneg\cj\xa
+  \FPmul\dj\xa\ym
+%    \end{macrocode}
+% 解方程
+%    \begin{macrocode}
+  \FPsub\u\dj\di
+  \FPupn{v}{bj ci * bi cj * -}%
+  \FPupn{delta}{bi dj * bj di * - cj ci - * 4 * %
+    v u + copy * %
+    - 2 swap root}%
+  \ifdim\diagbox@wd=\z@
+    \FPupn{x}{2 bj bi - delta v u - + / /}%
+    \diagbox@wd=\x\p@
+  \else
+    \edef\x{\strip@pt\diagbox@wd}%
+  \fi
+  \ifdim\diagbox@ht=\z@
+    \FPupn{y}{2 cj ci - delta v u + - / /}%
+    \diagbox@ht=\y\p@
+  \else
+    \edef\y{\strip@pt\diagbox@ht}%
+  \fi
+  \FPsub\xxm\x\xm
+  \FPsub\yym\y\ym
+%    \end{macrocode}
+% 画盒子
+%    \begin{macrocode}
+  $\vcenter{\hbox{\diagbox@pict}}$%
+  \endgroup}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\diagbox}
+% \changes{v2.0}{2011/11/22}{判断参数个数，选择两部分或三部分盒子。}
+% 主要的用户命令。判断使用两部分还是三部分的盒子。
+%    \begin{macrocode}
+\newcommand\diagbox[3][]{%
+  \@ifnextchar\bgroup
+    {\diagbox@triple{#1}{#2}{#3}}{\diagbox@double{#1}{#2}{#3}}}
 %    \end{macrocode}
 % \end{macro}
 %
