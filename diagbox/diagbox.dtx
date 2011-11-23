@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{diagbox}
 %<*package>
-    [2011/11/22 v2.0 Making table heads with diagonal lines]
+    [2011/11/23 v2.0 Making table heads with diagonal lines]
 %</package>
 %
 %<*driver>
@@ -37,8 +37,20 @@
 \usepackage{diagbox}
 \usepackage[left=1.7in,top=1in,bottom=1in]{geometry}
 \usepackage{fvrb-ex}
-\usepackage[UTF8,hyperref]{ctex}
-\usepackage[pdfstartview=FitH]{hyperref}
+\usepackage[UTF8]{ctex}
+\makeatletter
+\renewcommand\glossary@prologue{%
+  \pdfbookmark[1]{版本历史}{history}
+  \section*{版本历史}
+  \markboth{版本历史}{版本历史}}
+\renewcommand\index@prologue{%
+  \pdfbookmark[1]{Index / 代码索引}{index}
+  \section*{Index / 代码索引}
+  \markboth{Index / 代码索引}{Index / 代码索引}
+  斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
+  立体的数字表示对应项使用时所在的行号。}
+\makeatother
+\usepackage[pdfstartview=FitH,bookmarksnumbered,colorlinks]{hyperref}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -70,7 +82,6 @@
 %
 %
 % \changes{v1.0}{2011/11/21}{初始版本。}
-% \changes{v2.0}{2011/11/22}{增加有三部分、双斜线的表头格式。}
 %
 % \DoNotIndex{\newcommand, \newenvironment, \@nameuse, \@pkgextension,
 % \@reserveda, \@tfor, \begin, \begingroup, \box, \csname, \def, \define@key,
@@ -84,7 +95,8 @@
 % \providecommand*{\pkg}{\textsf}
 % \GetFileInfo{diagbox.dtx}
 % \title{\hypertarget{English}{\pkg{diagbox} Package (\fileversion)}
-%    \makebox[0pt]{\hspace{5cm}\hyperlink{Chinese}{\textsf{中文版}}}\\
+%   \makebox[0pt][l]{\hspace{3cm}\large
+%     \hyperlink{Chinese}{$\Rightarrow$ \textsf{中文版}}}\\
 %    Making Table Heads with Diagonal Lines}
 % \author{Leo Liu \\ \path{leoliu.pku@gmail.com}}
 % \date{\filedate}
@@ -93,25 +105,37 @@
 %
 % \section{Introduction}
 %
-% \pkg{diagbox} is a replacement of old \pkg{slashbox} package. I write this
+% \pkg{diagbox} is a replacement of old \pkg{slashbox} package\footnote{By
+% Koichi Yasuoka and Toru Sato. Available on
+% \url{CTAN://macros/latex/contrib/slashbox/slashbox.sty}}. I write this
 % package simply because that \pkg{slashbox} is not available in \TeX\ Live
 % for licening problems. \pkg{slashbox} has no explicit license information
 % available, but \pkg{diagbox} is under LPPL.
 %
 % \pkg{diagbox} is a modern alternative of \pkg{slashbox}. I changed the
 % user interface to use a key-value syntax, get rid of some restrictions of
-% \pkg{slashbox}, use \pkg{pict2e} to draw diagonal lines. \pkg{diagbox}
-% package also provides compatible macros of \pkg{slashbox}, but the result is
-% a little different.
+% \pkg{slashbox}, use \pkg{pict2e} to draw diagonal lines. Especially, this
+% package also provides ability to make a box with two diagonal lines in it.
+% All these can be obtained by a "\diagbox" command.
+%
+% As a replacement of \pkg{slashbox}, \pkg{diagbox} package also provides
+% compatible macros of \pkg{slashbox}, but the result is a little different.
 %
 % To use \pkg{diagbox}, \eTeX{} is needed. And \pkg{diagbox} requires
 % \pkg{pict2e}, \pkg{keyval} and \pkg{fp} packages.
 %
+%
 % \section{Usage}
 %
+% \subsection{Basic usage}
+%
+% To load the package, just put this in the preamble:
+% \begin{Verbatim}
+% \usepackage{diagbox}
+% \end{Verbatim}
 %
 % \DescribeMacro{\diagbox}
-% "\diagbox" is the main command. It takes two arguments, to produce a box
+% "\diagbox" is the main command. It can take two arguments, to produce a box
 % with a diagonal line from north west to south east.
 %
 % For example:\\
@@ -125,22 +149,63 @@
 % \hline
 % \end{tabular}
 % \end{SideBySideExample}
-%
 % \medskip
-% "\diagbox" can take an optional argument in key-value syntax to specify the
+%
+% "\diagbox" can also take three arguments, to draw a table head with two
+% diagbox lines. For example,
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|l|ccc|}
+% \hline
+% \diagbox{Time}{Room}{Day} & Mon & Tue & Wed \\
+% \hline
+% Morning   & used & used &      \\
+% Afternoon &      & used & used \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+% \subsection{More options}
+%
+% "\diagbox" can take a key-value list as an optional argument to specify the
 % width and height of the box, the direction of the diagonal line, and the
-% trimming margin:
+% trimming margins:
 % \begin{description}
-% \item[width] Specify the width of the box explicitly.
-% \item[height] Specify the height of the box explicitly.
+% \item[width] Specify the width of the box explicitly. If it is omitted,
+% package will calculate a width automatically.
+% 
+% \item[height] Specify the height of the box explicitly. If it is omitted,
+% package will calculate a height automatically.
+% 
 % \item[dir] Specify the direction of the diagonal line. The value can be
-% "NW", "NE", "SW" and "SE". Default value is "NW" (from north west to south
-% east).
+% "NW", "NE", "SW" and "SE". Default value is "NW". The meaning of the values
+% see below.
+% \begin{itemize}
+% \item "\diagbox[dir="\meta{direction}"]{A}{B}" in a table looks:\\
+% \begin{tabular}{ll@{\qquad}ll}
+% "NW" or "SE"：&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{B} \\\hline \end{tabular} &
+% "SW" or "NE"：&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{B} \\\hline \end{tabular}
+% \end{tabular}
+% \item "\diagbox[dir="\meta{direction}"]{A}{M}{B}" in a table looks:\\
+% \begin{tabular}{*4{ll@{\qquad}}}
+% "NW"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NW]{A}{M}{B} \\\hline \end{tabular}&
+% "NE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=NE]{A}{M}{B} \\\hline \end{tabular}&
+% "SW"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SW]{A}{M}{B} \\\hline \end{tabular}&
+% "SE"&
+% \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{M}{B} \\\hline \end{tabular}
+% \end{tabular}
+% \end{itemize}
+%
 % \item[trim] Specify the margin to be trimmed. The value can be "l", "r", and
-% "lr", "rl".
+% "lr", "rl". This helps the slash line exceeds the boundary when "@{}" column
+% specifier is used.
 % \end{description}
 %
-% Here is a more complex example:
+% Here is a more complex example to show the usage of the options:
 % \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|@{}l|c|c|r@{}|}
 % \hline
@@ -154,6 +219,26 @@
 % \end{Example}
 %
 % \bigskip
+% What's more, you can use "\\" to break lines in "\diagbox". Manual setting
+% of the height of the head may be needed. For example,
+% \begin{Example}[frame=single,numbers=left]
+% \begin{tabular}{|c|}
+% \hline
+% \diagbox[height=45pt]{line\\heads}{column\\heads} \\
+% \hline
+% \end{tabular}
+% \end{Example}
+%
+% \subsection{Compatibility with \pkg{slashbox}}
+%
+% \pkg{diagbox} package emulates \pkg{slashbox} and also prevents
+% \pkg{slashbox} to be loaded.
+%
+% \pkg{diagbox} package provides "\slashbox" and "\backslashbox" which syntax
+% similar to \pkg{slashbox} package. However, the results of the two packages
+% are a little different. These two commands are for compatibility only, it is
+% better to use "\diagbox" instead for new documents.
+%
 % \DescribeMacro{\backslashbox}
 % "\backslashbox" works as "\diagbox", but it takes two optional arguments to
 % specify the "width" and "trim" options.
@@ -162,23 +247,54 @@
 % "\slashbox" works as "\diagbox[dir=SW]", and takes two optional arguments to
 % specify the "width" and "trim" options.
 %
-% The syntax of "\slashbox" and "\backslashbox" comes from \pkg{slashbox}
-% packages. \pkg{diagbox} package emulates \pkg{slashbox} and also prevents
-% \pkg{slashbox} to be loaded. However, the results of the two packages are
-% a little different. These two commands are for compatibility only, it is
-% better to use "\diagbox" instead.
+% For example,\\
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|c|c|c|} \hline
+% \backslashbox[2cm]{num}{alpha}
+%   & A  & B  \\\hline
+% 1 & A1 & B1 \\\hline
+% 2 & A2 & B2 \\\hline
+% \end{tabular}
+% \end{SideBySideExample}
 %
 %
-% \section{Bugs and TODO}
+% \section{Known issues and TODO}
 %
-% I will provide a new command to produce a three-part box with two diagonal
-% lines in later version.
+% Known issues:
+% \begin{itemize}
+% \item The result of "\slashbox" and "\backslashbox" is different with
+% \pkg{slashbox} package. The algorithms to calculate the width and height are
+% different; and the results of the second optional argument of "\slashbox"
+% (i.e. "trim" key in "\diagbox") in the two packages are differernt.
 %
+% This is not a bug. Usually the width calculated by \pkg{diagbox} is more
+% safe than \pkg{slashbox}.
 %
+% \item
+% The cell with "\diagbox" should be the widest one of the column. Otherwise
+% the slash line cannot exceeds the boundary. For example,\\[1ex]
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|c|}  \hline
+%   \diagbox{A}{B}    \\\hline
+%   Very long term    \\\hline
+% \end{tabular}
+% \end{SideBySideExample}
+% \\[1ex]
+% This can be solved by setting a wider "width" option of "\diagbox" manually.
+% \end{itemize}
+%
+% TODO:
+% \begin{itemize}
+% \item
+% Improve the document of the source code. The algorithm of "\diagbox@triple"
+% should be explained in detail. However, the explanations would be only
+% available in Chinese, I'm sorry.
+% \end{itemize}
 %
 %
 % \title{\hypertarget{Chinese}{\pkg{diagbox} 宏包（\fileversion）}
-%    \makebox[0pt]{\hspace{5cm}\hyperlink{English}{\textsf{English Version}}}\\
+%   \makebox[0pt][l]{\hspace{3cm}\large
+%     \hyperlink{English}{$\Rightarrow$ \textsf{English Version}}}\\
 %    制做斜线表头}
 % \author{刘海洋 \\ \path{leoliu.pku@gmail.com}}
 % \date{\filedate}
@@ -188,9 +304,11 @@
 %
 % \section{简介}
 %
-% \pkg{diagbox} 设计用来代替旧的 \pkg{slashbox} 宏包。编写这个宏包的缘起是
-% \pkg{slashbox} 因为缺少明确的自由许可信息，被 \TeX\ Live 排除。这个宏包是在
-% LPPL 协议下发行的。
+% \pkg{diagbox} 设计用来代替旧的 \pkg{slashbox} 宏包\footnote{作者 Koichi
+% Yasuoka（安岡孝一）与 Sato Toru（佐藤徹）。宏包见
+% \url{CTAN://macros/latex/contrib/slashbox/slashbox.sty}。}。编写这个宏包的缘
+% 起是 \pkg{slashbox} 因为缺少明确的自由许可信息，被 \TeX\ Live 排除。这个宏包
+% 是在 LPPL 协议下发行的。
 %
 % \pkg{diagbox} 是 \pkg{slashbox} 宏包的一个现代的版本。它采用了新的 key-value
 % 式语法参数，去除了 \pkg{slashbox} 原有的一些长度限制，并调用 \pkg{pict2e} 宏
@@ -205,6 +323,11 @@
 % \section{用法说明}
 %
 % \subsection{基本用法}
+%
+% 要使用本宏包，首先在导言区调用：
+% \begin{Verbatim}
+% \usepackage{diagbox}
+% \end{Verbatim}
 %
 % \DescribeMacro{\diagbox}
 % "\diagbox" 是宏包提供的主要命令。它可以带有两个必选参数，表示要生成斜线表头的
@@ -223,6 +346,7 @@
 % \end{SideBySideExample}
 % \medskip
 %
+% \changes{v2.0}{2011/11/22}{增加有三部分、双斜线的表头格式。}
 % "\diagbox" 也可以接受三个参数，这样就会生成带有两条斜线的表头，例如：
 % \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|l|ccc|}
@@ -248,7 +372,7 @@
 % 等价的。斜线方向的默认值是 "NW"。
 %
 % "\diagbox[dir="\meta{方向}"]{A}{B}" 在表格中的效果：\\
-% \begin{tabular}{llll}
+% \begin{tabular}{ll@{\qquad}ll}
 % "NW" 或 "SE"：&
 % \begin{tabular}{|c|} \hline \diagbox[dir=SE]{A}{B} \\\hline \end{tabular} &
 % "SW" 或 "NE"：&
@@ -256,7 +380,7 @@
 % \end{tabular}
 %
 % "\diagbox[dir="\meta{方向}"]{A}{M}{B}" 在表格中的效果：\\
-% \begin{tabular}{*4{ll}}
+% \begin{tabular}{*4{ll@{\qquad}}}
 % "NW"&
 % \begin{tabular}{|c|} \hline \diagbox[dir=NW]{A}{M}{B} \\\hline \end{tabular}&
 % "NE"&
@@ -271,6 +395,8 @@
 % "rl"。这个选项在列格式包含 "@{}" 时将会有用。
 % \end{description}
 %
+% \changes{v2.0}{2011/11/23}{变更 "trim" 选项的行为，去掉了使用 "trim" 选项时
+% 内部的间距。这与 \pkg{slashbox} 行为不同。}
 % 一个更复杂的例子：
 % \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|@{}l|c|c|r@{}|}
@@ -287,7 +413,7 @@
 %
 % 此外，"\diagbox" 的表头内容还可以用 "\\" 手工换行。此时通常需要对自动计算的
 % 表头高度进行手工调整。例如：
-% \begin{Example}
+% \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|c|}
 % \hline
 % \diagbox[height=45pt]{line\\heads}{column\\heads} \\
@@ -316,7 +442,8 @@
 % 例如：\\
 % \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
 % \begin{tabular}{|c|c|c|} \hline
-% \backslashbox{num}{alpha} & A & B\\\hline
+% \backslashbox[2cm]{num}{alpha}
+%   & A  & B  \\\hline
 % 1 & A1 & B1 \\\hline
 % 2 & A2 & B2 \\\hline
 % \end{tabular}
@@ -324,10 +451,34 @@
 %
 % \section{已知问题和未来版本}
 %
-% "\diagbox" 生成的单元格必须是表列中最宽的一个。如果不能达到最宽，则画出的斜
-% 线不能保证在正确的位置。
+% 已知问题：
+% \begin{itemize}
+% \item "\slashbox" 与 "\backslashbox" 命令的效果与在 \pkg{slashbox} 宏包中不
+% 同。两个宏包在计算盒子宽度和高度时，使用了不同的算法；同时，在处理
+% "\slashbox" 第二个可选参数（即 "\diagbox" 的 "trim" 键）时，使用的方式也不一
+% 样。
 %
-% 需要更新整理双斜线表头的文档。更新代码说明。
+% 这不是 bug。通常 \pkg{diagbox} 计算出的宽度比 \pkg{slashbox} 的结果更安全一
+% 些。
+%
+% \item
+% "\diagbox" 生成的单元格必须是表列中最宽的一个。如果不能达到最宽，则画出的斜
+% 线不能保证在正确的位置。例如：\\[1ex]
+% \begin{SideBySideExample}[frame=single,numbers=left,xrightmargin=.45\linewidth]
+% \begin{tabular}{|c|}  \hline
+%   \diagbox{A}{B}    \\\hline
+%   Very long term    \\\hline
+% \end{tabular}
+% \end{SideBySideExample}
+% \\[1ex]
+% 此时可以手工设置较宽的 "\diagbox" 的 "width" 选项，解决此问题。
+% \end{itemize}
+%
+% 未尽的工作：
+% \begin{itemize}
+% \item 源代码的文档需要改进。特别是在 "\diagbox@triple" 中的宽度和高度计算算
+% 法需要详细说明。
+% \end{itemize}
 %
 % \StopEventually{}
 %
@@ -350,7 +501,7 @@
 %    \end{macrocode}
 % 计算依赖 \pkg{fp} 宏包。
 %    \begin{macrocode}
-\RequirePackage{fp}
+\RequirePackage[nomessages]{fp}
 %    \end{macrocode}
 % 
 % 分配用到的盒子寄存器。它们分别对应于 "\diagbox" 三个必选参数的内容。
