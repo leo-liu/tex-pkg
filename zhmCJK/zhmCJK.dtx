@@ -30,15 +30,35 @@
 %</package>
 %
 %<*driver>
-\documentclass{ltxdoc}
+\documentclass[11pt,a4paper]{ltxdoc}
 \usepackage{zhmCJK}
 \setCJKmainfont{simsun.ttc}
 \setCJKsansfont{simhei.ttf}
 \setCJKmonofont{simfang.ttf}
-\unless\ifpdf
-  \PassOptionsToPackage{dvipdfmx}{hyperref}
+\setlength\parindent{2em}
+\linespread{1.2}
+\ifpdf
+  \usepackage[pdftex,unicode,colorlinks,pdfstartview=FitH]{hyperref}
+\else
+  \usepackage[dvipdfmx,unicode,colorlinks,pdfstartview=FitH]{hyperref}
 \fi
-\usepackage[unicode,colorlinks,pdfstartview=FitH]{hyperref}
+\makeatletter
+\renewcommand\glossary@prologue{%
+  \pdfbookmark[1]{版本历史}{history}
+  \section*{版本历史}
+  \markboth{版本历史}{版本历史}}
+\renewcommand\index@prologue{%
+  \pdfbookmark[1]{代码索引}{index}
+  \section*{代码索引}
+  \markboth{代码索引}{代码索引}
+  斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
+  立体的数字表示对应项使用时所在的行号。}
+\makeatother
+\newcommand\eTeX{$\varepsilon$-\TeX}
+\newcommand\pkg[1]{\textsf{#1}}
+\AtBeginDocument{
+  \DeleteShortVerb{\|}
+  \MakeShortVerb{\"}}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -50,7 +70,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{132}
+% \CheckSum{133}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -70,79 +90,152 @@
 %
 %
 % \changes{v0.1}{2012/02/02}{初始版本}
+% \changes{v0.2}{2012/02/02}{编写宏包文档。增加 \pkg{CJKpunct}。做一些小的代码
+% 调整。}
 %
 % \DoNotIndex{\newcommand,\newenvironment}
 %
 % \GetFileInfo{zhmCJK.dtx}
-% \title{The \textsf{zhmCJK} package}
-% \author{Leo Liu \\ \nolinkurl{leoliu.pku@gmail.com}}
-% \date{\fileversion~from \filedate}
+% \title{\pkg{zhmCJK} 宏包}
+% \author{刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \date{\filedate\ \fileversion}
 %
 % \maketitle
 %
-% \section{Introduction}
+% \section{简介}
 %
-% Put text here.
+% \pkg{zhmCJK} 宏包是一个基于 \pkg{zhmetrics} 和 \pkg{CJK} 宏包的 CJK 文字配置
+% 宏包，它为 \pkg{zhmetrics} 提供了一个方便的 \LaTeX{} 用户界面，可以仅指定字
+% 体文件名，就完成原来十分复杂的 CJK 字体安装设置工作。
 %
-% \section{Usage}
+% \pkg{zhmCJK} 提供了尽可能简单的用户界面。除了提供 UTF-8 编码下对 \pkg{CJK}
+% 宏包所用字体的实时安装设置功能，\pkg{zhmCJK} 还同时加载了 \pkg{CJKpunct} 和
+% \pkg{CJKspace} 宏包处理标点压缩和字符间距。
 %
-% Put text here.
+% \pkg{zhmCJK} 支持 pdf\TeX{} 和 DVIPDFMx 两种输出驱动，可以使用 "pdflatex" 或
+% $"latex"+"dvipdfmx"$ 的方式编译。使用 \pkg{zhmCJK} 需要 \eTeX{} 支持，并依赖
+% \pkg{CJK}, \pkg{CJKpunct}, \pkg{CJKspace} 和 \pkg{ifpdf} 宏包。
 %
+% \section{用法}
 %
-% \DescribeMacro{\zhmdefinefont}
-%
-%
-% \DescribeMacro{\setCJKfamilyfont}
-%
+% \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 十分相似，定义字体的几个命令语法大
+% 体相同。
 %
 % \DescribeMacro{\setCJKmainfont}
+% 设置正文默认罗马族的 CJK 字体，字体用 TrueType 文件名表示。该命令影响
+% "\rmfamily" 和 "\textfm" 的字体。
 %
+% 例如，使用
+% \begin{verbatim}
+% \setCJKmainfont{simsun.ttc}
+% \end{verbatim}
+% 将使用文件名为 "simsun.ttc" 的字体（中易宋体）作为正文罗马族字体。
 %
 % \DescribeMacro{\setCJKsansfont}
-%
+% 设置正文无衬线族的 CJK 字体。影响 "\sffamily" 和 "\textsf" 的字体。
 %
 % \DescribeMacro{\setCJKmonofont}
+% 设置正文等宽族的 CJK 字体。影响 "\ttfamily" 和 "\texttt" 的字体。
+%
+% \DescribeMacro{\setCJKfamilyfont}
+% 定义新的 CJK 字体族并指定字体。例如用
+% \begin{verbatim}
+% \setCJKfamilyfont{yahei}{msyh.ttf}
+% \end{verbatim}
+% 可以定义名为 "yahei" 的 CJK 字体族，其对应的实际字体文件名为 "msyh.ttf"（微
+% 软雅黑）。
+%
+% 以上字体设置命令只能在文档导言区使用。中文字体可以用 \pkg{CJK} 宏包的
+% "\CJKfamily" 命令切换。例如用 "\CJKfamily{yahei}" 就可以选择前面定义的微软雅
+% 黑字体。
 %
 %
 % \DescribeMacro{\CJKrmdefault}
+% 保存 "\rmfamily" 所使用的 CJK 字体族，默认值是 "rm"。类似西文字体的
+% "\rmdefault"。
 %
-%
-% \DescribeMacro{\CJKsfdefault}
-%
+% \DescribeMacro{\CJKsfdefault} 保存 "\sffamily" 所使用的 CJK 字体族，默认值是
+% "sf"。类似西文字体的 "\sfdefault"。
 %
 % \DescribeMacro{\CJKttdefault}
-%
+% 保存 "\ttfamily" 所使用的 CJK 字体族，默认值是 "tt"。类似西文字体的
+% "\ttdefault"。
 %
 % \DescribeMacro{\CJKfamilydefault}
+% 保存 "\normalfont" 所使用的 CJK 字体族，默认值是 "\CJKrmdefault"。类似西文字
+% 体的 "\familydefault"。例如，使用
+% \begin{verbatim}
+% \renewcommand\familydefault{\sfdefault}
+% \renewcommand\CJKfamilydefault{\CJKsfdefault}
+% \end{verbatim}
+% 可以将全文的 CJK 和西文默认字体改为无衬线字体族。
 %
+%
+% \section{已知问题}
+%
+% \begin{itemize}
+%  \item 暂时不提供复合字体，即将几个不同的实际字体定义为一个 CJK 字体族不同形
+%  状的功能。
+%  \item 受制于预定义的映射文件 "texfonts.map"，使用 \pkg{zhmCJK} 在同一文档中
+%  能够使用的字体文件是有限的。目前只有 32 个。
+% \end{itemize}
 %
 % \StopEventually{}
 %
-% \section{Implementation}
+% \clearpage
+% \section{代码实现}
 %
 % \iffalse
 %<*package>
 % \fi
+%
+% 首先载入基本的 CJK 相关支持包。
+%
+% 基本 CJK 支持，UTF-8 编码。
 %    \begin{macrocode}
 \RequirePackage{CJKutf8}
+%    \end{macrocode}
+% CJK 字符与西文字符之间的空格。
+%    \begin{macrocode}
 \RequirePackage{CJKspace}
+%    \end{macrocode}
+% CJK 标点禁则与压缩。
+%    \begin{macrocode}
 \RequirePackage{CJKpunct}
-\AtEndOfPackage{\CJK@makeActive}
-\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKrmdefault}}
-\AtEndDocument{\end{CJK*}}
-\newcount\zhmfamcnt
 %    \end{macrocode}
 %
-% \begin{macro}{\zhmdefinefont}
+% 在导言区和正文中分别开启 \pkg{CJK} 的功能。
 %    \begin{macrocode}
-\def\zhmdefinefont#1{
-  \DeclareFontFamily{C70}{#1}{\hyphenchar \font-1}
-  \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{\CJKnormal}
-  \DeclareFontShape{C70}{#1}{bx}{n}{<-> CJKb * zhm\the\zhmfamcnt}{\CJKbold}
+\AtEndOfPackage{\CJK@makeActive}
+\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKfamilydefault}}
+\AtEndDocument{\clearpage\end{CJK*}}
+%    \end{macrocode}
+%
+% \begin{macro}{\zhmfamcnt}
+% 已定义的 CJK 字体数。
+%    \begin{macrocode}
+\newcount\zhmfamcnt
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\zhm@definefont}
+% 定义 CJK 字体族。模拟 |.fd| 文件的定义。
+%    \begin{macrocode}
+\def\zhm@definefont#1{
+  \DeclareFontFamily{C70}{#1}{\hyphenchar\font\m@ne}
+%    \end{macrocode}
+% "\DeclareFontShape" 内部需要修改 "\catcode"，这里使用 "\scantokens" 处理。
+%    \begin{macrocode}
+  \scantokens{
+    \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{\CJKnormal}
+    \DeclareFontShape{C70}{#1}{bx}{n}{<-> CJKb * zhm\the\zhmfamcnt}{\CJKbold}
+  }
 }
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\zhm@mapline}
+% 添加实际字体映射。为 pdf\TeX{} 与 DVIPDFMx 引擎使用不同的命令完成。
 %    \begin{macrocode}
 \RequirePackage{ifpdf}
 \ifpdf
@@ -153,8 +246,10 @@
     \special{pdf:mapline + zhm\the\zhmfamcnt @Unicode@ unicode #1}}
 \fi
 %    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\setCJKfamilyfont}
+% 设置一个 CJK 字体族。
 %    \begin{macrocode}
 \def\setCJKfamilyfont#1#2{
   \advance\zhmfamcnt\@ne
@@ -163,10 +258,17 @@
       {No more CJK font families can be setup.}%
       {There are at most 32 families setup by zhmCJK.}
   \else
-    \scantokens\expandafter{\zhmdefinefont{#1}}
+%    \end{macrocode}
+% 载入字体族及字形定义。
+%    \begin{macrocode}
+    \zhm@definefont{#1}
+%    \end{macrocode}
+% 字体映射需要在输出例程初始处设置。
+%    \begin{macrocode}
     \AtBeginDvi{\zhm@mapline{#2}}
 %    \end{macrocode}
-% for eso-pic
+% 如果载入了 \pkg{atbegshi} 宏包，则还要处理修改了的输出例程。这会影响
+% \pkg{eso-pic} 等用户层宏包。
 %    \begin{macrocode}
     \AtBeginDocument{%
       \@ifpackageloaded{atbegshi}{\AtBeginShipoutFirst{%
@@ -179,6 +281,7 @@
 %
 %
 % \begin{macro}{\setCJKmainfont}
+% 设置 CJK 普通（罗马）字体。
 %    \begin{macrocode}
 \def\setCJKmainfont{%
   \setCJKfamilyfont{\CJKrmdefault}}
@@ -188,6 +291,7 @@
 %
 %
 % \begin{macro}{\setCJKsansfont}
+% 设置 CJK 无衬线字体。
 %    \begin{macrocode}
 \def\setCJKsansfont{%
   \setCJKfamilyfont{\CJKsfdefault}}
@@ -197,6 +301,7 @@
 %
 %
 % \begin{macro}{\setCJKmonofont}
+% 设置 CJK 等宽（打字机）字体。
 %    \begin{macrocode}
 \def\setCJKmonofont{%
   \setCJKfamilyfont{\CJKttdefault}}
@@ -206,6 +311,7 @@
 %
 %
 % \begin{macro}{\CJKrmdefault}
+% CJK 罗马体默认字体族，作用于 "\rmfamily"。
 %    \begin{macrocode}
 \providecommand\CJKrmdefault{rm}
 %    \end{macrocode}
@@ -213,6 +319,7 @@
 %
 %
 % \begin{macro}{\CJKsfdefault}
+% CJK 无衬线体默认字体族，作用于 "\sffamily"。
 %    \begin{macrocode}
 \providecommand\CJKsfdefault{sf}
 %    \end{macrocode}
@@ -220,6 +327,7 @@
 %
 %
 % \begin{macro}{\CJKttdefault}
+% CJK 打字机体默认字体族，作用于 "\ttfamily"。
 %    \begin{macrocode}
 \providecommand\CJKttdefault{tt}
 %    \end{macrocode}
@@ -227,11 +335,14 @@
 %
 %
 % \begin{macro}{\CJKfamilydefault}
+% CJK 默认字体族，作用于 "\normalfont"。
 %    \begin{macrocode}
 \providecommand\CJKfamilydefault{\CJKrmdefault}
 %    \end{macrocode}
 % \end{macro}
 %
+% 重定义 "\normalfont", "\rmfamily", "\sffamily" 和 "\ttfamily"，使其同时设置
+% CJK 字体。
 %    \begin{macrocode}
 \DeclareRobustCommand\normalfont
         {\CJKfamily{\CJKfamilydefault}%
