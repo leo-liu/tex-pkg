@@ -1,0 +1,261 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2012 by Leo Liu <leoliu.pku@gmail.com>
+% ---------------------------------------------------------------------------
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+%
+% This work has the LPPL maintenance status `maintained'.
+%
+% The Current Maintainer of this work is Leo Liu.
+%
+% This work consists of the files zhmCJK.dtx and zhmCJK.ins
+% and the derived filebase zhmCJK.sty.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{zhmCJK.dtx}
+%</driver>
+%<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+%<package>\ProvidesPackage{zhmCJK}
+%<*package>
+    [2012/02/02 v0.2 setup CJK fonts with zhmetrics]
+%</package>
+%
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage{zhmCJK}
+\setCJKmainfont{simsun.ttc}
+\setCJKsansfont{simhei.ttf}
+\setCJKmonofont{simfang.ttf}
+\unless\ifpdf
+  \PassOptionsToPackage{dvipdfmx}{hyperref}
+\fi
+\usepackage[unicode,colorlinks,pdfstartview=FitH]{hyperref}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\begin{document}
+  \DocInput{zhmCJK.dtx}
+  \PrintChanges
+  \PrintIndex
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{132}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+%
+% \changes{v0.1}{2012/02/02}{初始版本}
+%
+% \DoNotIndex{\newcommand,\newenvironment}
+%
+% \GetFileInfo{zhmCJK.dtx}
+% \title{The \textsf{zhmCJK} package}
+% \author{Leo Liu \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \date{\fileversion~from \filedate}
+%
+% \maketitle
+%
+% \section{Introduction}
+%
+% Put text here.
+%
+% \section{Usage}
+%
+% Put text here.
+%
+%
+% \DescribeMacro{\zhmdefinefont}
+%
+%
+% \DescribeMacro{\setCJKfamilyfont}
+%
+%
+% \DescribeMacro{\setCJKmainfont}
+%
+%
+% \DescribeMacro{\setCJKsansfont}
+%
+%
+% \DescribeMacro{\setCJKmonofont}
+%
+%
+% \DescribeMacro{\CJKrmdefault}
+%
+%
+% \DescribeMacro{\CJKsfdefault}
+%
+%
+% \DescribeMacro{\CJKttdefault}
+%
+%
+% \DescribeMacro{\CJKfamilydefault}
+%
+%
+% \StopEventually{}
+%
+% \section{Implementation}
+%
+% \iffalse
+%<*package>
+% \fi
+%    \begin{macrocode}
+\RequirePackage{CJKutf8}
+\RequirePackage{CJKspace}
+\RequirePackage{CJKpunct}
+\AtEndOfPackage{\CJK@makeActive}
+\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKrmdefault}}
+\AtEndDocument{\end{CJK*}}
+\newcount\zhmfamcnt
+%    \end{macrocode}
+%
+% \begin{macro}{\zhmdefinefont}
+%    \begin{macrocode}
+\def\zhmdefinefont#1{
+  \DeclareFontFamily{C70}{#1}{\hyphenchar \font-1}
+  \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{\CJKnormal}
+  \DeclareFontShape{C70}{#1}{bx}{n}{<-> CJKb * zhm\the\zhmfamcnt}{\CJKbold}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\RequirePackage{ifpdf}
+\ifpdf
+  \def\zhm@mapline#1{%
+    \pdfmapline{=zhm\the\zhmfamcnt @Unicode@ <#1}}
+\else
+  \def\zhm@mapline#1{%
+    \special{pdf:mapline + zhm\the\zhmfamcnt @Unicode@ unicode #1}}
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\setCJKfamilyfont}
+%    \begin{macrocode}
+\def\setCJKfamilyfont#1#2{
+  \advance\zhmfamcnt\@ne
+  \ifnum\zhmfamcnt>\@xxxii
+    \PackageError{zhmCJK}%
+      {No more CJK font families can be setup.}%
+      {There are at most 32 families setup by zhmCJK.}
+  \else
+    \scantokens\expandafter{\zhmdefinefont{#1}}
+    \AtBeginDvi{\zhm@mapline{#2}}
+%    \end{macrocode}
+% for eso-pic
+%    \begin{macrocode}
+    \AtBeginDocument{%
+      \@ifpackageloaded{atbegshi}{\AtBeginShipoutFirst{%
+        \zhm@mapline{#2}}}{}}
+  \fi
+}
+\@onlypreamble\setCJKfamilyfont
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\setCJKmainfont}
+%    \begin{macrocode}
+\def\setCJKmainfont{%
+  \setCJKfamilyfont{\CJKrmdefault}}
+\@onlypreamble\setCJKmainfont
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\setCJKsansfont}
+%    \begin{macrocode}
+\def\setCJKsansfont{%
+  \setCJKfamilyfont{\CJKsfdefault}}
+\@onlypreamble\setCJKsansfont
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\setCJKmonofont}
+%    \begin{macrocode}
+\def\setCJKmonofont{%
+  \setCJKfamilyfont{\CJKttdefault}}
+\@onlypreamble\setCJKmonofont
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\CJKrmdefault}
+%    \begin{macrocode}
+\providecommand\CJKrmdefault{rm}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\CJKsfdefault}
+%    \begin{macrocode}
+\providecommand\CJKsfdefault{sf}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\CJKttdefault}
+%    \begin{macrocode}
+\providecommand\CJKttdefault{tt}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\CJKfamilydefault}
+%    \begin{macrocode}
+\providecommand\CJKfamilydefault{\CJKrmdefault}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
+\DeclareRobustCommand\normalfont
+        {\CJKfamily{\CJKfamilydefault}%
+         \usefont\encodingdefault
+                 \familydefault
+                 \seriesdefault
+                 \shapedefault
+         \relax}
+\let\reset@font\normalfont
+\DeclareRobustCommand\rmfamily
+        {\not@math@alphabet\rmfamily\mathrm
+         \fontfamily\rmdefault\CJKfamily{\CJKrmdefault}\selectfont}
+\DeclareRobustCommand\sffamily
+        {\not@math@alphabet\sffamily\mathsf
+         \fontfamily\sfdefault\CJKfamily{\CJKsfdefault}\selectfont}
+\DeclareRobustCommand\ttfamily
+        {\not@math@alphabet\ttfamily\mathtt
+         \fontfamily\ttdefault\CJKfamily{\CJKttdefault}\selectfont}
+\endinput
+%    \end{macrocode}
+%
+% \iffalse
+%</package>
+% \fi
+%
+% \Finale
+\endinput
