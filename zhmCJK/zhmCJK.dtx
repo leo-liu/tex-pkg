@@ -15,7 +15,8 @@
 % The Current Maintainer of this work is Leo Liu.
 %
 % This work consists of the files zhmCJK.dtx and zhmCJK.ins
-% and the derived filebase zhmCJK.sty.
+% with the derived filebase zhmCJK.sty, the font mapping files
+% zhmCJK.map and texfonts.map, and the test code test-zhmCJK.tex.
 %
 % \fi
 %
@@ -26,29 +27,26 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{zhmCJK}
 %<*package>
-    [2012/02/02 v0.2 setup CJK fonts with zhmetrics]
+    [2012/02/02 v0.3 setup CJK fonts with zhmetrics]
 %</package>
 %
 %<*driver>
-\documentclass[11pt,a4paper]{ltxdoc}
+\documentclass[11pt,a4paper,
+  driverfallback=dvipdfmx,unicode]{ltxdoc}
+\usepackage[numbered]{hypdoc}
+\hypersetup{pdfstartview=FitH}
 \usepackage{zhmCJK}
 \setCJKmainfont{simsun.ttc}
 \setCJKsansfont{simhei.ttf}
 \setCJKmonofont{simfang.ttf}
+\usepackage{longtable}
 \setlength\parindent{2em}
 \linespread{1.2}
-\ifpdf
-  \usepackage[pdftex,unicode,colorlinks,pdfstartview=FitH]{hyperref}
-\else
-  \usepackage[dvipdfmx,unicode,colorlinks,pdfstartview=FitH]{hyperref}
-\fi
 \makeatletter
 \renewcommand\glossary@prologue{%
-  \pdfbookmark[1]{版本历史}{history}
   \section*{版本历史}
   \markboth{版本历史}{版本历史}}
 \renewcommand\index@prologue{%
-  \pdfbookmark[1]{代码索引}{index}
   \section*{代码索引}
   \markboth{代码索引}{代码索引}
   斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
@@ -70,7 +68,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{133}
+% \CheckSum{161}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -93,7 +91,14 @@
 % \changes{v0.2}{2012/02/02}{编写宏包文档。增加 \pkg{CJKpunct}。做一些小的代码
 % 调整。}
 %
-% \DoNotIndex{\newcommand,\newenvironment}
+% \DoNotIndex{\newcommand,\newenvironment,
+%   \@ifpackageloaded, \@ne, \@onlypreamble, \@xxxii, \advance, \aftergroup,
+%   \AtBeginDocument, \AtBeginDvi, \AtBeginShipoutFirst, \AtEndDocument,
+%   \AtEndOfPackage, \begin, \clearpage, \DeclareBoolOption,
+%   \DeclareRobustCommand, \def, \else, \end, \endinput, \fi, \font, \ifnum,
+%   \ifpdf, \let, \m@ne, \mathrm, \mathsf, \mathtt, \newcount,
+%   \not@math@alphabet, \ProcessKeyvalOptions, \providecommand, \relax,
+%   \RequirePackage, \scantokens, \SetupKeyvalOptions, \the}
 %
 % \GetFileInfo{zhmCJK.dtx}
 % \title{\pkg{zhmCJK} 宏包}
@@ -118,12 +123,35 @@
 %
 % \section{用法}
 %
+% \subsection{宏包载入与选项}
+%
+% 宏包提供的选项如下：
+% \begin{longtable}{l|l|l|l}
+% \hline
+% 选项 & 取值 & 默认值 & 功能 \\
+% \hline
+% "pdffakebold" & "true|false" & "true" & 使用 PDF 原语生成伪粗体 \\
+% \hline
+% \end{longtable}
+%
+% 只需要在导言区使用 "\usepackage{zhmCJK}" 载入宏包即可载入宏包。宏包可以带有
+% 一些选项，例如如果要使用 \pkg{CJK} 通过重复输出得到的伪粗体，就可以用
+% \begin{verbatim}
+% \usepackage[pdffakebold=false]{zhmCJK}
+% \end{verbatim}
+% 一般来说使用默认的选项即可。
+%
+% \subsection{命令}
+%
 % \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 十分相似，定义字体的几个命令语法大
 % 体相同。
 %
 % \DescribeMacro{\setCJKmainfont}
 % 设置正文默认罗马族的 CJK 字体，字体用 TrueType 文件名表示。该命令影响
 % "\rmfamily" 和 "\textfm" 的字体。
+%
+% \DescribeMacro{\setCJKromanfont}
+% 是 "\setCJKmainfont" 的别名。
 %
 % 例如，使用
 % \begin{verbatim}
@@ -189,7 +217,7 @@
 %<*package>
 % \fi
 %
-% 首先载入基本的 CJK 相关支持包。
+% 首先载入基本的 CJK 相关支持包和工具宏包。
 %
 % 基本 CJK 支持，UTF-8 编码。
 %    \begin{macrocode}
@@ -203,6 +231,57 @@
 %    \begin{macrocode}
 \RequirePackage{CJKpunct}
 %    \end{macrocode}
+%
+% 工具宏包。
+%    \begin{macrocode}
+\RequirePackage{ifpdf}
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+  family=zhm,
+  prefix=zhm@
+}
+%    \end{macrocode}
+%
+% \changes{v0.3}{2012/02/02}{\texttt{pdffakebold} 选项}
+% "pdffakebold" 选项选择是否使用 PDF 原语生成伪粗体。默认是 "true"，如果选
+% "false" 则改用原来 \pkg{CJK} 宏包平移输出的伪粗体机制。
+%    \begin{macrocode}
+\DeclareBoolOption[true]{pdffakebold}
+%    \end{macrocode}
+%
+% 执行选项。
+%    \begin{macrocode}
+\ProcessKeyvalOptions*
+%    \end{macrocode}
+%
+% \begin{macro}{\zhm@pdfliteral}
+% 插入 PDF 原语。
+%    \begin{macrocode}
+\ifpdf
+  \def\zhm@pdfliteral#1{\pdfliteral direct {#1}}
+\else
+  \def\zhm@pdfliteral#1{\special{pdf: literal direct #1}}
+\fi
+%    \end{macrocode}
+% \end{macro}
+%
+% 使用 PDF 原语生成伪粗体。
+% \changes{v0.3}{2012/02/02}{使用 PDF 原语生成伪粗体}
+%    \begin{macrocode}
+\ifzhm@pdffakebold
+%    \end{macrocode}
+% \begin{macro}{\CJKbold}
+%    \begin{macrocode}
+  \def\CJKbold{\zhm@pdfliteral{q 2 Tr 0.4 w}%
+      \aftergroup\CJKnormal}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\CJKnormal}
+%    \begin{macrocode}
+  \def\CJKnormal{\zhm@pdfliteral{0 Tr}}
+\fi
+%    \end{macrocode}
+% \end{macro}
 %
 % 在导言区和正文中分别开启 \pkg{CJK} 的功能。
 %    \begin{macrocode}
@@ -237,7 +316,6 @@
 % \begin{macro}{\zhm@mapline}
 % 添加实际字体映射。为 pdf\TeX{} 与 DVIPDFMx 引擎使用不同的命令完成。
 %    \begin{macrocode}
-\RequirePackage{ifpdf}
 \ifpdf
   \def\zhm@mapline#1{%
     \pdfmapline{=zhm\the\zhmfamcnt @Unicode@ <#1}}
@@ -286,6 +364,14 @@
 \def\setCJKmainfont{%
   \setCJKfamilyfont{\CJKrmdefault}}
 \@onlypreamble\setCJKmainfont
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\setCJKromanfont}
+% \changes{v0.3}{2012/02/02}{新增。}
+% "\setCJKmainfont" 的别名。
+%    \begin{macrocode}
+\let\setCJKromanfont\setCJKmainfont
+\@onlypreamble\setCJKromanfont
 %    \end{macrocode}
 % \end{macro}
 %
