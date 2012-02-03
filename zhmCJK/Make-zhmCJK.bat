@@ -1,6 +1,6 @@
 if exist zhmCJK.sty del zhmCJK.sty
 if exist zhmCJK.pdf del zhmCJK.pdf
-tex zhmCJK.ins
+latex zhmCJK.ins
 latex zhmCJK.dtx
 makeindex -s gind zhmCJK.idx
 makeindex -s gglo -o zhmCJK.gls zhmCJK.glo
