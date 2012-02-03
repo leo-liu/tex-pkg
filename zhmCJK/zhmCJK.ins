@@ -13,8 +13,9 @@
 %% The Current Maintainer of this work is Leo Liu.
 %%
 %% This work consists of the files zhmCJK.dtx and zhmCJK.ins
-%% with the derived filebase zhmCJK.sty, the font mapping files
-%% zhmCJK.map and texfonts.map, and the test code test-zhmCJK.tex.
+%% with the derived file zhmCJK.sty, the font mapping files
+%% zhmCJK.map and texfonts.map, the font metrics zhmetrics.tfm,
+%% and the test code test-zhmCJK.tex.
 %%
 
 \input docstrip.tex
@@ -44,12 +45,22 @@ version 2005/12/01 or later.
 \Msg{*************************************************************}
 \Msg{*                                                           *}
 \Msg{* To finish the installation you have to move the following *}
-\Msg{* file into a directory searched by TeX:                    *}
+\Msg{* file into proper directories searched by TeX:             *}
 \Msg{*                                                           *}
-\Msg{*     zhmCJK.sty                                            *}
+\Msg{*     zhmCJK.sty           into tex/latex/zhmCJK/           *}
+\Msg{*     zhmCJK.map           into fonts/map/fontname/         *}
+\Msg{*     texfonts.map         into fonts/map/fontname/         *}
+\Msg{*     zhmetrics.tfm        into fonts/tfm/zhmetrics/        *}
 \Msg{*                                                           *}
 \Msg{* To produce the documentation run the file zhmCJK.dtx      *}
 \Msg{* through LaTeX.                                            *}
+\Msg{*                                                           *}
+\Msg{* And move the source files and documentation:              *}
+\Msg{*                                                           *}
+\Msg{*     zhmCJK.pdf           into doc/latex/zhmCJK/           *}
+\Msg{*     test-zhmCJK.tex      into doc/latex/zhmCJK/           *}
+\Msg{*     zhmCJK.dtx           into source/latex/zhmCJK/        *}
+\Msg{*     zhmCJK.ins           into source/latex/zhmCJK/        *}
 \Msg{*                                                           *}
 \Msg{* Happy TeXing!                                             *}
 \Msg{*                                                           *}
