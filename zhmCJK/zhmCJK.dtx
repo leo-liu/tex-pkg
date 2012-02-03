@@ -15,8 +15,9 @@
 % The Current Maintainer of this work is Leo Liu.
 %
 % This work consists of the files zhmCJK.dtx and zhmCJK.ins
-% with the derived filebase zhmCJK.sty, the font mapping files
-% zhmCJK.map and texfonts.map, and the test code test-zhmCJK.tex.
+% with the derived file zhmCJK.sty, the font mapping files
+% zhmCJK.map and texfonts.map, the font metrics zhmetrics.tfm,
+% and the test code test-zhmCJK.tex.
 %
 % \fi
 %
@@ -39,9 +40,14 @@
 \setCJKmainfont{simsun.ttc}
 \setCJKsansfont{simhei.ttf}
 \setCJKmonofont{simfang.ttf}
+\setCJKfamilyfont{kaiti}{simkai.ttf}
+\renewcommand\textit[1]{{\itshape\CJKfamily{kaiti}#1\/}}
+\usepackage[T1]{fontenc}
+\def\MacroFont{\small\normalfont\ttfamily}
 \usepackage{longtable}
 \setlength\parindent{2em}
 \linespread{1.2}
+\renewcommand\refname{参考文档}
 \makeatletter
 \renewcommand\glossary@prologue{%
   \section*{版本历史}
@@ -54,6 +60,7 @@
 \makeatother
 \newcommand\eTeX{$\varepsilon$-\TeX}
 \newcommand\pkg[1]{\textsf{#1}}
+\newcommand{\enquote}[1]{``#1''}
 \AtBeginDocument{
   \DeleteShortVerb{\|}
   \MakeShortVerb{\"}}
@@ -62,13 +69,11 @@
 \RecordChanges
 \begin{document}
   \DocInput{zhmCJK.dtx}
-  \PrintChanges
-  \PrintIndex
 \end{document}
 %</driver>
 % \fi
 %
-% \CheckSum{161}
+% \CheckSum{160}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -102,24 +107,24 @@
 %
 % \GetFileInfo{zhmCJK.dtx}
 % \title{\pkg{zhmCJK} 宏包}
-% \author{刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \author{\CJKfamily{kaiti}刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
 % \date{\filedate\ \fileversion}
 %
 % \maketitle
 %
 % \section{简介}
 %
-% \pkg{zhmCJK} 宏包是一个基于 \pkg{zhmetrics} 和 \pkg{CJK} 宏包的 CJK 文字配置
-% 宏包，它为 \pkg{zhmetrics} 提供了一个方便的 \LaTeX{} 用户界面，可以仅指定字
-% 体文件名，就完成原来十分复杂的 CJK 字体安装设置工作。
+% \pkg{zhmCJK} 宏包是一个基于 \pkg{zhmetrics} \cite{Wang2009} 和 \pkg{CJK} 宏包
+% \cite{Lemberg2008} 的 CJK 文字配置宏包，它为 \pkg{zhmetrics} 提供了一个方便的
+% \LaTeX{} 用户界面，可以仅指定字体文件名，就完成原来十分复杂的 CJK 字体安装设
+% 置工作。
 %
 % \pkg{zhmCJK} 提供了尽可能简单的用户界面。除了提供 UTF-8 编码下对 \pkg{CJK}
 % 宏包所用字体的实时安装设置功能，\pkg{zhmCJK} 还同时加载了 \pkg{CJKpunct} 和
 % \pkg{CJKspace} 宏包处理标点压缩和字符间距。
 %
 % \pkg{zhmCJK} 支持 pdf\TeX{} 和 DVIPDFMx 两种输出驱动，可以使用 "pdflatex" 或
-% $"latex"+"dvipdfmx"$ 的方式编译。使用 \pkg{zhmCJK} 需要 \eTeX{} 支持，并依赖
-% \pkg{CJK}, \pkg{CJKpunct}, \pkg{CJKspace} 和 \pkg{ifpdf} 宏包。
+% $"latex"+"dvipdfmx"$ 的方式编译。
 %
 % \section{用法}
 %
@@ -141,10 +146,10 @@
 % \end{verbatim}
 % 一般来说使用默认的选项即可。
 %
-% \subsection{命令}
+% \subsection{宏包提供的命令}
 %
-% \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 十分相似，定义字体的几个命令语法大
-% 体相同。
+% \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 宏包 \cite{Sun2010} 十分相似，定义
+% 字体的几个命令语法大体相同。
 %
 % \DescribeMacro{\setCJKmainfont}
 % 设置正文默认罗马族的 CJK 字体，字体用 TrueType 文件名表示。该命令影响
@@ -160,10 +165,18 @@
 % 将使用文件名为 "simsun.ttc" 的字体（中易宋体）作为正文罗马族字体。
 %
 % \DescribeMacro{\setCJKsansfont}
-% 设置正文无衬线族的 CJK 字体。影响 "\sffamily" 和 "\textsf" 的字体。
+% 设置正文无衬线族的 CJK 字体。影响 "\sffamily" 和 "\textsf" 的字体。例如用
+% \begin{verbatim}
+% \setCJKsansfont{simhei.ttf}
+% \end{verbatim}
+% 将使用字体 "simhei.ttf"（中易黑体）作为正文无衬线字体。
 %
 % \DescribeMacro{\setCJKmonofont}
-% 设置正文等宽族的 CJK 字体。影响 "\ttfamily" 和 "\texttt" 的字体。
+% 设置正文等宽族的 CJK 字体。影响 "\ttfamily" 和 "\texttt" 的字体。例如用
+% \begin{verbatim}
+% \setCJKsansfont{simfang.ttf}
+% \end{verbatim}
+% 将使用字体 "simfang.ttf"（中易仿宋体）作为正文等宽字体。
 %
 % \DescribeMacro{\setCJKfamilyfont}
 % 定义新的 CJK 字体族并指定字体。例如用
@@ -199,6 +212,85 @@
 % 可以将全文的 CJK 和西文默认字体改为无衬线字体族。
 %
 %
+% \section{安装}
+%
+% \subsection{组成与依赖项}
+%
+% \pkg{zhmCJK} 包装包包含如下文件：
+% \begin{itemize}
+%   \item "zhmCJK.dtx", "zhmCJK.ins"：这是 \pkg{zhmCJK} 的 \pkg{DocStrip} 包与
+%   驱动。
+%   \item "test-zhmCJK.tex"：测试示例文件。
+%   \item "zhmetrics.tfm"：这是 \pkg{zhmetrics} 的通用 CJK 字符 TFM 文件，可用
+%   于大部分常见的中文字体。
+%   \item "zhmCJK.map", "texfonts.map"：字体名映射文件。
+% \end{itemize}
+%
+% 除此以外，使用 \pkg{zhmCJK} 还依赖：
+% \begin{itemize}
+%   \item \pkg{CJKutf8}, \pkg{CJKspace} 宏包，同属于 \pkg{CJK} 集合。
+%   \item \pkg{CJKpunct} 宏包。
+%   \item \pkg{ifpdf}, \pkg{kvoptions} 宏包，同属于 \pkg{oberdiek} 集合。
+% \end{itemize}
+%
+% 编译使用 \pkg{zhmCJK} 的文档需要 \eTeX{} 支持，并要求使用较新版本的
+% pdf\TeX{} 或 DVIPDFMx 生成 PDF 文件。
+%
+% \subsection{生成与安装}
+%
+% 生成格式文件 "zhmCJK.sty" 和文档 "zhmCJK.pdf"：
+% \begin{enumerate}
+%   \item 执行：
+%     \begin{quote}
+%       "tex zhmCJK.ins"
+%     \end{quote}
+%     生成 "zhmCJK.sty" 文件。
+%   \item 执行：
+%     \begin{quote}
+%       "latex zhmCJK.dtx" \\
+%       "makeindex -s gind zhmCJK.idx" \\
+%       "makeindex -s gglo -o zhmCJK.gls zhmCJK.glo" \\
+%       "latex zhmCJK.dtx" \\
+%       "latex zhmCJK.dtx" \\
+%       "dvipdfmx zhmCJK.dvi"
+%     \end{quote}
+%     生成宏包文档。编译文档可以使用 "pdflatex" 命令。编译文档需要系统安装有
+%     "simsun.ttc"（宋体）和 "simkai.ttf"（楷体）两种中文 Windows 预装字体。
+% \end{enumerate}
+%
+% 设 "TEXMF" 是 \TeX{} 系统的 TDS 根目录，按如下目录结构复制宏包的各个文件：
+% \begin{verbatim}
+% TEXMF/doc/latex/zhmCJK/test-zhmCJK.tex
+% TEXMF/doc/latex/zhmCJK/zhmCJK.pdf
+% TEXMF/fonts/map/fontname/texfonts.map
+% TEXMF/fonts/map/fontname/zhmCJK.map
+% TEXMF/fonts/tfm/zhmetrics/zhmetrics.tfm
+% TEXMF/source/latex/zhmCJK/zhmCJK.dtx
+% TEXMF/source/latex/zhmCJK/zhmCJK.ins
+% TEXMF/tex/latex/zhmCJK/zhmCJK.sty
+% \end{verbatim}
+% 如果目录中原来已有非空的 "texfonts.map"，可以把 \pkg{zhmCJK} 所附的
+% "texfonts.map" 文件内容附加在原有的 "texfonts.map" 之后。复制完所有文件后运
+% 行 "texhash" 命令（可能需要管理员权限），宏包即可使用。
+%
+% \subsection{字体搜索路径}
+%
+% \pkg{zhmCJK} 可以使用 kpathsea 库 \cite{Berry2011} 所能搜索到的 Unicode 编码
+% CJK 字体，包括操作系统安装的字体。pdf\TeX{} 支持 TrueType 格式（扩展名
+% ".ttf", ".ttc"），DVIPDFMx 还支持 OpenType 格式（扩展名 ".otf"）。
+%
+% Windows 操作系统下，MiKTeX 和 \TeX\ Live 可以不做特别的设置，即可正确搜索操
+% 作系统的字体目录。
+%
+% 在 Linux 操作系统下，需要设置 \TeX\ Live 的 "texmf.cnf" 配置文件，在其中的
+% "OSFONTDIR" 变量中增加操作系统字体目录。例如 \TeX\ Live 在目录
+% \path{/usr/local/share/texlive/} 安装，则新建（或修改）文件
+% \path{/usr/local/share/texlive/texmf.cnf}，在其中增加如下内容：
+% \begin{verbatim}
+% OSFONTDIR = /usr/share/fonts//;~/.fonts//
+% \end{verbatim}
+% 详情可参考 \TeX\ Live 手册及原有 "texmf.cnf" 文件中的相关注释说明。
+%
 % \section{已知问题}
 %
 % \begin{itemize}
@@ -208,7 +300,46 @@
 %  能够使用的字体文件是有限的。目前只有 32 个。
 % \end{itemize}
 %
-% \StopEventually{}
+% \StopEventually{
+% \begin{thebibliography}{9}
+% \bibitem{adobe2001}
+%   \textsc{{Adobe Systems Incorporated}}.
+%   \newblock \textit{PDF reference: Adobe portable document format version 1.4}.
+%   \newblock Addison-Wesley, third edition, 2001
+%   \newline\url{http://www.adobe.com/devnet/pdf/pdf_reference.html}
+% \bibitem{Berry2011}
+%   \textsc{Karl Berry, Olaf Weber and Taco Hoekwater}.
+%   \newblock \textit{Kpathsea library}, version 6.0.1, 2011
+%   \newline\url{CTAN://info/doc-k/kpathsea.pdf}
+% \bibitem{Cho2009}
+%   \textsc{Jin-Hwan Cho}.
+%   \newblock \enquote{DVI specials for PDF generation}.
+%   \newblock \textit{TUGboat}, volume~30(1):pages 6--11, 2009
+%   \newline\url{http://www.tug.org/TUGboat/Articles/tb30-1/tb94cho.pdf}
+% \bibitem{Lemberg2008}
+%   \textsc{Werner Lemberg}.
+%   \newblock \textit{\pkg{CJK}}, version 4.8.2, 2008
+%   \newline\url{CTAN://language/chinese/CJK/cjk-4.8.2/doc/CJK.txt}
+% \bibitem{Lemberg2008fonts}
+%   \textsc{Werner Lemberg}.
+%   \newblock \textit{The fonts}, 2008
+%   \newline\url{CTAN://language/chinese/CJK/cjk-4.8.2/doc/fonts.txt}
+% \bibitem{Thanh2009}
+%   \textsc{H\`an~Th\^{\'e} Th\`anh}.
+%   \newblock \enquote{A closer look at TrueType fonts and pdf\TeX}.
+%   \newblock \textit{TUGboat}, volume~30(1):pages 32--34, 2009
+%   \newline\url{http://www.tug.org/TUGboat/Articles/tb30-1/tb94thanh.pdf}
+% \bibitem{Sun2012}
+%   孙文昌.
+%   \newblock \textit{\pkg{xeCJK} 宏包}, 版本 2.4.5, 2012
+%   \newline\url{CTAN://macros/xetex/latex/xecjk/xeCJK.pdf}
+% \bibitem{Wang2009}
+%   王越.
+%   \newblock \textit{\pkg{CJK} 宏包中，中文字体的秘密}.
+%   \newblock C\TeX{} 论坛, 2009 年 5 月
+%   \newline\url{http://bbs.ctex.org/viewthread.php?tid=50078}
+% \end{thebibliography}
+% }
 %
 % \clearpage
 % \section{代码实现}
@@ -255,7 +386,7 @@
 %    \end{macrocode}
 %
 % \begin{macro}{\zhm@pdfliteral}
-% 插入 PDF 原语。
+% 插入 PDF 原语 \cite{Cho2009,Thanh2009}。
 %    \begin{macrocode}
 \ifpdf
   \def\zhm@pdfliteral#1{\pdfliteral direct {#1}}
@@ -265,7 +396,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% 使用 PDF 原语生成伪粗体。
+% 使用 PDF 原语生成伪粗体，参考 \cite[\S~4.3.3, \S~5.2.5]{adobe2001}。
 % \changes{v0.3}{2012/02/02}{使用 PDF 原语生成伪粗体}
 %    \begin{macrocode}
 \ifzhm@pdffakebold
@@ -298,7 +429,7 @@
 % \end{macro}
 %
 % \begin{macro}{\zhm@definefont}
-% 定义 CJK 字体族。模拟 |.fd| 文件的定义。
+% 定义 CJK 字体族。模拟 |.fd| 文件的定义 \cite{Lemberg2008fonts}。
 %    \begin{macrocode}
 \def\zhm@definefont#1{
   \DeclareFontFamily{C70}{#1}{\hyphenchar\font\m@ne}
@@ -306,7 +437,7 @@
 % "\DeclareFontShape" 内部需要修改 "\catcode"，这里使用 "\scantokens" 处理。
 %    \begin{macrocode}
   \scantokens{
-    \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{\CJKnormal}
+    \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{}
     \DeclareFontShape{C70}{#1}{bx}{n}{<-> CJKb * zhm\the\zhmfamcnt}{\CJKbold}
   }
 }
@@ -314,14 +445,15 @@
 % \end{macro}
 %
 % \begin{macro}{\zhm@mapline}
-% 添加实际字体映射。为 pdf\TeX{} 与 DVIPDFMx 引擎使用不同的命令完成。
+% 添加实际字体映射。为 pdf\TeX{} 与 DVIPDFMx 引擎使用不同的命令完成
+% \cite{Thanh2009}。
 %    \begin{macrocode}
 \ifpdf
   \def\zhm@mapline#1{%
     \pdfmapline{=zhm\the\zhmfamcnt @Unicode@ <#1}}
 \else
   \def\zhm@mapline#1{%
-    \special{pdf:mapline + zhm\the\zhmfamcnt @Unicode@ unicode #1}}
+    \special{pdf:mapline zhm\the\zhmfamcnt @Unicode@ unicode #1}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -454,5 +586,7 @@
 %</package>
 % \fi
 %
+% \PrintChanges
+% \PrintIndex
 % \Finale
 \endinput
