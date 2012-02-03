@@ -28,7 +28,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{zhmCJK}
 %<*package>
-    [2012/02/02 v0.3 setup CJK fonts with zhmetrics]
+    [2012/02/04 v0.4 setup CJK fonts with zhmetrics]
 %</package>
 %
 %<*driver>
@@ -37,14 +37,14 @@
 \usepackage[numbered]{hypdoc}
 \hypersetup{pdfstartview=FitH}
 \usepackage{zhmCJK}
-\setCJKmainfont{simsun.ttc}
+\setCJKmainfont[BoldFont=simhei.ttf,ItalicFont=simkai.ttf]{simsun.ttc}
 \setCJKsansfont{simhei.ttf}
 \setCJKmonofont{simfang.ttf}
-\setCJKfamilyfont{kaiti}{simkai.ttf}
-\renewcommand\textit[1]{{\itshape\CJKfamily{kaiti}#1\/}}
 \usepackage[T1]{fontenc}
 \def\MacroFont{\small\normalfont\ttfamily}
 \usepackage{longtable}
+\usepackage{fvrb-ex}
+\usepackage{indentfirst}
 \setlength\parindent{2em}
 \linespread{1.2}
 \renewcommand\refname{参考文档}
@@ -73,7 +73,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{160}
+% \CheckSum{276}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -103,11 +103,14 @@
 %   \DeclareRobustCommand, \def, \else, \end, \endinput, \fi, \font, \ifnum,
 %   \ifpdf, \let, \m@ne, \mathrm, \mathsf, \mathtt, \newcount,
 %   \not@math@alphabet, \ProcessKeyvalOptions, \providecommand, \relax,
-%   \RequirePackage, \scantokens, \SetupKeyvalOptions, \the}
+%   \RequirePackage, \scantokens, \SetupKeyvalOptions, \the, \@nameuse,
+%   \csname, \define@key, \DeclareStringOption, \edef, \endcsname,
+%   \expandafter, \global, \hyphenchar, \ifcsname, \ifx, \PackageError,
+%   \PackageWarning, \setkeys, \space, \unless, \xdef, \begingroup, \endgroup}
 %
 % \GetFileInfo{zhmCJK.dtx}
 % \title{\pkg{zhmCJK} 宏包}
-% \author{\CJKfamily{kaiti}刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \author{\textit{刘海洋} \\ \nolinkurl{leoliu.pku@gmail.com}}
 % \date{\filedate\ \fileversion}
 %
 % \maketitle
@@ -130,59 +133,86 @@
 %
 % \subsection{宏包载入与选项}
 %
+% 只需要在导言区使用
+% \begin{Verbatim}
+% \usepackage{zhmCJK}
+% \end{Verbatim}
+% 即可载入宏包。
+%
+% 宏包可以带有一些选项，例如如果要使用 \pkg{CJK} 通过重复输出得到的伪粗体，就
+% 可以用
+% \begin{Verbatim}
+% \usepackage[pdffakebold=false]{zhmCJK}
+% \end{Verbatim}
+% 一般来说使用默认的设置，即不用任何选项即可。
+%
 % 宏包提供的选项如下：
-% \begin{longtable}{l|l|l|l}
+% \begin{longtable}{l|l|l|p{12em}}
 % \hline
 % 选项 & 取值 & 默认值 & 功能 \\
 % \hline
-% "pdffakebold" & "true|false" & "true" & 使用 PDF 原语生成伪粗体 \\
+% "pdffakebold" & "true"$|$"false" & "true" & 设置伪粗体类型为 PDF 原语生成；
+%   若设置为 "false" 则沿用旧的 \pkg{CJK} 伪粗体机制 \\
+% "AutoFakeBold" & 数字 & 0.4 & 设置自动伪粗体的粗细，单位为 bp；若设置为 0 则
+%   禁用自动伪粗体 \\
 % \hline
 % \end{longtable}
 %
-% 只需要在导言区使用 "\usepackage{zhmCJK}" 载入宏包即可载入宏包。宏包可以带有
-% 一些选项，例如如果要使用 \pkg{CJK} 通过重复输出得到的伪粗体，就可以用
-% \begin{verbatim}
-% \usepackage[pdffakebold=false]{zhmCJK}
-% \end{verbatim}
-% 一般来说使用默认的选项即可。
-%
 % \subsection{宏包提供的命令}
 %
-% \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 宏包 \cite{Sun2010} 十分相似，定义
+% \pkg{zhmCJK} 的基本用户界面与 \pkg{xeCJK} 宏包 \cite{Sun2012} 十分相似，定义
 % 字体的几个命令语法大体相同。
 %
+% \begin{quote}
 % \DescribeMacro{\setCJKmainfont}
+% "\setCJKmainfont["\meta{选项}"]{"\meta{字体文件名}"}"
+% \end{quote}
 % 设置正文默认罗马族的 CJK 字体，字体用 TrueType 文件名表示。该命令影响
-% "\rmfamily" 和 "\textfm" 的字体。
+% "\rmfamily" 和 "\textrm" 的字体。
+%
+% 可用的字体选项有："BoldFont", "ItalicFont", "BoldItalicFont", "SlantedFont",
+% "BoldSlantedFont"，分别用来设置不同字型的变体；"AutoFakeBold"，设置单个字体
+% 族的伪粗体。
 %
 % \DescribeMacro{\setCJKromanfont}
 % 是 "\setCJKmainfont" 的别名。
 %
 % 例如，使用
-% \begin{verbatim}
-% \setCJKmainfont{simsun.ttc}
-% \end{verbatim}
-% 将使用文件名为 "simsun.ttc" 的字体（中易宋体）作为正文罗马族字体。
+% \begin{Verbatim}
+% \setCJKmainfont[BoldFont=simhei.ttf,ItalicFont=simkai.ttf]{simsun.ttc}
+% \end{Verbatim}
+% 将使用文件名为 "simsun.ttc" 的字体（中易宋体）作为正文罗马族字体，同时其粗体
+% 形式设置为 "simhei.ttf"（中易黑体），其斜体形式设置为 "simkai.ttf"（中易
+% 楷体）。
 %
+% \begin{quote}
 % \DescribeMacro{\setCJKsansfont}
+% "\setCJKsansfont["\meta{选项}"]{"\meta{字体文件名}"}"
+% \end{quote}
 % 设置正文无衬线族的 CJK 字体。影响 "\sffamily" 和 "\textsf" 的字体。例如用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \setCJKsansfont{simhei.ttf}
-% \end{verbatim}
+% \end{Verbatim}
 % 将使用字体 "simhei.ttf"（中易黑体）作为正文无衬线字体。
 %
+% \begin{quote}
 % \DescribeMacro{\setCJKmonofont}
+% "\setCJKmonofont["\meta{选项}"]{"\meta{字体文件名}"}"
+% \end{quote}
 % 设置正文等宽族的 CJK 字体。影响 "\ttfamily" 和 "\texttt" 的字体。例如用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \setCJKsansfont{simfang.ttf}
-% \end{verbatim}
+% \end{Verbatim}
 % 将使用字体 "simfang.ttf"（中易仿宋体）作为正文等宽字体。
 %
 % \DescribeMacro{\setCJKfamilyfont}
+% \begin{quote}
+% "\setCJKfamilyfont["\meta{选项}"]{"\meta{族}"}{"\meta{字体文件名}"}"
+% \end{quote}
 % 定义新的 CJK 字体族并指定字体。例如用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \setCJKfamilyfont{yahei}{msyh.ttf}
-% \end{verbatim}
+% \end{Verbatim}
 % 可以定义名为 "yahei" 的 CJK 字体族，其对应的实际字体文件名为 "msyh.ttf"（微
 % 软雅黑）。
 %
@@ -205,12 +235,49 @@
 % \DescribeMacro{\CJKfamilydefault}
 % 保存 "\normalfont" 所使用的 CJK 字体族，默认值是 "\CJKrmdefault"。类似西文字
 % 体的 "\familydefault"。例如，使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \renewcommand\familydefault{\sfdefault}
 % \renewcommand\CJKfamilydefault{\CJKsfdefault}
-% \end{verbatim}
+% \end{Verbatim}
 % 可以将全文的 CJK 和西文默认字体改为无衬线字体族。
 %
+% \subsection{示例文件}
+%
+% \iffalse
+%<*test>
+% \fi
+%    \begin{macrocode}
+% UTF-8 编码
+% 使用 pdflatex 或 latex + dvipdfmx 编译
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{zhmCJK}
+\setCJKmainfont[BoldFont=simhei.ttf,ItalicFont=simkai.ttf]{simsun.ttc}
+\setCJKsansfont{simhei.ttf}
+\setCJKmonofont[AutoFakeBold=0]{simfang.ttf}
+\setCJKfamilyfont{xinwei}{STXINWEI.TTF}
+
+\title{\bfseries 一个华丽的 zhmCJK 测试}
+\author{Leo Liu}
+\date{2012 年 2 月 4 日}
+
+\begin{document}
+
+\maketitle
+
+正文是宋体字，\textbf{加粗变成黑体}，\textit{倾斜变成楷体}
+
+\textsf{这是黑体字，\textbf{自动加粗的黑体字}}
+
+\texttt{这是仿宋字，\textbf{不加粗的仿宋字}}
+
+{\CJKfamily{xinwei}还有华文新魏}
+
+\end{document}
+%    \end{macrocode}
+% \iffalse
+%</test>
+% \fi
 %
 % \section{安装}
 %
@@ -220,7 +287,6 @@
 % \begin{itemize}
 %   \item "zhmCJK.dtx", "zhmCJK.ins"：这是 \pkg{zhmCJK} 的 \pkg{DocStrip} 包与
 %   驱动。
-%   \item "test-zhmCJK.tex"：测试示例文件。
 %   \item "zhmetrics.tfm"：这是 \pkg{zhmetrics} 的通用 CJK 字符 TFM 文件，可用
 %   于大部分常见的中文字体。
 %   \item "zhmCJK.map", "texfonts.map"：字体名映射文件。
@@ -238,13 +304,13 @@
 %
 % \subsection{生成与安装}
 %
-% 生成格式文件 "zhmCJK.sty" 和文档 "zhmCJK.pdf"：
+% 生成格式文件和文档：
 % \begin{enumerate}
 %   \item 执行：
 %     \begin{quote}
-%       "tex zhmCJK.ins"
+%       "latex zhmCJK.ins"
 %     \end{quote}
-%     生成 "zhmCJK.sty" 文件。
+%     生成格式文件 "zhmCJK.sty" 和示例文件 "test-zhmCJK.tex"。
 %   \item 执行：
 %     \begin{quote}
 %       "latex zhmCJK.dtx" \\
@@ -259,7 +325,7 @@
 % \end{enumerate}
 %
 % 设 "TEXMF" 是 \TeX{} 系统的 TDS 根目录，按如下目录结构复制宏包的各个文件：
-% \begin{verbatim}
+% \begin{Verbatim}
 % TEXMF/doc/latex/zhmCJK/test-zhmCJK.tex
 % TEXMF/doc/latex/zhmCJK/zhmCJK.pdf
 % TEXMF/fonts/map/fontname/texfonts.map
@@ -268,7 +334,7 @@
 % TEXMF/source/latex/zhmCJK/zhmCJK.dtx
 % TEXMF/source/latex/zhmCJK/zhmCJK.ins
 % TEXMF/tex/latex/zhmCJK/zhmCJK.sty
-% \end{verbatim}
+% \end{Verbatim}
 % 如果目录中原来已有非空的 "texfonts.map"，可以把 \pkg{zhmCJK} 所附的
 % "texfonts.map" 文件内容附加在原有的 "texfonts.map" 之后。复制完所有文件后运
 % 行 "texhash" 命令（可能需要管理员权限），宏包即可使用。
@@ -286,9 +352,9 @@
 % "OSFONTDIR" 变量中增加操作系统字体目录。例如 \TeX\ Live 在目录
 % \path{/usr/local/share/texlive/} 安装，则新建（或修改）文件
 % \path{/usr/local/share/texlive/texmf.cnf}，在其中增加如下内容：
-% \begin{verbatim}
+% \begin{Verbatim}
 % OSFONTDIR = /usr/share/fonts//;~/.fonts//
-% \end{verbatim}
+% \end{Verbatim}
 % 详情可参考 \TeX\ Live 手册及原有 "texmf.cnf" 文件中的相关注释说明。
 %
 % \section{已知问题}
@@ -368,22 +434,42 @@
 \RequirePackage{ifpdf}
 \RequirePackage{kvoptions}
 \SetupKeyvalOptions{
-  family=zhm,
-  prefix=zhm@
-}
+  family=zhm@opt,
+  prefix=zhm@}
 %    \end{macrocode}
 %
-% \changes{v0.3}{2012/02/02}{\texttt{pdffakebold} 选项}
+% \changes{v0.3}{2012/02/02}{增加宏包 \texttt{pdffakebold} 选项}
 % "pdffakebold" 选项选择是否使用 PDF 原语生成伪粗体。默认是 "true"，如果选
 % "false" 则改用原来 \pkg{CJK} 宏包平移输出的伪粗体机制。
 %    \begin{macrocode}
 \DeclareBoolOption[true]{pdffakebold}
 %    \end{macrocode}
 %
+% \changes{v0.4}{2012/02/04}{增加宏包 \texttt{AutoFakeBold} 选项}
+% "AutoFakeBold" 选项使用 PDF 原语对 "b" 和 "bx" 系列生成伪粗体，并设置伪粗强
+% 度。
+%    \begin{macrocode}
+\DeclareStringOption[0.4]{AutoFakeBold}[0.4]
+%    \end{macrocode}
+%
 % 执行选项。
 %    \begin{macrocode}
 \ProcessKeyvalOptions*
 %    \end{macrocode}
+%
+% 在导言区和正文中分别开启 \pkg{CJK} 的功能。
+%    \begin{macrocode}
+\AtEndOfPackage{\CJK@makeActive}
+\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKfamilydefault}}
+\AtEndDocument{\clearpage\end{CJK*}}
+%    \end{macrocode}
+%
+% \begin{macro}{\zhm@fontnum}
+% 已定义的 CJK 字体数。
+%    \begin{macrocode}
+\newcount\zhm@fontnum
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\zhm@pdfliteral}
 % 插入 PDF 原语 \cite{Cho2009,Thanh2009}。
@@ -396,95 +482,202 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \pkg{CJK} 原始的伪粗体。
+% \begin{macro}{\zhm@old@CJKbold}
+%    \begin{macrocode}
+\let\zhm@old@CJKbold\CJKbold
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\zhm@old@CJKnormal}
+%    \begin{macrocode}
+\let\zhm@old@CJKnormal\CJKnormal
+%    \end{macrocode}
+% \end{macro}
+%
 % 使用 PDF 原语生成伪粗体，参考 \cite[\S~4.3.3, \S~5.2.5]{adobe2001}。
 % \changes{v0.3}{2012/02/02}{使用 PDF 原语生成伪粗体}
+% \begin{macro}{\zhm@pdf@CJKbold}
+%    \begin{macrocode}
+\def\zhm@pdf@CJKbold{%
+  \zhm@pdfliteral{q 2 Tr \@nameuse{zhm@\CJK@family @embolden} w}%
+  \aftergroup\zhm@pdf@CJKnormal}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\zhm@pdf@CJKnormal}
+%    \begin{macrocode}
+\def\zhm@pdf@CJKnormal{\zhm@pdfliteral{0 Tr}}
+%    \end{macrocode}
+% \end{macro}
+%
+% 根据选项选择伪粗体类型。
 %    \begin{macrocode}
 \ifzhm@pdffakebold
-%    \end{macrocode}
-% \begin{macro}{\CJKbold}
-%    \begin{macrocode}
-  \def\CJKbold{\zhm@pdfliteral{q 2 Tr 0.4 w}%
-      \aftergroup\CJKnormal}
-%    \end{macrocode}
-% \end{macro}
-% \begin{macro}{\CJKnormal}
-%    \begin{macrocode}
-  \def\CJKnormal{\zhm@pdfliteral{0 Tr}}
+  \let\CJKbold\zhm@pdf@CJKbold
+  \let\CJKnormal\zhm@pdf@CJKnormal
 \fi
 %    \end{macrocode}
-% \end{macro}
-%
-% 在导言区和正文中分别开启 \pkg{CJK} 的功能。
+% 当选项 "AutoFakeBold=0" 时，禁用伪粗体。
 %    \begin{macrocode}
-\AtEndOfPackage{\CJK@makeActive}
-\AtBeginDocument{\begin{CJK*}{UTF8}{\CJKfamilydefault}}
-\AtEndDocument{\clearpage\end{CJK*}}
+\def\zhm@zero{0}
+\def\ifzhm@fakebold{\expandafter\unless\expandafter\ifx
+  \csname zhm@\zhm@fam @embolden\endcsname
+  \zhm@zero}
+\def\zhm@fakeboldfalse{\@namedef{zhm@\zhm@fam @embolden}{0}}
 %    \end{macrocode}
 %
-% \begin{macro}{\zhmfamcnt}
-% 已定义的 CJK 字体数。
+% \begin{macro}{\zhm@DeclareFontShape}
+% "\DeclareFontShape" 内部需要修改 "\catcode"，因此在其他宏中声明时，使用
+% "\scantokens" 处理。
 %    \begin{macrocode}
-\newcount\zhmfamcnt
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\zhm@definefont}
-% 定义 CJK 字体族。模拟 |.fd| 文件的定义 \cite{Lemberg2008fonts}。
-%    \begin{macrocode}
-\def\zhm@definefont#1{
-  \DeclareFontFamily{C70}{#1}{\hyphenchar\font\m@ne}
-%    \end{macrocode}
-% "\DeclareFontShape" 内部需要修改 "\catcode"，这里使用 "\scantokens" 处理。
-%    \begin{macrocode}
-  \scantokens{
-    \DeclareFontShape{C70}{#1}{m}{n}{<-> CJK * zhm\the\zhmfamcnt}{}
-    \DeclareFontShape{C70}{#1}{bx}{n}{<-> CJKb * zhm\the\zhmfamcnt}{\CJKbold}
-  }
-}
+\def\zhm@DeclareFontShape#1#2#3#4#5#6{%
+  \scantokens{\DeclareFontShape{#1}{#2}{#3}{#4}{#5}{#6}}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\zhm@mapline}
-% 添加实际字体映射。为 pdf\TeX{} 与 DVIPDFMx 引擎使用不同的命令完成
-% \cite{Thanh2009}。
+% 添加实际字体映射行，两个参数是字体编号和字体文件名。为 pdf\TeX{} 与 DVIPDFMx
+% 引擎使用不同的命令完成 \cite{Thanh2009}。
 %    \begin{macrocode}
 \ifpdf
-  \def\zhm@mapline#1{%
-    \pdfmapline{=zhm\the\zhmfamcnt @Unicode@ <#1}}
+  \def\zhm@mapline#1#2{%
+    \pdfmapline{=zhm#1@Unicode@ <#2}}
 \else
-  \def\zhm@mapline#1{%
-    \special{pdf:mapline zhm\the\zhmfamcnt @Unicode@ unicode #1}}
+  \def\zhm@mapline#1#2{%
+    \special{pdf:mapline zhm#1@Unicode@ unicode #2}}
 \fi
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\zhm@setfontmap}
+% 设置字体映射，两个参数是字体编号和字体文件名。字体映射需要在输出例程初始处设
+% 置。如果载入了 \pkg{atbegshi} 宏包，则还要处理修改了的输出例程。这会影响
+% \pkg{eso-pic} 等用户层宏包。
+%    \begin{macrocode}
+\def\zhm@setfontmap#1#2{%
+  \AtBeginDvi{\zhm@mapline{#1}{#2}}
+  \AtBeginDocument{%
+    \@ifpackageloaded{atbegshi}{\AtBeginShipoutFirst{%
+      \zhm@mapline{#1}{#2}}}{}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\zhm@DeclareRealFont}
+% 分配实际字体，并设置字体映射。参数是字体文件名。如果实际字体已经分配，则不改
+% 变。
+%    \begin{macrocode}
+\def\zhm@DeclareRealFont#1{
+  \unless\ifcsname zhm@#1@fontnum\endcsname
+    \global\advance\zhm@fontnum\@ne
+    \ifnum\zhm@fontnum>\@xxxii
+      \PackageError{zhmCJK}%
+        {No more CJK font families can be setup.}%
+        {There are at most 32 families setup by zhmCJK.}
+    \else
+      \expandafter\xdef\csname zhm@#1@fontnum\endcsname{\the\zhm@fontnum}
+      \zhm@setfontmap{\the\zhm@fontnum}{#1}
+    \fi
+  \fi
+  \edef\zhm@tfm{zhm\@nameuse{zhm@#1@fontnum}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{AutoFakeBold} 选项。}
+%    \begin{macrocode}
+\define@key{zhm}{AutoFakeBold}[\zhm@AutoFakeBold]{%
+  \expandafter\xdef\csname zhm@\zhm@fam @embolden\endcsname{#1}}
+%    \end{macrocode}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{BoldFont} 选项。}
+% 设置 "BoldFont" 选项。
+%    \begin{macrocode}
+\define@key{zhm}{BoldFont}{
+  \zhm@DeclareRealFont{#1}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{b}{n}{<-> CJK * \zhm@tfm}{}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{bx}{n}{<-> CJK * \zhm@tfm}{}
+  \zhm@fakeboldfalse}
+%    \end{macrocode}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{ItalicFont} 选项。}
+% 设置 "ItalicFont" 选项。
+%    \begin{macrocode}
+\define@key{zhm}{ItalicFont}{
+  \zhm@DeclareRealFont{#1}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{m}{it}{<-> CJK * \zhm@tfm}{}}
+%    \end{macrocode}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{BoldItalicFont} 选项。}
+% 设置 "BoldItalicFont" 选项。
+%    \begin{macrocode}
+\define@key{zhm}{BoldItalicFont}{
+  \zhm@DeclareRealFont{#1}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{b}{it}{<-> CJK * \zhm@tfm}{}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{bx}{it}{<-> CJK * \zhm@tfm}{}}
+%    \end{macrocode}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{SlantedFont} 选项。}
+% 设置 "SlantedFont" 选项。
+%    \begin{macrocode}
+\define@key{zhm}{SlantedFont}{
+  \zhm@DeclareRealFont{#1}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{m}{sl}{<-> CJK * \zhm@tfm}{}}
+%    \end{macrocode}
+%
+% \changes{v0.4}{2012/02/04}{设置字体 \texttt{BoldSlantedFont} 选项。}
+% 设置 "BoldSlantedFont" 选项。
+%    \begin{macrocode}
+\define@key{zhm}{BoldSlantedFont}{
+  \zhm@DeclareRealFont{#1}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{b}{sl}{<-> CJK * \zhm@tfm}{}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{bx}{sl}{<-> CJK * \zhm@tfm}{}}
+%    \end{macrocode}
+%
+% \begin{macro}{\zhm@newfontfamily}
+% 设置一个 CJK 新字体族。三个参数分别为：选项，字体族名，字体文件名。
+%    \begin{macrocode}
+\def\zhm@newfontfamily[#1]#2#3{
+  \begingroup
+%    \end{macrocode}
+% 警告字体族重定义
+%    \begin{macrocode}
+  \ifcsname zhm@#2@font\endcsname
+    \PackageWarning{zhmCJK}{Redefnition of CJK family `#2'.}
+  \fi
+%    \end{macrocode}
+% 缓存字体族名及对应主字体文件名。
+%    \begin{macrocode}
+  \edef\zhm@fam{#2}
+  \expandafter\xdef\csname zhm@#2@font\endcsname{#3}
+%    \end{macrocode}
+% 检查并定义实际字体。
+%    \begin{macrocode}
+  \zhm@DeclareRealFont{#3}
+%    \end{macrocode}
+% 定义 CJK 字体族和标准字形。模拟 ".fd" 文件的定义 \cite{Lemberg2008fonts}。
+%    \begin{macrocode}
+  \DeclareFontFamily{C70}{\zhm@fam}{\hyphenchar\font\m@ne}
+  \zhm@DeclareFontShape{C70}{\zhm@fam}{m}{n}{<-> CJK * \zhm@tfm}{}
+%    \end{macrocode}
+% 按选项定义其他字形。
+%    \begin{macrocode}
+  \setkeys{zhm}{AutoFakeBold}
+  \setkeys{zhm}{#1}
+%    \end{macrocode}
+% 按需要，定义伪粗体字形。
+%    \begin{macrocode}
+  \ifzhm@fakebold
+    \zhm@DeclareRealFont{#3}
+    \zhm@DeclareFontShape{C70}{\zhm@fam}{bx}{n}{<-> CJKb * \zhm@tfm}{\CJKbold}
+    \zhm@DeclareFontShape{C70}{\zhm@fam}{b}{n}{<-> CJKb * \zhm@tfm}{\CJKbold}
+  \fi
+  \endgroup}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\setCJKfamilyfont}
 % 设置一个 CJK 字体族。
 %    \begin{macrocode}
-\def\setCJKfamilyfont#1#2{
-  \advance\zhmfamcnt\@ne
-  \ifnum\zhmfamcnt>\@xxxii
-    \PackageError{zhmCJK}%
-      {No more CJK font families can be setup.}%
-      {There are at most 32 families setup by zhmCJK.}
-  \else
-%    \end{macrocode}
-% 载入字体族及字形定义。
-%    \begin{macrocode}
-    \zhm@definefont{#1}
-%    \end{macrocode}
-% 字体映射需要在输出例程初始处设置。
-%    \begin{macrocode}
-    \AtBeginDvi{\zhm@mapline{#2}}
-%    \end{macrocode}
-% 如果载入了 \pkg{atbegshi} 宏包，则还要处理修改了的输出例程。这会影响
-% \pkg{eso-pic} 等用户层宏包。
-%    \begin{macrocode}
-    \AtBeginDocument{%
-      \@ifpackageloaded{atbegshi}{\AtBeginShipoutFirst{%
-        \zhm@mapline{#2}}}{}}
-  \fi
-}
+\newcommand*\setCJKfamilyfont[3][]{
+  \zhm@newfontfamily[#1]{#2}{#3}}
 \@onlypreamble\setCJKfamilyfont
 %    \end{macrocode}
 % \end{macro}
@@ -493,8 +686,8 @@
 % \begin{macro}{\setCJKmainfont}
 % 设置 CJK 普通（罗马）字体。
 %    \begin{macrocode}
-\def\setCJKmainfont{%
-  \setCJKfamilyfont{\CJKrmdefault}}
+\newcommand*\setCJKmainfont[2][]{%
+  \setCJKfamilyfont[#1]{\CJKrmdefault}{#2}}
 \@onlypreamble\setCJKmainfont
 %    \end{macrocode}
 % \end{macro}
@@ -511,8 +704,8 @@
 % \begin{macro}{\setCJKsansfont}
 % 设置 CJK 无衬线字体。
 %    \begin{macrocode}
-\def\setCJKsansfont{%
-  \setCJKfamilyfont{\CJKsfdefault}}
+\newcommand*\setCJKsansfont[2][]{%
+  \setCJKfamilyfont[#1]{\CJKsfdefault}{#2}}
 \@onlypreamble\setCJKsansfont
 %    \end{macrocode}
 % \end{macro}
@@ -521,8 +714,8 @@
 % \begin{macro}{\setCJKmonofont}
 % 设置 CJK 等宽（打字机）字体。
 %    \begin{macrocode}
-\def\setCJKmonofont{%
-  \setCJKfamilyfont{\CJKttdefault}}
+\newcommand*\setCJKmonofont[2][]{%
+  \setCJKfamilyfont[#1]{\CJKttdefault}{#2}}
 \@onlypreamble\setCJKmonofont
 %    \end{macrocode}
 % \end{macro}
@@ -531,7 +724,7 @@
 % \begin{macro}{\CJKrmdefault}
 % CJK 罗马体默认字体族，作用于 "\rmfamily"。
 %    \begin{macrocode}
-\providecommand\CJKrmdefault{rm}
+\providecommand*\CJKrmdefault{rm}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -539,7 +732,7 @@
 % \begin{macro}{\CJKsfdefault}
 % CJK 无衬线体默认字体族，作用于 "\sffamily"。
 %    \begin{macrocode}
-\providecommand\CJKsfdefault{sf}
+\providecommand*\CJKsfdefault{sf}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -547,7 +740,7 @@
 % \begin{macro}{\CJKttdefault}
 % CJK 打字机体默认字体族，作用于 "\ttfamily"。
 %    \begin{macrocode}
-\providecommand\CJKttdefault{tt}
+\providecommand*\CJKttdefault{tt}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -555,7 +748,7 @@
 % \begin{macro}{\CJKfamilydefault}
 % CJK 默认字体族，作用于 "\normalfont"。
 %    \begin{macrocode}
-\providecommand\CJKfamilydefault{\CJKrmdefault}
+\providecommand*\CJKfamilydefault{\CJKrmdefault}
 %    \end{macrocode}
 % \end{macro}
 %
