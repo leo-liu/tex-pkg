@@ -26,6 +26,8 @@
 %
 % \fi
 %
+% \iffalse
+%
 %<*internal>
 \iffalse
 %</internal>
@@ -125,7 +127,6 @@ If you are interested in the process of development you may observe
 \fi
 %</internal>
 %
-% \iffalse
 %<*driver>
 \ProvidesFile{zhmCJK.dtx}
 %</driver>
@@ -253,13 +254,13 @@ If you are interested in the process of development you may observe
 % 一般来说使用默认的设置，即不用任何选项即可。
 %
 % 宏包提供的选项如下：
-% \begin{longtable}{l|l|l|p{12em}}
+% \begin{longtable}{l|l|p{12em}}
 % \hline
-% 选项 & 取值 & 默认值 & 功能 \\
+% 选项 & 默认值 & 功能 \\
 % \hline
-% "pdffakebold" & "true"$|$"false" & "true" & 设置伪粗体类型为 PDF 原语生成；
-%   若设置为 "false" 则沿用旧的 \pkg{CJK} 伪粗体机制 \\
-% "AutoFakeBold" & 数字 & 0.4 & 设置自动伪粗体的粗细，单位为 bp；若设置为 0 则
+% "pdffakebold="\meta{\texttt{true}$|$\texttt{false}} & "true" & 设置伪粗体类型
+%   为 PDF 原语生成；若设置为 "false" 则沿用旧的 \pkg{CJK} 伪粗体机制 \\
+% "AutoFakeBold="\meta{数字} & 0.4 & 设置自动伪粗体的粗细，单位为 bp；若设置为 0 则
 %   禁用自动伪粗体 \\
 % \hline
 % \end{longtable}
@@ -476,6 +477,7 @@ If you are interested in the process of development you may observe
 % \begin{itemize}
 %  \item 受制于预定义的映射文件 "texfonts.map"，使用 \pkg{zhmCJK} 在同一文档中
 %  能够使用的字体文件是有限的。目前只有 32 个。
+%  \item 缺少伪斜体。
 % \end{itemize}
 %
 % \StopEventually{
