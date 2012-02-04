@@ -1,6 +1,7 @@
 @echo off
 if "%1"=="clean" goto clean
 
+texlua zhmCJK.lua map
 latex zhmCJK.ins
 latex zhmCJK.dtx
 makeindex -s gind zhmCJK.idx
@@ -19,7 +20,8 @@ goto end
 
 :zip
 call :clean_zip
-zip zhmCJK zhmCJK.dtx zhmCJK.ins README.txt zhmCJK.sty zhmCJK.pdf zhmetrics.tfm texfonts.map zhmCJK.map zhmCJK-test.tex
+zip zhmCJK zhmCJK.dtx zhmCJK.ins zhmCJK.lua README.txt zhmCJK.sty zhmCJK.pdf zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK-test.tex
+if exist fallback.tar.bz2 zip zhmCJK fallback.tar.bz2
 exit /b
 
 :clean_zip
@@ -31,6 +33,7 @@ call :clean_tds
 mkdir source\latex\zhmCJK
 copy zhmCJK.dtx source\latex\zhmCJK\
 copy zhmCJK.ins source\latex\zhmCJK\
+copy zhmCJK.lua source\latex\zhmCJK\
 mkdir tex\latex\zhmCJK
 copy zhmCJK.sty tex\latex\zhmCJK\
 mkdir doc\latex\zhmCJK
@@ -40,8 +43,9 @@ copy README.txt doc\latex\zhmCJK\
 mkdir fonts\map\fontname
 copy zhmCJK.map fonts\map\fontname\
 copy texfonts.map fonts\map\fontname\
-mkdir fonts\tfm\zhmetrics
-copy zhmetrics.tfm fonts\tfm\zhmetrics\
+mkdir fonts\tfm\zhmCJK
+copy zhmCJK.tfm fonts\tfm\zhmCJK\
+if exist fallback.tar.bz2 copy fallback.tar.bz2 fonts\tfm\zhmCJK\
 zip -r zhmCJK-tds source tex doc fonts
 exit /b
 
@@ -58,6 +62,6 @@ exit /b
 call :clean_tmp
 call :clean_zip
 call :clean_tds
-for %%i in (zhmCJK.pdf zhmCJK.sty README.txt zhmCJK-test.tex) do if exist %%i del %%i
+for %%i in (zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK.pdf zhmCJK.sty README.txt zhmCJK-test.tex) do if exist %%i del %%i
 
 :end
