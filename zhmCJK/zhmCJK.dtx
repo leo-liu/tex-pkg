@@ -460,6 +460,17 @@ If you are interested in the process of development you may observe
 % \end{Verbatim}
 % 详情可参考 \TeX\ Live 手册及原有 "texmf.cnf" 文件中的相关注释说明。
 %
+% 可以使用 "kpsewhich" 命令检查 \pkg{zhmCJK} 能否搜索到指定的字体文件。例如在
+% Windows 系统中使用命令：
+% \begin{Verbatim}
+% kpsewhich simsun.ttc
+% \end{Verbatim}
+% 应该得到输出：
+% \begin{Verbatim}
+% c:/Windows/fonts/simsun.ttc
+% \end{Verbatim}
+% 对非 Windows 系统，文件和路径区分大小写。
+%
 % \section{已知问题}
 %
 % \begin{itemize}
