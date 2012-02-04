@@ -12,10 +12,15 @@
 %%
 %% The Current Maintainer of this work is Leo Liu.
 %%
-%% This work consists of the files zhmCJK.dtx and zhmCJK.ins
-%% with the derived file zhmCJK.sty, the font mapping files
-%% zhmCJK.map and texfonts.map, the font metrics zhmetrics.tfm,
-%% and the test code test-zhmCJK.tex.
+%% This work consists of the files zhmCJK.dtx,
+%%                                 zhmCJK.ins,
+%%                                 zhmCJK.map,
+%%                                 texfonts.map, and
+%%                                 zhmetrics.tfm,
+%%           and the derived files zhmCJK.sty,
+%%                                 zhmCJK.pdf,
+%%                                 zhmCJK-test.tex, and
+%%                                 README.txt.
 %%
 
 \input docstrip.tex
@@ -39,7 +44,10 @@ version 2005/12/01 or later.
 
 \askforoverwritefalse
 \generate{\file{zhmCJK.sty}{\from{zhmCJK.dtx}{package}}}
-\generate{\file{test-zhmCJK.tex}{\from{zhmCJK.dtx}{test}}}
+\nopostamble
+\generate{\file{zhmCJK-test.tex}{\from{zhmCJK.dtx}{test}}}
+\nopreamble
+\generate{\file{README.txt}{\from{zhmCJK.dtx}{readme}}}
 
 \obeyspaces
 \Msg{*************************************************************}
@@ -58,7 +66,8 @@ version 2005/12/01 or later.
 \Msg{* And move the source files and documentation:              *}
 \Msg{*                                                           *}
 \Msg{*     zhmCJK.pdf           into doc/latex/zhmCJK/           *}
-\Msg{*     test-zhmCJK.tex      into doc/latex/zhmCJK/           *}
+\Msg{*     zhmCJK-test.tex      into doc/latex/zhmCJK/           *}
+\Msg{*     README.txt           into doc/latex/zhmCJK/           *}
 \Msg{*     zhmCJK.dtx           into source/latex/zhmCJK/        *}
 \Msg{*     zhmCJK.ins           into source/latex/zhmCJK/        *}
 \Msg{*                                                           *}
