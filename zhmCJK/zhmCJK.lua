@@ -174,7 +174,7 @@ end
 -- authors of zhtfm.lua are:
 --
 --        Lingyun Wu    <wulingyun@gmail.com>
---        Zhiwei Huang  <zwhuang@gmail.com>
+--        zwhuang       <zwhuang@gmail.com>
 --
 -- For more information of zhmetrics, see the ctex-kit project:
 --
