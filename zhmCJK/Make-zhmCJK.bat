@@ -2,7 +2,7 @@
 if "%1"=="clean" goto clean
 
 texlua zhmCJK.lua map
-latex zhmCJK.ins
+pdftex zhmCJK.ins
 latex zhmCJK.dtx
 makeindex -s gind zhmCJK.idx
 makeindex -s gglo -o zhmCJK.gls zhmCJK.glo
@@ -56,6 +56,7 @@ exit /b
 
 :clean_tmp
 for %%i in (zhmCJK.dvi zhmCJK.aux zhmCJK.log zhmCJK.glo zhmCJK.gls zhmCJK.idx zhmCJK.ind zhmCJK.ilg zhmCJK.out zhmCJK.tmp zhmCJK.hd zhmCJK.*~ Make-zhmCJK.bat~) do if exist %%i del %%i
+for %%i in (zhmCJK-test.dvi zhmCJK-test.aux zhmCJK-test.log zhmCJK-test.*~) do if exist %%i del %%i
 exit /b
 
 :clean
@@ -63,5 +64,6 @@ call :clean_tmp
 call :clean_zip
 call :clean_tds
 for %%i in (zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK.pdf zhmCJK.sty README.txt zhmCJK-test.tex) do if exist %%i del %%i
+for %%i in (zhmCJK-test.pdf) do if exist %%i del %%i
 
 :end
