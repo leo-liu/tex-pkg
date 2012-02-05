@@ -57,6 +57,7 @@ exit /b
 :clean_tmp
 for %%i in (zhmCJK.dvi zhmCJK.aux zhmCJK.log zhmCJK.glo zhmCJK.gls zhmCJK.idx zhmCJK.ind zhmCJK.ilg zhmCJK.out zhmCJK.tmp zhmCJK.hd zhmCJK.*~ Make-zhmCJK.bat~) do if exist %%i del %%i
 for %%i in (zhmCJK-test.dvi zhmCJK-test.aux zhmCJK-test.log zhmCJK-test.*~) do if exist %%i del %%i
+for %%i in (*.synctex.*) do del %%i
 exit /b
 
 :clean
