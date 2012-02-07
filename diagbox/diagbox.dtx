@@ -40,17 +40,18 @@
 \usepackage[UTF8]{ctex}
 \makeatletter
 \renewcommand\glossary@prologue{%
-  \pdfbookmark[1]{版本历史}{history}
   \section*{版本历史}
   \markboth{版本历史}{版本历史}}
 \renewcommand\index@prologue{%
-  \pdfbookmark[1]{Index / 代码索引}{index}
   \section*{Index / 代码索引}
   \markboth{Index / 代码索引}{Index / 代码索引}
   斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
   立体的数字表示对应项使用时所在的行号。}
+\renewcommand*\title[2][]{\gdef\@title{#2}}
+\renewcommand*\author[2][]{\gdef\@author{#2}}
 \makeatother
-\usepackage[pdfstartview=FitH,bookmarksnumbered,colorlinks]{hyperref}
+\usepackage[numbered]{hypdoc}
+\hypersetup{pdfstartview=FitH}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -94,11 +95,14 @@
 %
 % \providecommand*{\pkg}{\textsf}
 % \GetFileInfo{diagbox.dtx}
-% \title{\hypertarget{English}{\pkg{diagbox} Package (\fileversion)}
+% \title[diagbox Package (\fileversion):
+%   Making Table Heads with Diagonal Lines]%
+%  {\hypertarget{English}{\pkg{diagbox} Package (\fileversion)}
 %   \makebox[0pt][l]{\hspace{3cm}\large
 %     \hyperlink{Chinese}{$\Rightarrow$ \textsf{中文版}}}\\
-%    Making Table Heads with Diagonal Lines}
-% \author{Leo Liu \\ \path{leoliu.pku@gmail.com}}
+%   sMaking Table Heads with Diagonal Lines}
+% \author[Leo Liu <leoliu.pku@gmail.com>]%
+%   {Leo Liu \\ \path{leoliu.pku@gmail.com}}
 % \date{\filedate}
 %
 % \maketitle
@@ -292,7 +296,7 @@
 % \end{itemize}
 %
 %
-% \title{\hypertarget{Chinese}{\pkg{diagbox} 宏包（\fileversion）}
+% \title[]{\hypertarget{Chinese}{\pkg{diagbox} 宏包（\fileversion）}
 %   \makebox[0pt][l]{\hspace{3cm}\large
 %     \hyperlink{English}{$\Rightarrow$ \textsf{English Version}}}\\
 %    制做斜线表头}

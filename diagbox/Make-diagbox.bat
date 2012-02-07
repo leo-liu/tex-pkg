@@ -1,6 +1,6 @@
 if exist diagbox.sty del diagbox.sty
 if exist diagbox.pdf del diagbox.pdf
-tex diagbox.ins
+pdftex diagbox.ins
 xelatex diagbox.dtx
 makeindex -s gind diagbox.idx
 makeindex -s gglo -o diagbox.gls diagbox.glo
