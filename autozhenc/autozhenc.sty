@@ -1,0 +1,73 @@
+\ProvidesPackage{autozhenc}
+  [2012/02/18 v0.1 Chinese encoding autodetection]
+
+\DeclareOption*{%
+  \edef\aze@txt{\CurrentOption}}
+\ProcessOptions
+
+\newif\ifUTF
+\providecommand*\fallbackzhenc{GBK}
+
+\ifx\luatexversion\undefined\else
+  \PackageWarning{autozhenc}{%
+    LuaTeX engine is not supported.
+    Assuming the file is in UTF8 encoding.}{}
+  \UTFtrue
+  \def\autozhenc{UTF8}
+  \expandafter\endinput
+\fi
+\ifx\XeTeXrevision\undefined\else
+  \PackageWarning{autozhenc}{%
+    Autodetection for XeTeX engine is not supported.
+    Assuming the file is in UTF8 encoding.}{}
+  \UTFtrue
+  \def\autozhenc{UTF8}
+  \expandafter\endinput
+\fi
+
+\def\aze@wrongoption{%
+  \PackageError{autozhenc}{%
+    The option should be one Chinese character.}{}%
+  \let\autozhenc\fallbackzhenc}
+
+\def\testzhenc#1{%
+  \count@\z@
+  \@tfor\reversed@a:=#1\do{%
+    \advance\count@\@ne}%
+  \ifcase\count@
+        \aze@wrongoption
+    \or \aze@wrongoption
+    \or \UTFfalse \let\autozhenc\fallbackzhenc
+    \or \UTFtrue  \def\autozhenc{UTF8}%
+    \else \aze@wrongoption
+  \fi}
+
+\expandafter\testzhenc\expandafter{\aze@txt}
+
+\endinput
+
+Usage:
+
+  \usepackage[<CJKchar>]{autozhenc}
+    Do the test when loaded.
+
+  \testzhenc{<CJKchar>}
+    Do the test in the document.
+  
+  \ifUTF
+    True if <CJKchar> has 3 bytes,
+    False if <CJKchar> has 2 bytes.
+
+  \autozhenc
+    The encoding used by CJK environment:
+    UTF8 if <CJKchar> has 3 bytes,
+    \fallbackzhenc if <CJKchar> has 2 bytes.
+
+  \fallbackzhenc
+    Default value is GBK
+
+Thanks:
+
+    Inspired by liruomeng at CTeX.org.
+    http://bbs.ctex.org/redirect.php?tid=70346
+
