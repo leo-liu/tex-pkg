@@ -34,6 +34,7 @@ mkdir source\latex\zhmCJK
 copy zhmCJK.dtx source\latex\zhmCJK\
 copy zhmCJK.ins source\latex\zhmCJK\
 copy zhmCJK.lua source\latex\zhmCJK\
+copy zhmCJK-addmap.pl source\latex\zhmCJK\
 mkdir tex\latex\zhmCJK
 copy zhmCJK.sty tex\latex\zhmCJK\
 mkdir doc\latex\zhmCJK
