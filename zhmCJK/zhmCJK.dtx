@@ -154,7 +154,7 @@ If you are interested in the process of development you may observe
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{zhmCJK}
 %<*package>
-    [2012/02/06 v0.8 setup CJK fonts dynamically]
+    [2013/08/07 v0.9 setup CJK fonts dynamically]
 %</package>
 %
 %<*driver>
@@ -789,6 +789,16 @@ If you are interested in the process of development you may observe
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\zhm@cmap}
+% \changes{v0.9}{2013/08/07}{允许修改 DVIPDFMx 的 CMap 映射。}
+% 保存使用的 DVIPDFMx 字体映射所使用的 CMap 映射，默认是 "unicode"，即使用 UCS2
+% 编码的字体映射。多数 CJK 字体可以使用默认值，但少量需要单独设置才能使 DVIPDFMx
+% 工作正常。
+%    \begin{macrocode}
+\def\zhm@cmap{unicode}
+%    \end{macrocode}
+% \end{macro}
+%
 % 在导言区和正文中分别开启 \pkg{CJK} 的功能。
 %    \begin{macrocode}
 \AtEndOfPackage{\CJK@makeActive}
@@ -934,7 +944,7 @@ If you are interested in the process of development you may observe
     \pdfmapline{=zhm#1@\zhm@sfd @ <#2}}
 \else
   \def\zhm@mapline#1#2{%
-    \special{pdf:mapline zhm#1@\zhm@sfd @ unicode #2}}
+    \special{pdf:mapline zhm#1@\zhm@sfd @ \zhm@cmap\space #2}}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -971,6 +981,12 @@ If you are interested in the process of development you may observe
   \edef\zhm@tfm{zhm\@nameuse{zhm@#1@fontnum}}}
 %    \end{macrocode}
 % \end{macro}
+%
+% \changes{v0.9}{2013/08/07}{设置字体 \texttt{cmap} 选项。}
+%    \begin{macrocode}
+\define@key{zhm}{cmap}{%
+  \edef\zhm@cmap{#1}}
+%    \end{macrocode}
 %
 % \changes{v0.8}{2012/02/06}{设置字体 \texttt{encoding} 选项。}
 %    \begin{macrocode}
@@ -1070,24 +1086,24 @@ If you are interested in the process of development you may observe
   \edef\zhm@fam{#1}
   \expandafter\xdef\csname zhm@#1@font\endcsname{#3}
 %    \end{macrocode}
-% 检查并定义实际字体。
-%    \begin{macrocode}
-  \zhm@DeclareRealFont{#3}
-%    \end{macrocode}
-% 定义 CJK 字体族和标准字形。模拟 ".fd" 文件的定义 \cite{Lemberg2008fonts}。
-%    \begin{macrocode}
-  \DeclareFontFamily{\zhm@nfssenc}{\zhm@fam}{\hyphenchar\font\m@ne}
-  \zhm@DeclareFontShape{\zhm@nfssenc}{\zhm@fam}{m}{n}{<-> CJK * \zhm@tfm}{}
-%    \end{macrocode}
 % 使全局的 "AutoFakeBold" 和 "AutoFakeSlant" 生效。
 %    \begin{macrocode}
   \setkeys{zhm}{%
     AutoFakeBold=\zhm@AutoFakeBold,
     AutoFakeSlant=\zhm@AutoFakeSlant}
 %    \end{macrocode}
-% 按选项定义其他字形。
+% 定义 CJK 字体族。
+%    \begin{macrocode}
+  \DeclareFontFamily{\zhm@nfssenc}{\zhm@fam}{\hyphenchar\font\m@ne}
+%    \end{macrocode}
+% 执行选项，定义编码、CMap 和其他字形等。
 %    \begin{macrocode}
   \setkeys{zhm}{#2}
+%    \end{macrocode}
+% 检查并定义实际字体，定义标准字形。模拟 ".fd" 文件的定义 \cite{Lemberg2008fonts}。
+%    \begin{macrocode}
+  \zhm@DeclareRealFont{#3}
+  \zhm@DeclareFontShape{\zhm@nfssenc}{\zhm@fam}{m}{n}{<-> CJK * \zhm@tfm}{}
 %    \end{macrocode}
 % 按需要，定义伪粗体、伪斜体字形。
 %    \begin{macrocode}
