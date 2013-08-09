@@ -185,6 +185,36 @@ If you are interested in the process of development you may observe
   \markboth{代码索引}{代码索引}
   斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
   立体的数字表示对应项使用时所在的行号。}
+\def\option{\begingroup
+   \catcode`\\12
+   \MakePrivateLetters \option@}
+\let\endoption\endtrivlist
+\long\def\option@#1{\endgroup \topsep\MacroTopsep \trivlist
+  \edef\saved@macroname{\string#1}%
+  \def\makelabel##1{\llap{##1}}%
+  \if@inlabel
+    \let\@tempa\@empty \count@\macro@cnt
+    \loop \ifnum\count@>\z@
+      \edef\@tempa{\@tempa\hbox{\strut}}\advance\count@\m@ne \repeat
+    \edef\makelabel##1{\llap{\vtop to\baselineskip
+                               {\@tempa\hbox{##1}\vss}}}%
+    \advance \macro@cnt \@ne
+  \else  \macro@cnt\@ne  \fi
+  \edef\@tempa{\noexpand\item[%
+     \noexpand\PrintEnvName
+     {\string#1}]}%
+  \@tempa
+  \global\advance\c@CodelineNo\@ne
+      \SpecialMainOptionIndex{#1}\nobreak
+  \global\advance\c@CodelineNo\m@ne
+  \ignorespaces}
+\def\SpecialMainOptionIndex#1{\@bsphack
+  \special@index{%
+    #1\actualchar
+    {\string\ttfamily\space#1}
+    (option)%
+    \encapchar main}%
+  \@esphack}
 \makeatother
 \providecommand\eTeX{$\varepsilon$-\TeX}
 \newcommand\pkg[1]{\textsf{#1}}
@@ -674,49 +704,49 @@ If you are interested in the process of development you may observe
 %    \end{macrocode}
 %
 % \changes{v0.9}{2013/08/08}{增加宏包 \texttt{cmap} 选项选择 DVIPDFMx 的 CMap 映射。}
-% \begin{environment}{cmap}
+% \begin{option}{cmap}
 % 定义使用的 DVIPDFMx 字体映射所使用的 CMap 映射，默认是 "unicode"，即使用 UCS2
 % 编码的字体映射。多数 CJK 字体可以使用默认值，但少量需要单独设置才能使 DVIPDFMx
 % 工作正常。
 %    \begin{macrocode}
 \DeclareStringOption[unicode]{cmap}
 %    \end{macrocode}
-% \end{environment}
+% \end{option}
 %
 % \changes{v0.8}{2012/02/06}{增加宏包 \texttt{encoding} 选项选择默认编码。}
-% \begin{environment}{encoding}
+% \begin{option}{encoding}
 % 定义编码选项。初始化为 "UTF8"，使用时不能省略参数。
 %    \begin{macrocode}
 \DeclareStringOption[UTF8]{encoding}
 %    \end{macrocode}
-% \end{environment}
+% \end{option}
 %
 % \changes{v0.3}{2012/02/02}{增加宏包 \texttt{pdffakebold} 选项}
-% \begin{environment}{pdffakebold}
+% \begin{option}{pdffakebold}
 % 选择是否使用 PDF 原语生成伪粗体。默认是 "true"，如果选 "false" 则改用原来
 % \pkg{CJK} 宏包平移输出的伪粗体机制。
 %    \begin{macrocode}
 \DeclareBoolOption[true]{pdffakebold}
 %    \end{macrocode}
-% \end{environment}
+% \end{option}
 %
 % \changes{v0.4}{2012/02/04}{增加宏包 \texttt{AutoFakeBold} 选项}
-% \begin{environment}{AutoFakeBold}
+% \begin{option}{AutoFakeBold}
 % 使用 PDF 原语对 "b" 和 "bx" 系列生成伪粗体，并设置伪粗体描边线宽。初始化为
 % 0.4 (bp)，无参数缺省值为 0.4。
 %    \begin{macrocode}
 \DeclareStringOption[0.4]{AutoFakeBold}[0.4]
 %    \end{macrocode}
-% \end{environment}
+% \end{option}
 %
 % \changes{v0.6}{2012/02/05}{增加宏包 \texttt{AutoFakeSlant} 选项}
-% \begin{environment}{AutoFakeSlant}
+% \begin{option}{AutoFakeSlant}
 % 使用 PDF 原语对 "sl" 形状生成伪斜体，并设置伪斜体倾斜度。初始化为 0（禁用），
 % 没有参数时缺省值为 0.167。
 %    \begin{macrocode}
 \DeclareStringOption[0]{AutoFakeSlant}[0.167]
 %    \end{macrocode}
-% \end{environment}
+% \end{option}
 %
 % 执行选项。
 %    \begin{macrocode}
