@@ -969,9 +969,9 @@ If you are interested in the process of development you may observe
 % 设置伪粗体（不斜）。根据 "pdffakebold" 选项选择伪粗体类型。
 %    \begin{macrocode}
 \ifzhm@pdffakebold
-  \def\CJKbold{\zhm@CJK@bold@true\zhm@CJK@slant@false}
+  \def\CJKbold{\global\zhm@CJK@bold@true\global\zhm@CJK@slant@false}
 \else
-  \def\CJKbold{\CJK@bold@true\zhm@CJK@slant@false}
+  \def\CJKbold{\global\CJK@bold@true\global\zhm@CJK@slant@false}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -980,9 +980,9 @@ If you are interested in the process of development you may observe
 % 设置伪斜体（不加粗）。
 %    \begin{macrocode}
 \ifzhm@pdffakebold
-  \def\CJKslant{\zhm@CJK@bold@false\zhm@CJK@slant@true}
+  \def\CJKslant{\global\zhm@CJK@bold@false\global\zhm@CJK@slant@true}
 \else
-  \def\CJKnormal{\CJK@bold@false\zhm@CJK@slant@false}
+  \def\CJKnormal{\global\CJK@bold@false\global\zhm@CJK@slant@false}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -991,9 +991,9 @@ If you are interested in the process of development you may observe
 % 设置伪粗体加伪斜体。
 %    \begin{macrocode}
 \ifzhm@pdffakebold
-  \def\CJKboldslant{\zhm@CJK@bold@true\zhm@CJK@slant@true}
+  \def\CJKboldslant{\global\zhm@CJK@bold@true\global\zhm@CJK@slant@true}
 \else
-  \def\CJKnormal{\CJK@bold@false\zhm@CJK@slant@false}
+  \def\CJKnormal{\global\CJK@bold@false\global\zhm@CJK@slant@false}
 \fi
 %    \end{macrocode}
 % \end{macro}
@@ -1002,9 +1002,9 @@ If you are interested in the process of development you may observe
 % 恢复无伪粗、伪斜体的状态。
 %    \begin{macrocode}
 \ifzhm@pdffakebold
-  \def\CJKnormal{\zhm@CJK@bold@false\zhm@CJK@slant@false}
+  \def\CJKnormal{\global\zhm@CJK@bold@false\global\zhm@CJK@slant@false}
 \else
-  \def\CJKnormal{\CJK@bold@false\zhm@CJK@slant@false}
+  \def\CJKnormal{\global\CJK@bold@false\global\zhm@CJK@slant@false}
 \fi
 %    \end{macrocode}
 % \end{macro}
