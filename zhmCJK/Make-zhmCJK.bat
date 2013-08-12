@@ -67,7 +67,7 @@ exit /b
 call :clean_tmp
 call :clean_zip
 call :clean_tds
-for %%i in (zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK.pdf zhmCJK.sty README.txt README.txt zhmCJK-test.tex) do if exist %%i del %%i
+for %%i in (zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK.pdf zhmCJK.sty README README.txt zhmCJK-test.tex) do if exist %%i del %%i
 for %%i in (zhmCJK-test.pdf) do if exist %%i del %%i
 
 :end
