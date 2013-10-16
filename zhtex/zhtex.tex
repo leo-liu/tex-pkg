@@ -1,0 +1,66 @@
+%% This is file `zhtex.tex', a minimal Chinese support for Plain TeX.
+%%
+%% Only UTF-8 encoding is (partially) supported.
+%% The zhspacing package is loaded under XeTeX,
+%% otherwise a minimal support for CJK fonts is setup.
+%%
+%% Copyright (C) 2013 by Leo Liu <leoliu.pku@gmail.com>
+\catcode`@=11
+
+\def\ifZH@primitive#1{\begingroup
+  \edef\tempa{\meaning#1}%
+  \edef\tempb{\string#1}%
+  \expandafter\endgroup
+    \ifx\tempa\tempb}
+
+\ifZH@primitive\eTeXversion\else
+  \immediate\write16{zhtex Error: We need eTeX support for Chinese.}
+  \expandafter\endinput
+\fi
+
+\ifZH@primitive\XeTeXrevision
+  \input zhspacing.sty
+  \zhspacing
+  \expandafter\endinput
+\fi
+
+\def\ZH@hexdigit#1{\ifcase\numexpr#1\relax
+ 0\or 1\or 2\or 3\or 4\or 5\or 6\or 7\or
+ 8\or 9\or a\or b\or c\or d\or e\or f\fi}
+\def\ZH@hexbyte#1{%
+    \ZH@hexdigit{\numexpr (#1 - 8) / 16\relax}%
+    \ZH@hexdigit{\numexpr #1 - (#1 - 8) / 16 * 16\relax}}
+
+\def\ZH@defutftriple#1{%
+  \begingroup\uccode`~="E#1\uppercase{\endgroup
+    \def~##1##2{%
+      \begingroup
+        \ifnum`##1="80
+          \def\ZH@firstbyte{\numexpr "#1 * 16\relax}%
+          \def\ZH@secondbyte{\numexpr `##2 - "80\relax}%
+        \else
+          \def\ZH@firstbyte{\numexpr "#1 * 16 + (`##1 - "80 - 2) / 4\relax}%
+          \def\ZH@secondbyte{\numexpr (`##1 - "80 - (`##1 - "80 - 2) / 4 * 4) * 64 + `##2 - "80\relax}%
+        \fi
+         \edef\ZH@fontname{\zhfont \ZH@hexbyte\ZH@firstbyte}%
+        \expandafter\ifx\csname ZH@\ZH@fontname\endcsname\relax
+           \global\expandafter\font\csname ZH@\ZH@fontname\endcsname=\ZH@fontname
+        \fi
+        \csname ZH@\ZH@fontname\endcsname
+        \char\ZH@secondbyte
+        \skipzh
+      \endgroup}}%
+  \catcode"E#1\active}
+
+\ZH@defutftriple{0}\ZH@defutftriple{1}\ZH@defutftriple{2}\ZH@defutftriple{3}
+\ZH@defutftriple{4}\ZH@defutftriple{5}\ZH@defutftriple{6}\ZH@defutftriple{7}
+\ZH@defutftriple{8}\ZH@defutftriple{9}\ZH@defutftriple{A}\ZH@defutftriple{B}
+\ZH@defutftriple{C}\ZH@defutftriple{D}\ZH@defutftriple{E}\ZH@defutftriple{F}
+
+\catcode`@=12
+
+\def\skipzh{\hskip 0em plus 0.2em minus 0.1em}
+\def\zhfont{gbsnu}
+
+\endinput
+% vim:ft=plaintex
