@@ -1,4 +1,5 @@
-// stroke_collator.go
+// $Id$
+
 package main
 
 import (
