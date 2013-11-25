@@ -33,11 +33,13 @@ func main() {
 	log.Printf("版本 %s，%s\n", ProgramVersion, ProgramDate)
 	log.Printf("作者：%s\n", ProgramAuthor)
 
+	if option.style != "" {
+		log.Println("正在读取格式文件……")
+	}
 	instyle, outstyle := NewStyles(option.style)
 
-	log.Println("正在读取输入文件……")
 	in := NewInputIndex(&option.InputOptions, instyle)
-	log.Printf("共 %d 项。\n", len(*in))
+	log.Printf("合并后共 %d 项。\n", len(*in))
 
 	log.Println("正在排序……")
 	out := NewOutputIndex(in, &option.OutputOptions, outstyle)
