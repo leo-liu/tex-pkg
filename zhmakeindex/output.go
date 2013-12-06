@@ -130,21 +130,24 @@ type IndexItem struct {
 }
 
 type PageRange struct {
-	encap string
-	begin string
-	end   string
+	begin PageInput
+	end   PageInput
 }
 
 func (p *PageRange) Write(out io.Writer, style *OutputStyle) {
-	if p.encap != "" {
-		fmt.Fprintf(out, "%s%s%s", style.encap_prefix, p.encap, style.encap_infix)
-	}
-	if p.begin == p.end {
-		fmt.Fprint(out, p.begin)
+	if p.begin.rangetype == PAGE_NORMAL {
+		fmt.Fprint(out, encapedString(p.begin, style))
 	} else {
-		fmt.Fprintf(out, "%s%s%s", p.begin, style.delim_r, p.end)
+		fmt.Fprintf(out, "%s%s%s", encapedString(p.begin, style),
+			style.delim_r, encapedString(p.end, style))
 	}
+}
+
+func encapedString(p PageInput, style *OutputStyle) string {
 	if p.encap != "" {
-		fmt.Fprint(out, style.encap_suffix)
+		return style.encap_prefix + p.encap + style.encap_infix +
+			p.String() + style.encap_suffix
+	} else {
+		return p.String()
 	}
 }
