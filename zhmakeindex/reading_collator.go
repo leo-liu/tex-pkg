@@ -48,7 +48,6 @@ func (_ ReadingIndexCollator) Group(entry *IndexEntry) int {
 		// 符号组
 		return 1
 	}
-	return 0
 }
 
 // 按汉字读音比较两个串的大小

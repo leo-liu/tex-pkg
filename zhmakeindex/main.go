@@ -86,7 +86,7 @@ func NewOptions() *Options {
 	flag.StringVar(&o.sort, "x", "pinyin", "中文排序方式，可以使用 pinyin 或 stroke")
 	// flag.StringVar(&o.page, "p", "", "设置起始页码") // 未实现
 	flag.BoolVar(&o.quiet, "q", false, "静默模式，不输出错误信息")
-	// flag.BoolVar(&o.disable_range, "r", false, "禁用自动生成页码区间")
+	flag.BoolVar(&o.disable_range, "r", false, "禁用自动生成页码区间")
 	flag.BoolVar(&o.strict, "strict", false, "严格区分不同 encapsulated 命令的页码")
 	flag.StringVar(&o.style, "s", "", "格式文件名")
 	flag.StringVar(&o.log, "t", "", "日志文件名")
