@@ -1,0 +1,19 @@
+\ProvidesPackage{ucomicsans}[2013/12/22 v0.1]
+
+\RequirePackage{ifxetex,ifluatex}
+
+\unless\ifxetex \unless\ifluatex
+  \RequirePackage{comicsans}
+\fi \fi
+
+\RequirePackage{unicode-math}
+\setmainfont[BoldFont={* Bold},AutoFakeSlant]{Comic Sans MS}
+
+\setmathfont{Comic Sans MS}
+\setmathfont[range={\bar,\hat},FakeBold]{Neo Euler}
+\setmathfont[range={\int,\sum},Scale=1.5]{Comic Sans MS}
+\setmathfont[range=\mathbfup]{Comic Sans MS Bold}
+\setmathfont[range=\mathit,FakeSlant]{Comic Sans MS}
+\setmathfont[range=\mathbfit,FakeSlant]{Comic Sans MS Bold}
+
+\endinput
