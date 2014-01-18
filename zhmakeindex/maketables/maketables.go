@@ -112,7 +112,8 @@ func make_stroke_table(outdir string) {
 	fmt.Fprintln(outfile, `// 笔顺来源：sunwb_strokeorder.txt`)
 	fmt.Fprintln(outfile, `// 笔画数来源：Unihan_DictionaryLikeData.txt`)
 	fmt.Fprintf(outfile, "// Unicode 版本：%s\n", unicodeVersion)
-	fmt.Fprintf(outfile, "var CJKstrokes map[rune] []int8 {\n")
+	fmt.Fprintln(outfile, `package main`)
+	fmt.Fprintln(outfile, `var CJKstrokes = [][]int8{`)
 	for r, order := range CJKstrokes {
 		if order == nil {
 			continue
