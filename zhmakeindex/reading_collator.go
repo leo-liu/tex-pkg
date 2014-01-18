@@ -12,7 +12,7 @@ type ReadingIndexCollator struct{}
 
 func (_ ReadingIndexCollator) InitGroups(style *OutputStyle) []IndexGroup {
 	// 分组：数字、符号、字母 A..Z
-	groups := make([]IndexGroup, 2+26+MAX_STROKE)
+	groups := make([]IndexGroup, 2+26)
 	if style.headings_flag > 0 {
 		groups[0].name = style.numhead_positive
 		groups[1].name = style.symhead_positive
