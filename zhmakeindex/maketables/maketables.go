@@ -113,7 +113,7 @@ func make_stroke_table(outdir string) {
 	fmt.Fprintln(outfile, `// 笔画数来源：Unihan_DictionaryLikeData.txt`)
 	fmt.Fprintf(outfile, "// Unicode 版本：%s\n", unicodeVersion)
 	fmt.Fprintln(outfile, `package main`)
-	fmt.Fprintln(outfile, `var CJKstrokes = []string{`)
+	fmt.Fprintln(outfile, `var CJKstrokes = map[rune]string{`)
 	for r, order := range CJKstrokes {
 		if order == nil {
 			continue
