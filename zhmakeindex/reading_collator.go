@@ -36,7 +36,7 @@ func (_ ReadingIndexCollator) Group(entry *IndexEntry) int {
 	first := ([]rune(entry.level[0].key))[0]
 	first = unicode.ToLower(first)
 	switch {
-	case unicode.IsNumber(first):
+	case IsNumRune(first):
 		return 0
 	case 'a' <= first && first <= 'z':
 		return 2 + int(first) - 'a'

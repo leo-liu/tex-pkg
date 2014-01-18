@@ -180,6 +180,10 @@ func make_reading_table(outdir string) {
 		numbered := NumberedPinyin(pinyin)
 		out_reading_table[k] = numbered
 	}
+	// 单独增加数字“〇”的读音
+	if out_reading_table['〇'] == "" {
+		out_reading_table['〇'] = "ling2"
+	}
 	// 输出
 	outfile, err := os.Create(path.Join(outdir, "readings.go"))
 	if err != nil {
