@@ -50,23 +50,21 @@ func (_ ReadingIndexCollator) Group(entry *IndexEntry) int {
 	}
 }
 
-// 按汉字读音比较两个字符
+// 按汉字读音比较两个字符，读音相同的，内码序
 func (_ ReadingIndexCollator) RuneCmp(a, b rune) int {
 	a_reading, b_reading := CJKreadings[a], CJKreadings[b]
 	switch {
 	case a_reading == "" && b_reading == "":
-		return int(a - b)
+		return RuneCmpIgnoreCases(a, b)
 	case a_reading == "" && b_reading != "":
 		return -1
 	case a_reading != "" && b_reading == "":
 		return 1
+	case a_reading < b_reading:
+		return -1
+	case a_reading > b_reading:
+		return 1
 	default:
-		if a_reading < b_reading {
-			return -1
-		} else if a_reading > b_reading {
-			return 1
-		} else {
-			return 0
-		}
+		return int(a - b)
 	}
 }
