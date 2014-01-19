@@ -31,6 +31,10 @@ func NewIndexSorter(method string) *IndexSorter {
 		return &IndexSorter{
 			IndexCollator: ReadingIndexCollator{},
 		}
+	case "bushou", "radical":
+		return &IndexSorter{
+			IndexCollator: RadicalIndexCollator{},
+		}
 	default:
 		log.Fatalln("未知排序方式")
 	}
