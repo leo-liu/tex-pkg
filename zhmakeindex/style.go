@@ -136,7 +136,7 @@ func NewStyles(stylename string) (*InputStyle, *OutputStyle) {
 	// 读取格式文件，处理格式
 	stylename = kpathsea.PathSearch("", stylename, false)
 	if stylename == "" {
-		debug.Fatalln("找不到")
+		log.Fatalln("找不到格式文件。")
 	}
 	styleFile, err := os.Open(stylename)
 	if err != nil {
