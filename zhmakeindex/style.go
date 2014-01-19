@@ -3,6 +3,7 @@
 package main
 
 import (
+	"./kpathsea"
 	"bufio"
 	"log"
 	"os"
@@ -133,6 +134,10 @@ func NewStyles(stylename string) (*InputStyle, *OutputStyle) {
 		return in, out
 	}
 	// 读取格式文件，处理格式
+	stylename = kpathsea.PathSearch("", stylename, false)
+	if stylename == "" {
+		debug.Fatalln("找不到")
+	}
 	styleFile, err := os.Open(stylename)
 	if err != nil {
 		log.Fatalln(err.Error())
