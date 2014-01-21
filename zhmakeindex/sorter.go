@@ -23,7 +23,7 @@ type IndexSorter struct {
 
 func NewIndexSorter(method string) *IndexSorter {
 	switch method {
-	case "stroke":
+	case "bihua", "stroke":
 		return &IndexSorter{
 			IndexCollator: StrokeIndexCollator{},
 		}
