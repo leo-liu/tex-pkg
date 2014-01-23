@@ -29,7 +29,7 @@ func (_ StrokeIndexCollator) InitGroups(style *OutputStyle) []IndexGroup {
 		}
 	}
 	for stroke, i := 1, 2+26; stroke <= MAX_STROKE; stroke++ {
-		groups[i].name = strconv.Itoa(stroke) + " 划"
+		groups[i].name = style.stroke_prefix + strconv.Itoa(stroke) + style.stroke_suffix
 		i++
 	}
 	return groups

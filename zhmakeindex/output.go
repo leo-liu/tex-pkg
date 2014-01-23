@@ -51,9 +51,7 @@ func (o *OutputIndex) Output() {
 		} else {
 			fmt.Fprint(outfile, o.style.group_skip)
 		}
-		if o.style.headings_flag > 0 {
-			fmt.Fprintf(outfile, "%s%s%s", o.style.heading_prefix, group.name, o.style.heading_suffix)
-		} else if o.style.headings_flag < 0 {
+		if o.style.headings_flag != 0 {
 			fmt.Fprintf(outfile, "%s%s%s", o.style.heading_prefix, group.name, o.style.heading_suffix)
 		}
 		for i, item := range group.items {
