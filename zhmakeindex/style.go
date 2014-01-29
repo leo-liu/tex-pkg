@@ -150,7 +150,7 @@ func NewStyles(o *StyleOptions) (*InputStyle, *OutputStyle) {
 		return in, out
 	}
 	// 读取格式文件，处理格式
-	o.style = kpathsea.PathSearch("", o.style, false)
+	o.style = kpathsea.FindFile(o.style, kpathsea.IST_FORMAT, false)
 	if o.style == "" {
 		log.Fatalln("找不到格式文件。")
 	}
