@@ -95,7 +95,7 @@ type StyleOptions struct {
 
 func NewOptions() *Options {
 	o := new(Options)
-	// flag.BoolVar(&o.compress, "c", false, "忽略条目首尾空格") // 未实现
+	flag.BoolVar(&o.compress, "c", false, "忽略条目首尾空格")
 	flag.BoolVar(&o.stdin, "i", false, "从标准输入读取")
 	flag.StringVar(&o.output, "o", "", "输出文件")
 	flag.StringVar(&o.sort, "z", "pinyin",
