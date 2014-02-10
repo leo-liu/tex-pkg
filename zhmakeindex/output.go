@@ -114,7 +114,9 @@ func writePage(out io.Writer, level int, pageranges []PageRange, style *OutputSt
 		}
 		p.Write(out, style)
 	}
-	fmt.Fprint(out, style.delim_t)
+	if len(pageranges) != 0 {
+		fmt.Fprint(out, style.delim_t)
+	}
 }
 
 // 一个输出项目组
