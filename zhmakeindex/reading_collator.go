@@ -5,6 +5,7 @@ package main
 
 import (
 	"unicode"
+	"unicode/utf8"
 )
 
 // 汉字按拼音排序，按拼音首字母与英文一起分组
@@ -33,7 +34,7 @@ func (_ ReadingIndexCollator) InitGroups(style *OutputStyle) []IndexGroup {
 
 // 取得分组
 func (_ ReadingIndexCollator) Group(entry *IndexEntry) int {
-	first := ([]rune(entry.level[0].key))[0]
+	first, _ := utf8.DecodeRuneInString(entry.level[0].key)
 	first = unicode.ToLower(first)
 	switch {
 	case IsNumString(entry.level[0].key):
@@ -66,5 +67,18 @@ func (_ ReadingIndexCollator) RuneCmp(a, b rune) int {
 		return 1
 	default:
 		return int(a - b)
+	}
+}
+
+// 判断是否字母或汉字
+func (_ ReadingIndexCollator) IsLetter(r rune) bool {
+	r = unicode.ToLower(r)
+	switch {
+	case 'a' <= r && r <= 'z':
+		return true
+	case CJKreadings[r] != "":
+		return true
+	default:
+		return false
 	}
 }

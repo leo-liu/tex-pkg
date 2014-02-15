@@ -309,6 +309,8 @@ func make_radical_table(outdir string) {
 	CJKRadical := read_radicals()
 	// 读入部首、除部首笔画
 	version, CJKRadicalStrokes := read_radical_strokes()
+	// 单独增加数字“〇”的部首、除部首笔画（乙部 0 画）
+	CJKRadicalStrokes['〇'] = MakeRadicalStroke('〇', 5, 0)
 	// 输出
 	outfile, err := os.Create(path.Join(outdir, "radicalstrokes.go"))
 	if err != nil {
