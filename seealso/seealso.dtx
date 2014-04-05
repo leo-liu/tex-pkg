@@ -132,7 +132,26 @@
 % \setkeys,\SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
-% \title{\pkg{seealso} 宏包 (\fileversion)}
+% \title[The seealso Package (\fileversion)]
+%   {\hypertarget{English}{The \pkg{seealso} Package (\fileversion)}
+%    \makebox[0pt][l]{\hspace{3cm}\large
+%      \hyperlink{Chinese}{$\Rightarrow$ \textsf{中文版}}}}
+% \author[Liú Hǎiyáng (Leo Liu) <leoliu.pku@gmail.com>]
+%   {Liú Hǎiyáng (Leo Liu) \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \date{\filedate}
+%
+% \maketitle
+%
+% \section{Introduction}
+%
+% \section{Reference}
+%
+% \section{Known Issues}
+%
+%
+% \title{\hypertarget{Chinese}{\pkg{seealso} 宏包 (\fileversion)}
+%   \makebox[0pt][l]{\hspace{3cm}\large
+%     \hyperlink{English}{$\Rightarrow$ \textsf{English Version}}}}
 % \author{刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
 % \date{\filedate}
 %
@@ -312,11 +331,25 @@
 %
 % \section{已知问题}
 %
+% 以下是一些已知的问题和解决方案：
+% \begin{itemize}
+% \item
 % Makeindex 会按输出选项 |line_max| 对输出的内容进行折行，默认的 |line_max| 只
 % 有 72，所以当项目较多时，可能在 |\see| 或 |\seealso| 等命令所在的项目中产生
 % 折行。但由于默认情况下（|activecr| 选项打开）\pkg{seealso} 包遇到换行符就会
-% 输出参见列表，会造成错误。解决方法是设置 |activecr=false|，同时在 Makeindex
-% 的格式文件中显式设置 |delim_t| 为 |\SeealsoPrintList| 来输出参见列表。
+% 输出参见列表，会造成错误。一种解决方法是将 |line_max| 设置得很大，避免折行；
+% 另一种解决方法是设置 |activecr=false|，同时在 Makeindex 的格式文件中显式设置
+% |delim_t| 为 |\SeealsoPrintList| 来输出参见列表。
+% 
+% \item
+% 由于 |\seepage|, |\seealsopage| 的页码显示形式与普通页码相同，所以可能会造成
+% 页码重叠的情况。最好尽量避免交叉引用的项目有多种形式的索引。如果不能避免，为
+% 解决此问题，可以设置特别的页码输出格式以示区分，或者设置不输出页码。例如禁止
+% 输出页码：
+% \begin{verbatim}
+% \seealsosetup[see,also]{pageformat=}
+% \end{verbatim}
+% \end{itemize}
 %
 % \StopEventually{}
 % 
