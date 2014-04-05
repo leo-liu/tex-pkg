@@ -31,7 +31,10 @@
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage[UTF8]{ctex}
+\let\option\environment
+\let\endoption\endenvironment
+\newcommand\pkg[1]{\textsf{#1}}
+\usepackage[UTF8,hyperref]{ctex}
 \makeatletter
 \renewcommand\glossary@prologue{%
   \section*{版本历史}
@@ -42,8 +45,9 @@
   斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
   立体的数字表示对应项使用时所在的行号。}
 \makeatother
-\usepackage{seealso}
+\usepackage[override,activecr]{seealso}
 \usepackage{hypdoc}
+\AtBeginDocument{\MakeShortVerb\|}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -55,7 +59,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{97}
+% \CheckSum{102}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -79,7 +83,7 @@
 % \DoNotIndex{\newcommand,\newenvironment}
 %
 % \GetFileInfo{seealso.dtx}
-% \title{The \textsf{seealso} package}
+% \title{The \pkg{seealso} package}
 % \author{Leo Liu \\ \nolinkurl{leoliu.pku@gmail.com}}
 % \date{\fileversion~from \filedate}
 %
@@ -89,7 +93,7 @@
 %
 % Put text here.
 %
-% \see{AAA}{5}, \see{BBB}{6}, \see{CCC}{7}
+% \seepage{AAA}{5}, \seepage{BBB}{6}, \seepage{AAA}{6}, \seepage{CCC}{7}
 %
 % \seealso{AAA}{5}, \seealso{BBB}{6}, \seealso{CCC}{7}
 %
@@ -106,42 +110,93 @@
 %<*package>
 % \fi
 %
+% 声明宏包选项。
+%
+% \begin{option}{override}
+% 重定义 |\see| 与 |\seealso| 为有页码的形式。
+%    \begin{macrocode}
+\DeclareOption{override}{%
+  \def\see{\seepage}%
+  \def\seealso{\seealsopage}}
+%    \end{macrocode}
+% \end{option}
+%
+% \begin{option}{activecr}
+% 使用换行符作为输出 |\see| 等命令的指令。
+%    \begin{macrocode}
+\newif\ifseealso@activecr
+\DeclareOption{activecr}{%
+  \seealso@activecrtrue}
+%    \end{macrocode}
+% \end{option}
+%
+% 执行选项。
+%    \begin{macrocode}
+\ProcessOptions\relax
+%    \end{macrocode}
+%
 % 引入相关编程工具。
 %    \begin{macrocode}
 \RequirePackage{etoolbox}
+%    \end{macrocode}
+%
+% \begin{macro}{\seealso@charlet}
+% 参数 |#1| 是一个字符或 |\| 加字符的形式，|\seealso@charlet| 将此字符看做活动
+% 字符的宏，使用 |\let| 与后面的内容赋值，但本身不改变字符的 catcode。
+%    \begin{macrocode}
 \def\seealso@charlet#1{%
   \begingroup\lccode`\~=`#1\lowercase{\endgroup\let~}}
 %    \end{macrocode}
+% \end{macro}
 %
-%
+% \begin{macro}{\seealso@macrolist}
+% 列表记录所有独立的类似 |\seepage| 的宏。默认只有 |see| 和 |also| 两组，对应
+% 命令 |\seepage| 和 |\seealsopage|。
 %    \begin{macrocode}
-\providecommand*\seename{see}
-\providecommand*\alsoname{see also}
-
+\let\seealso@macrolist\empty
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\seealso@clearlists}
+% 清空列表 |\seealso@see@list| 与 |\seealso@also@list|。
+%    \begin{macrocode}
 \def\seealso@clearlists{%
-  \let\seealso@seelist\empty
-  \let\seealso@alsolist\empty}
-
+  \def\do##1{\cslet{seealso@##1@list}\empty}%
+  \dolistloop\seealso@macrolist}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\SeealsoPrintList}
+% 输出列表 |\seealso@see@list| 与 |\seealso@also@list|。
+%    \begin{macrocode}
 \newcommand\SeealsoPrintList{%
-  \seealso@printseelist
-  \seealso@printalsolist}
-
+  \forlistloop\seealso@printlist\seealso@macrolist}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\ifseealso@firstitem}
+% 测试是否是在输出参见列表的第一项。
+%    \begin{macrocode}
 \newif\ifseealso@firstitem
-\def\seealso@printseelist{%
-  \unless\ifx\seealso@seelist\empty
-    ,\space
-    \emph{\seename}
-    \seealso@firstitemtrue
-    \forlistloop{\seealso@listitem}{\seealso@seelist}%
-  \fi}
-\def\seealso@printalsolist{%
-  \unless\ifx\seealso@alsolist\empty
-    ,\space
-    \emph{\alsoname}
-    \seealso@firstitemtrue
-    \forlistloop{\seealso@listitem}{\seealso@alsolist}%
-  \fi}
-
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\seealso@printlist}
+% 输出参见列表 |#1|。如果列表为空则无操作。
+%    \begin{macrocode}
+\def\seealso@printlist#1{%
+  \ifcsempty{seealso@#1@list}
+    {}
+    {,\space
+     \emph{\csuse{#1name}}\space
+     \seealso@firstitemtrue
+     \forlistcsloop{\seealso@listitem}{seealso@#1@list}}}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\seealso@listitem}
+% 输出参见列表的一项。如果不是第一项，同时输出分隔符。
+%    \begin{macrocode}
 \def\seealso@listitem#1{%
   \ifseealso@firstitem
     \seealso@firstitemfalse
@@ -149,33 +204,89 @@
     ,\space
   \fi
   #1}
-
-\providecommand\see{}
-\renewcommand\see[2]{%
-  \seealso@setactiveline
-  \listadd\seealso@seelist{#1}%
-  #2}
-\providecommand\seealso{}
-\renewcommand\seealso[2]{%
-  \seealso@setactiveline
-  \listadd\seealso@alsolist{#1}%
-  #2}
-
-\newif\ifseealso@activeline
-
-\def\seealso@setactiveline{%
-  \unless\ifseealso@activeline
-    \seealso@clearlists
-    \catcode`\^^M=\active
-    \seealso@charlet\^^M\seealso@cr
-    \seealso@activelinetrue
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\DeclareSeealsoMacro}
+% 定义一个新的带页码的参见命令。|#1| 是命令名，|#2| 是该命令使用的参见列表。
+%    \begin{macrocode}
+\newcommand\DeclareSeealsoMacro[2]{%
+  \newcommand#1[2]{%
+    \seealso@setactivecr
+    \ifinlistcs{##1}{seealso@#2@list}
+      {}
+      {\listcsgadd{seealso@#2@list}{##1}}%
+    ##2}
+  \listadd\seealso@macrolist{#2}}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\ifseealso@iscractive}
+% 判断当前换行符是否已经被激活。
+%    \begin{macrocode}
+\newif\ifseealso@iscractive
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\seealso@setactivecr}
+% |activecr| 选项为真时，设置换行符为 |\seealso@cr| 并激活。
+%    \begin{macrocode}
+\def\seealso@setactivecr{%
+  \ifseealso@activecr
+    \unless\ifseealso@iscractive
+      \seealso@clearlists
+      \catcode`\^^M=\active
+      \seealso@charlet\^^M\seealso@cr
+      \seealso@iscractivetrue
+    \fi
   \fi}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\seealso@cr}
+% 是在 |activecr| 选项下，换行符的定义。它取消激活换行符为宏，并输出参见列表。
+%    \begin{macrocode}
 \def\seealso@cr{%
   \catcode`\^^M=5
-  \seealso@activelinefalse
+  \seealso@iscractivefalse
   \SeealsoPrintList}
 %    \end{macrocode}
+% \end{macro}
 %
+% \begin{macro}{\seenopage}
+% \begin{macro}{\seealsonopage}
+% 保存旧的 |\see| 与 |\seealso| 命令定义，使用 |override| 选项时可临时使用旧的
+% 定义。
+%    \begin{macrocode}
+\let\seenopage\see
+\let\seealsonopage\seealso
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\seepage}
+% \begin{macro}{\seealsopage}
+% 带页码输出的 |\see| 与 |\seealso|。使用 |override| 选项时可直接使用 |\see|
+% 与 |\seealso| 代替 |\seepage| 与 |\seealsopage|。
+%    \begin{macrocode}
+\DeclareSeealsoMacro\seepage{see}
+\DeclareSeealsoMacro\seealsopage{also}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\seename}
+% \begin{macro}{\alsoname}
+% \pkg{seealso} 本身并不依赖 \pkg{makeidx} 等宏包，但为了使
+% |\seepage|、|\seealsopage| 不至于出错，这里提供 |\seename| 和 |\alsoname| 的
+% 初始值，与 \pkg{makeidx} 一致。
+%    \begin{macrocode}
+\providecommand*\seename{see}
+\providecommand*\alsoname{see also}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% 
 % \iffalse
 %</package>
 % \fi
