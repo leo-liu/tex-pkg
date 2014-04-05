@@ -8,4 +8,4 @@ xelatex diagbox.dtx
 xelatex diagbox.dtx
 if exist diagbox.zip del diagbox.zip
 zip diagbox diagbox.dtx diagbox.ins diagbox.sty diagbox.pdf
-del diagbox.aux diagbox.log diagbox.glo diagbox.gls diagbox.idx diagbox.ind diagbox.ilg diagbox.out diagbox.tmp  diagbox.*~
+del diagbox.aux diagbox.log diagbox.glo diagbox.gls diagbox.idx diagbox.ind diagbox.ilg diagbox.out diagbox.tmp diagbox.hd diagbox.*~

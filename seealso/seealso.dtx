@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{seealso}
 %<*package>
-    [2014/04/04 v0.1 makeidx's see and seealso with page number support.]
+    [2014/04/05 v1.0 makeidx's see and seealso with page number support.]
 %</package>
 %
 %<*driver>
@@ -72,8 +72,21 @@
     (option)%
     \encapchar main}%
   \@esphack}
+\def\SpecialOptionIndex#1{\@bsphack
+    \index{#1\actualchar{\protect\ttfamily#1}
+           (option)\encapchar usage}%
+    \index{options:\levelchar#1\actualchar{\protect\ttfamily#1}\encapchar
+           usage}\@esphack}
+\def\DescribeOption{\leavevmode\@bsphack\begingroup\MakePrivateLetters
+  \Describe@Option}
+\def\Describe@Option#1{\endgroup
+              \marginpar{\raggedleft\PrintDescribeEnv{#1}}%
+              \SpecialOptionIndex{#1}\@esphack\ignorespaces}
+\def\stylemeaning#1{\texttt{%
+  \expandafter\expandafter\expandafter\strip@prefix
+    \expandafter\meaning\csname seealso@#1\endcsname}}
 \makeatother
-\usepackage[override,activecr]{seealso}
+\usepackage{seealso}
 \usepackage{hypdoc}
 \AtBeginDocument{\MakeShortVerb\|}
 \EnableCrossrefs
@@ -87,7 +100,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{125}
+% \CheckSum{140}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -107,40 +120,212 @@
 %
 %
 % \changes{v0.1}{2014/04/04}{初始版本。}
+% \changes{v1.0}{2014/04/05}{功能较完备的版本。}
 %
 % \DoNotIndex{\newcommand,\newenvironment,\^,\~,\active,\begingroup,\catcode,
-% \csdef,\cslet,\cslet,\csuse,\DeclareBoolOption,\def,\do,\dolistloop,\else,
-% \emph,\empty,\endgroup,\fi,\forlistcsloop,\forlistloop,\ifcsdef,\ifcsempty,
-% \ifinlistcs,\lccode,\let,\listadd,\listcsgadd,\lowercase,\newif,
-% \ProcessKeyvalOptions,\RequirePackage,\SetupKeyvalOptions,\space,\unless}
+% \csdef,\cslet,\cslet,\csuse,\DeclareBoolOption,\def,\define@key,\do,
+% \docsvlist, \dolistloop,\else, \emph,\empty,\endgroup,\fi,\forcsvlist,
+% \forlistcsloop, \forlistloop,\ifcsdef,\ifcsempty, \ifinlistcs,\ifstrempty,
+% \lccode,\let, \listadd,\listcsgadd,\lowercase,\newif, \ProcessKeyvalOptions,
+% \RequirePackage,\setkeys,\SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
-% \title{The \pkg{seealso} package}
-% \author{Leo Liu \\ \nolinkurl{leoliu.pku@gmail.com}}
-% \date{\fileversion~from \filedate}
+% \title{\pkg{seealso} 宏包 (\fileversion)}
+% \author{刘海洋 \\ \nolinkurl{leoliu.pku@gmail.com}}
+% \date{\filedate}
 %
 % \maketitle
 %
-% \section{Introduction}
+% \section{简介}
 %
-% Put text here.
+% 在索引生成时，\LaTeXe{} 的标准宏包 \pkg{makeidx} 定义了 |\see| 与 |\seealso|
+% 两个宏，它们通常是在 |\index| 中作为一种特殊的页码格式使用，表示索引项的引
+% 用。例如使用
+% \begin{verbatim}
+% \index{math|see{mathematics}}
+% \end{verbatim}
+% 会使索引项 math 引用到 mathematics。生成类似
+% \begin{quote}
+% math, \emph{see} mathematics
+% \end{quote}
+% 的索引条目。
 %
-% \seepage{AAA}{5}, \seepage{BBB}{6}, \seepage{AAA}{6}, \seepage{CCC}{7}
+% 不过，\LaTeXe{} 的 |\see| 与 |\seealso| 命令并不会为交叉引用的索引项输出页
+% 码。更严重的问题是，如果对一个索引项使用了多次交叉引用，则会多次输出相同的目
+% 标引用。因此可能出现这样的尴尬效果：
+% \begin{quote}
+% math, \emph{see} mathematics, \emph{see} mathematics, \emph{see} mathematics
+% \end{quote}
+% 其中可能在三个不同的地方使用了 \verb=\index{math|see{mathematics}}=。
 %
-% \seealso{AAA}{5}, \seealso{BBB}{6}, \seealso{CCC}{7}
+% \pkg{seealso} 宏包即为解决这种问题而编写。只要使用了
+% \begin{verbatim}
+% \usepackage{seealso}
+% \end{verbatim}
+% 则交叉引用的索引项会同时显示页码，同时多个交叉引用的目标（我们称为参见列表）
+% 会合并显示。前面的例子就可能会输出：
+% \begin{quote}
+% math, \seepage{mathematics}{2}, \seepage{mathematics}{4}, \seepage{mathematics}{5}
+% \end{quote}
+% 这样的格式。
 %
-% \section{Usage}
+% \section{参考手册}
 %
-% Put text here.
+% \subsection{宏包载入}
 %
+% 基本的用法就是直接使用
+% \begin{verbatim}
+% \usepackage{seealso}
+% \end{verbatim}
+% 这样 |\see| 和 |\seealso| 命令就会被重定义为支持输出页码和合并目标的格式。
+%
+% 注意 \pkg{seealso} 宏包的载入应该晚于 \pkg{makeidx}、\pkg{imakeidx} 等定义
+% |\see|、|\seealso| 的宏包，否则其功能将会失效。
+%
+% \subsection{宏包选项}
+%
+% \DescribeOption{override}
+% |override| 是布尔型选项，默认为 |true|。表示覆盖已有的 |\see| 与 |\seealso|
+% 定义。如果设置
+% \begin{verbatim}
+% \usepackage[override=false]{seealso}
+% \end{verbatim}
+% 则不对 |\see| 与 |\seealso| 覆盖，要使用 |\seepage| 和
+% |\seealsopage| 命令调用相应的功能。
+%
+% \DescribeOption{activecr}
+% |activecr| 是布尔型选项，默认为 |true|。表示打开在索引项行末自动输出所有参见
+% 列表的功能。如果设置 |activecr=false|，则必须手工（通常通过设置 Makeindex 的
+% |delim_t| 格式）在索引项末加上 |\SeealsoPrintList| 输出参见列表。
+%
+% \subsection{\cs{see} 与 \cs{seealso} 命令}
+%
+% \DescribeMacro{\seepage}
+% \DescribeMacro{\seealsopage}
+% |\seepage| 与 |\seealsopage| 提供了宏包的主要功能，它们与原始的
+% |\see|、|\seealso| 命令类似提供索引项的交叉引用功能，但同时会输出页码，并避
+% 免重复输出交叉引用。例如，在文档中第 1, 2, 3 页分别多次使用
+% \begin{verbatim}
+% \index{foo|seepage{bar}}
+% \end{verbatim}
+% 则在 |.ind| 文件中会生成：
+% \begin{verbatim}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
+% \end{verbatim}
+% 而输出的结果将会是：
+% \begin{quote}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
+% \end{quote}
+%
+% 同一个词可以有不同的参见引用项目，例如在不同的位置几次使用
+% \begin{verbatim}
+% \index{foo|seepage{bar}}
+% \index{foo|seepage{foobaz}}
+% \end{verbatim}
+% 则 |.ind| 文件中可能生成：
+% \begin{verbatim}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
+% \end{verbatim}
+% 于是将得到输出结果
+% \begin{quote}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
+% \end{quote}
+%
+% \DescribeMacro{\seenopage}
+% \DescribeMacro{\seealsonopage}
+% |\seenopage| 与 |\seealsonopage| 这两个宏则保存了在调用 \pkg{seealso} 宏包之
+% 前，|\see| 与 |\seealso| 的原始定义，它们不会输出页码。
+%
+% \DescribeMacro{\see}
+% \DescribeMacro{\seealso}
+% 在默认的 |override| 选项下，|\see| 与 |\seealso| 的功能与
+% |\seepage|、|\seealsopage| 相同。
+%
+% \DescribeMacro{\SeealsoPrintList}
+% |\seepage| 和 |\seealsopage| 会产生参数列表，|\SeealsoPrintList| 如果设置了
+% |activecr| 选项为 |false|，则 |\seepage| 与 |\seealsopage| 所在行结束后不会
+% 自动输出参见列表。此时，可以手工在此行最后加上 |\SeealsoPrintList| 宏，输出
+% 参见列表。通常可以在 Makeindex 的格式文件中，输出格式选项 |delim_t| 里面加上
+% |\SeealsoPrintList| 宏，如：
+% \begin{verbatim}
+% % example.ist
+% delim_t "\\SeealsoPrintList"
+% \end{verbatim}
+% 这样，每个非空索引项输出的最后都会加上 |\SeealsoPrintList|，按需要输出参见列
+% 表。
+%
+% \DescribeMacro{\DeclareSeealsoMacro}
+% |\DeclareSeealsoMacro| 命令用于生成新的类似 |\see| 与 |\seealso| 的宏。其语
+% 法为：
+% \begin{quote}
+% |\DeclareSeealsoMacro\|\meta{macro}|{|\meta{seelist}|}{|\meta{name}|}|
+% \end{quote}
+% 其中 |\|\meta{macro} 是新的宏名称，\meta{seelist} 是新的参见列表
+% 名，\meta{name} 是输出参见列表时的名称。使用该命令会生成两个宏，一个是
+% |\|\meta{macro}，一个是对应的名称 |\|\meta{macro}|name|。
+% |\|\meta{macro}|name| 如果事先没有定义，则定义其值为 \meta{name}，否则保持不
+% 变。
+%
+% 例如，|\seepage| 和 |\seealsopage| 就是这样定义的：
+% \begin{verbatim}
+% \DeclareSeealsoMacro\seepage{see}{see}
+% \DeclareSeealsoMacro\seealsopage{also}{see also}
+% \end{verbatim}
+% 上述命令同时定义了 |\seename| 的备选值为 |see|，以及 |\alsoname| 的备选值为
+% |see also|。
+%
+% \subsection{格式设置}
+%
+% \DescribeMacro{\seealsosetup}
+% |\seealsosetup| 命令用于设置参见列表的输出格式。其语法为：
+% \begin{quote}
+% |\seealsosetup[|\meta{seelists}|]{|\meta{kv-options}|}|
+% \end{quote}
+% 其中，可选参数 \meta{seelists} 是一个逗号分隔的列表，每一项表示要设置其格式
+% 的参见列表，如果 \meta{seelists} 为空，则设置默认的输出格式。而选项
+% \meta{kv-options} 则是输出格式项。
+%
+% 可用的输出格式见表~\ref{tab:outstylezh}。
+% \begin{table}[htbp]
+% \centering
+% \begin{tabular}{lll}
+% \hline
+% 选项 & 意义 & 默认值 \\
+% \hline
+% |listsep| & 参见列表前的分隔符 & \stylemeaning{listsep} \\
+% |itemsep| & 参见列表项间的分隔符 & \stylemeaning{itemsep} \\
+% |nameformat| & 输出参见名“see also”的格式 & \stylemeaning{nameformat} \\
+% |itemformat| & 参见列表项的格式 & \stylemeaning{itemformat} \\
+% |pageformat| & 页码格式 & \stylemeaning{pageformat} \\
+% \hline
+% \end{tabular}
+% \def\tablename{表}
+% \caption{\cs{seealsosetup} 使用的输出格式}\label{tab:outstylezh}
+% \end{table}
+%
+% 例如，如果要让所有 |\seealsopage| 命令生成的页码以斜体显示，就可以使用
+% \begin{verbatim}
+% \seealsosetup[also]{pageformat=\textit{#1}}
+% \end{verbatim}
+%
+% \section{已知问题}
+%
+% Makeindex 会按输出选项 |line_max| 对输出的内容进行折行，默认的 |line_max| 只
+% 有 72，所以当项目较多时，可能在 |\see| 或 |\seealso| 等命令所在的项目中产生
+% 折行。但由于默认情况下（|activecr| 选项打开）\pkg{seealso} 包遇到换行符就会
+% 输出参见列表，会造成错误。解决方法是设置 |activecr=false|，同时在 Makeindex
+% 的格式文件中显式设置 |delim_t| 为 |\SeealsoPrintList| 来输出参见列表。
 %
 % \StopEventually{}
-%
+% 
+% \clearpage
 % \section{Implementation / 代码实现}
 %
 % \iffalse
 %<*package>
 % \fi
+%
+% \subsection{准备工作}
 %
 % 引入相关编程工具。
 %    \begin{macrocode}
@@ -154,16 +339,18 @@
 % 声明宏包选项。
 %
 % \begin{option}{override}
-% 重定义 |\see| 与 |\seealso| 为有页码的形式。
+% \changes{v1.0}{2014/04/05}{新增选项。}
+% 重定义 |\see| 与 |\seealso| 为有页码的形式。默认打开。
 %    \begin{macrocode}
-\DeclareBoolOption{override}
+\DeclareBoolOption[true]{override}
 %    \end{macrocode}
 % \end{option}
 %
 % \begin{option}{activecr}
-% 使用换行符作为输出 |\see| 等命令的指令。
+% \changes{v1.0}{2014/04/05}{新增选项。}
+% 使用换行符作为输出 |\see| 等命令的指令。默认打开。
 %    \begin{macrocode}
-\DeclareBoolOption{activecr}
+\DeclareBoolOption[true]{activecr}
 %    \end{macrocode}
 % \end{option}
 %
@@ -181,6 +368,8 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{参见列表及其实现}
+%
 % \begin{macro}{\seealso@macrolist}
 % 列表记录所有独立的类似 |\seepage| 的宏。默认只有 |see| 和 |also| 两组，对应
 % 命令 |\seepage| 和 |\seealsopage|。
@@ -195,6 +384,7 @@
 \def\seealso@clearlists{%
   \def\do##1{\cslet{seealso@##1@list}\empty}%
   \dolistloop\seealso@macrolist}
+\AtBeginDocument{\seealso@clearlists}
 %    \end{macrocode}
 % \end{macro}
 % 
@@ -202,7 +392,8 @@
 % 输出列表 |\seealso@see@list| 与 |\seealso@also@list|。
 %    \begin{macrocode}
 \newcommand\SeealsoPrintList{%
-  \forlistloop\seealso@printlist\seealso@macrolist}
+  \forlistloop\seealso@printlist\seealso@macrolist
+  \seealso@clearlists}
 %    \end{macrocode}
 % \end{macro}
 % 
@@ -220,26 +411,27 @@
   \ifcsempty{seealso@#1@list}
     {}
     {\csuse{seealso@#1@listsep}%
-     \seealso@nameformat{\csuse{#1name}}%
+     \csuse{seealso@#1@nameformat}{\csuse{#1name}}%
      \seealso@firstitemtrue
-     \forlistcsloop{\seealso@listitem}{seealso@#1@list}}}
+     \forlistcsloop{\seealso@listitem{#1}}{seealso@#1@list}}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\seealso@listitem}
 % 输出参见列表的一项。如果不是第一项，同时输出分隔符。
 %    \begin{macrocode}
-\def\seealso@listitem#1{%
+\def\seealso@listitem#1#2{%
   \ifseealso@firstitem
     \seealso@firstitemfalse
   \else
-    \seealso@itemsep
+    \csuse{seealso@#1@itemsep}%
   \fi
-  \seealso@itemformat{#1}}
+  \csuse{seealso@#1@itemformat}{#2}}
 %    \end{macrocode}
 % \end{macro}
 % 
 % \begin{macro}{\DeclareSeealsoMacro}
+% \changes{v1.0}{2014/04/05}{新增以定义新的参见命令。}
 % 定义一个新的带页码的参见命令。|#1| 是命令名，|#2| 是该命令使用的参见列
 % 表，|#3| 是列表输出时使用的名字。
 %    \begin{macrocode}
@@ -249,26 +441,57 @@
     \ifinlistcs{##1}{seealso@#2@list}
       {}
       {\listcsgadd{seealso@#2@list}{##1}}%
-    \seealso@pageformat{##2}}
+    \csuse{seealso@#2@pageformat}{##2}}%
   \listadd\seealso@macrolist{#2}%
   \ifcsdef{#2name}
     {}
     {\csdef{#2name}{#3}}%
-  \csdef{seealso@#2@listsep}{\seealso@listsep}%
-  \csdef{seealso@#2@itemsep}{\seealso@itemsep}%
-  \csdef{seealso@#2@nameformat}{\seealso@nameformat}%
-  \csdef{seealso@#2@itemformat}{\seealso@itemformat}%
-  \csdef{seealso@#2@pageformat}{\seealso@pageformat}%
-}
+  \def\do##1{%
+    \define@key{seealso@#2}{##1}{%
+      \csdef{seealso@#2@##1}{####1}}%
+    \setkeys{seealso@#2}{##1=\csuse{seealso@##1}}}%
+  \docsvlist{listsep,itemsep,nameformat,itemformat,pageformat}}
+\@onlypreamble{\DeclareSeealsoMacro}
 %    \end{macrocode}
 % \end{macro}
 %
-% 设置参见列表的输出格式。以下宏给出的都是全局的默认值，可以单独修改每一项的输
-% 出格式。
+% \begin{macro}{\ifseealso@iscractive}
+% 判断当前换行符是否已经被激活。
+%    \begin{macrocode}
+\newif\ifseealso@iscractive
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\seealso@setactivecr}
+% |activecr| 选项为真时，设置换行符为 |\seealso@cr| 并激活。
+%    \begin{macrocode}
+\def\seealso@setactivecr{%
+  \ifseealso@activecr
+    \unless\ifseealso@iscractive
+      \catcode`\^^M=\active
+      \seealso@charlet\^^M\seealso@cr
+      \seealso@iscractivetrue
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\seealso@cr}
+% 是在 |activecr| 选项下，换行符的定义。它取消激活换行符为宏，并输出参见列表。
+%    \begin{macrocode}
+\def\seealso@cr{%
+  \catcode`\^^M=5
+  \seealso@iscractivefalse
+  \SeealsoPrintList}
+%    \end{macrocode}
+% \end{macro}
+%
+% 下面定义参见列表的默认输出格式。以下宏给出的都是全局的默认值，可以单独修改每
+% 一项的输出格式。
 % \begin{macro}{\seealso@listsep}
 % 参见列表之前的分隔符。
 %    \begin{macrocode}
-\def\seealso@listsep{;\space}
+\def\seealso@listsep{,\space}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\seealso@itemsep}
@@ -296,35 +519,33 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\ifseealso@iscractive}
-% 判断当前换行符是否已经被激活。
+% \begin{macro}{\seealso@define@key}
+% 定义 |seealso| 族的键，用于设置输出格式。
 %    \begin{macrocode}
-\newif\ifseealso@iscractive
+\def\seealso@define@key#1{%
+  \define@key{seealso}{#1}{%
+    \csdef{seealso@#1}{##1}}}
 %    \end{macrocode}
 % \end{macro}
-% 
-% \begin{macro}{\seealso@setactivecr}
-% |activecr| 选项为真时，设置换行符为 |\seealso@cr| 并激活。
+% 为每个输出格式定义键。
 %    \begin{macrocode}
-\def\seealso@setactivecr{%
-  \ifseealso@activecr
-    \unless\ifseealso@iscractive
-      \seealso@clearlists
-      \catcode`\^^M=\active
-      \seealso@charlet\^^M\seealso@cr
-      \seealso@iscractivetrue
-    \fi
-  \fi}
+\forcsvlist\seealso@define@key{listsep,itemsep,nameformat,itemformat,pageformat}
 %    \end{macrocode}
-% \end{macro}
-% 
-% \begin{macro}{\seealso@cr}
-% 是在 |activecr| 选项下，换行符的定义。它取消激活换行符为宏，并输出参见列表。
+%
+% \subsection{定义用户接口}
+%
+% \begin{macro}{\seealsosetup}
+% \changes{v1.0}{2014/04/05}{新增格式设置。}
+% 设置输出格式。可选参数是一个逗号列表：如果可选参数为空，用 |#2| 设置默认的输
+% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。
 %    \begin{macrocode}
-\def\seealso@cr{%
-  \catcode`\^^M=5
-  \seealso@iscractivefalse
-  \SeealsoPrintList}
+\newcommand\seealsosetup[2][]{%
+  \ifstrempty{#1}{%
+    \setkeys{seealso}{#2}%
+  }{%
+    \def\do##1{%
+      \setkeys{seealso@##1}{#2}}%
+    \docsvlist{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
