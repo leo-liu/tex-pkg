@@ -31,8 +31,6 @@
 %
 %<*driver>
 \documentclass{ltxdoc}
-\let\option\environment
-\let\endoption\endenvironment
 \newcommand\pkg[1]{\textsf{#1}}
 \usepackage[UTF8,hyperref]{ctex}
 \makeatletter
@@ -44,6 +42,36 @@
   \markboth{Index / 代码索引}{Index / 代码索引}
   斜体的数字表示对应项说明所在的页码。下划线的数字表示定义所在的代码行号；而直
   立体的数字表示对应项使用时所在的行号。}
+\def\option{\begingroup
+   \catcode`\\12
+   \MakePrivateLetters \option@}
+\let\endoption\endtrivlist
+\long\def\option@#1{\endgroup \topsep\MacroTopsep \trivlist
+  \edef\saved@macroname{\string#1}%
+  \def\makelabel##1{\llap{##1}}%
+  \if@inlabel
+    \let\@tempa\@empty \count@\macro@cnt
+    \loop \ifnum\count@>\z@
+      \edef\@tempa{\@tempa\hbox{\strut}}\advance\count@\m@ne \repeat
+    \edef\makelabel##1{\llap{\vtop to\baselineskip
+                               {\@tempa\hbox{##1}\vss}}}%
+    \advance \macro@cnt \@ne
+  \else  \macro@cnt\@ne  \fi
+  \edef\@tempa{\noexpand\item[%
+     \noexpand\PrintEnvName
+     {\string#1}]}%
+  \@tempa
+  \global\advance\c@CodelineNo\@ne
+      \SpecialMainOptionIndex{#1}\nobreak
+  \global\advance\c@CodelineNo\m@ne
+  \ignorespaces}
+\def\SpecialMainOptionIndex#1{\@bsphack
+  \special@index{%
+    #1\actualchar
+    {\string\ttfamily\space#1}
+    (option)%
+    \encapchar main}%
+  \@esphack}
 \makeatother
 \usepackage[override,activecr]{seealso}
 \usepackage{hypdoc}
@@ -59,7 +87,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{102}
+% \CheckSum{125}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -80,7 +108,11 @@
 %
 % \changes{v0.1}{2014/04/04}{初始版本。}
 %
-% \DoNotIndex{\newcommand,\newenvironment}
+% \DoNotIndex{\newcommand,\newenvironment,\^,\~,\active,\begingroup,\catcode,
+% \csdef,\cslet,\cslet,\csuse,\DeclareBoolOption,\def,\do,\dolistloop,\else,
+% \emph,\empty,\endgroup,\fi,\forlistcsloop,\forlistloop,\ifcsdef,\ifcsempty,
+% \ifinlistcs,\lccode,\let,\listadd,\listcsgadd,\lowercase,\newif,
+% \ProcessKeyvalOptions,\RequirePackage,\SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
 % \title{The \pkg{seealso} package}
@@ -110,34 +142,34 @@
 %<*package>
 % \fi
 %
+% 引入相关编程工具。
+%    \begin{macrocode}
+\RequirePackage{etoolbox}
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{
+  family=seealso@opt,
+  prefix=seealso@}
+%    \end{macrocode}
+%
 % 声明宏包选项。
 %
 % \begin{option}{override}
 % 重定义 |\see| 与 |\seealso| 为有页码的形式。
 %    \begin{macrocode}
-\DeclareOption{override}{%
-  \def\see{\seepage}%
-  \def\seealso{\seealsopage}}
+\DeclareBoolOption{override}
 %    \end{macrocode}
 % \end{option}
 %
 % \begin{option}{activecr}
 % 使用换行符作为输出 |\see| 等命令的指令。
 %    \begin{macrocode}
-\newif\ifseealso@activecr
-\DeclareOption{activecr}{%
-  \seealso@activecrtrue}
+\DeclareBoolOption{activecr}
 %    \end{macrocode}
 % \end{option}
 %
 % 执行选项。
 %    \begin{macrocode}
-\ProcessOptions\relax
-%    \end{macrocode}
-%
-% 引入相关编程工具。
-%    \begin{macrocode}
-\RequirePackage{etoolbox}
+\ProcessKeyvalOptions*
 %    \end{macrocode}
 %
 % \begin{macro}{\seealso@charlet}
@@ -187,13 +219,13 @@
 \def\seealso@printlist#1{%
   \ifcsempty{seealso@#1@list}
     {}
-    {,\space
-     \emph{\csuse{#1name}}\space
+    {\csuse{seealso@#1@listsep}%
+     \seealso@nameformat{\csuse{#1name}}%
      \seealso@firstitemtrue
      \forlistcsloop{\seealso@listitem}{seealso@#1@list}}}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 % \begin{macro}{\seealso@listitem}
 % 输出参见列表的一项。如果不是第一项，同时输出分隔符。
 %    \begin{macrocode}
@@ -201,26 +233,69 @@
   \ifseealso@firstitem
     \seealso@firstitemfalse
   \else
-    ,\space
+    \seealso@itemsep
   \fi
-  #1}
+  \seealso@itemformat{#1}}
 %    \end{macrocode}
 % \end{macro}
 % 
 % \begin{macro}{\DeclareSeealsoMacro}
-% 定义一个新的带页码的参见命令。|#1| 是命令名，|#2| 是该命令使用的参见列表。
+% 定义一个新的带页码的参见命令。|#1| 是命令名，|#2| 是该命令使用的参见列
+% 表，|#3| 是列表输出时使用的名字。
 %    \begin{macrocode}
-\newcommand\DeclareSeealsoMacro[2]{%
+\newcommand\DeclareSeealsoMacro[3]{%
   \newcommand#1[2]{%
     \seealso@setactivecr
     \ifinlistcs{##1}{seealso@#2@list}
       {}
       {\listcsgadd{seealso@#2@list}{##1}}%
-    ##2}
-  \listadd\seealso@macrolist{#2}}
+    \seealso@pageformat{##2}}
+  \listadd\seealso@macrolist{#2}%
+  \ifcsdef{#2name}
+    {}
+    {\csdef{#2name}{#3}}%
+  \csdef{seealso@#2@listsep}{\seealso@listsep}%
+  \csdef{seealso@#2@itemsep}{\seealso@itemsep}%
+  \csdef{seealso@#2@nameformat}{\seealso@nameformat}%
+  \csdef{seealso@#2@itemformat}{\seealso@itemformat}%
+  \csdef{seealso@#2@pageformat}{\seealso@pageformat}%
+}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
+% 设置参见列表的输出格式。以下宏给出的都是全局的默认值，可以单独修改每一项的输
+% 出格式。
+% \begin{macro}{\seealso@listsep}
+% 参见列表之前的分隔符。
+%    \begin{macrocode}
+\def\seealso@listsep{;\space}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@itemsep}
+% 参见列表项之间的分隔符。
+%    \begin{macrocode}
+\def\seealso@itemsep{,\space}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@nameformat}
+% 参见名“see also”的输出格式。
+%    \begin{macrocode}
+\def\seealso@nameformat#1{\emph{#1}\space}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@itemformat}
+% 参见列表项的输出格式。
+%    \begin{macrocode}
+\def\seealso@itemformat#1{#1}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@pageformat}
+% 参见页码的输出格式。
+%    \begin{macrocode}
+\def\seealso@pageformat#1{#1}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifseealso@iscractive}
 % 判断当前换行符是否已经被激活。
 %    \begin{macrocode}
@@ -266,23 +341,26 @@
 %
 % \begin{macro}{\seepage}
 % \begin{macro}{\seealsopage}
-% 带页码输出的 |\see| 与 |\seealso|。使用 |override| 选项时可直接使用 |\see|
-% 与 |\seealso| 代替 |\seepage| 与 |\seealsopage|。
+% 带页码输出的 |\seepage| 与 |\seealsopage|。使用 |override| 选项时可直接使用
+% |\see| 与 |\seealso| 代替 |\seepage| 与 |\seealsopage|。
+%
+% 如果之前没有定义，这里会同时定义 |\seename| 和 |\alsoname|，与 \pkg{makeidx}
+% 初始值一致。
 %    \begin{macrocode}
-\DeclareSeealsoMacro\seepage{see}
-\DeclareSeealsoMacro\seealsopage{also}
+\DeclareSeealsoMacro\seepage{see}{see}
+\DeclareSeealsoMacro\seealsopage{also}{see also}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
 %
-% \begin{macro}{\seename}
-% \begin{macro}{\alsoname}
-% \pkg{seealso} 本身并不依赖 \pkg{makeidx} 等宏包，但为了使
-% |\seepage|、|\seealsopage| 不至于出错，这里提供 |\seename| 和 |\alsoname| 的
-% 初始值，与 \pkg{makeidx} 一致。
+% \begin{macro}{\see}
+% \begin{macro}{\seealso}
+% 使用 |override| 时，重定义 |\see| 与 |\seealso|。
 %    \begin{macrocode}
-\providecommand*\seename{see}
-\providecommand*\alsoname{see also}
+\ifseealso@override
+  \def\see{\seepage}
+  \def\seealso{\seealsopage}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
