@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{seealso}
 %<*package>
-    [2014/04/05 v1.0 makeidx's see and seealso with page number support.]
+    [2014/04/06 v1.0 makeidx's see and seealso with page number support.]
 %</package>
 %
 %<*driver>
@@ -85,6 +85,14 @@
 \def\stylemeaning#1{\texttt{%
   \expandafter\expandafter\expandafter\strip@prefix
     \expandafter\meaning\csname seealso@#1\endcsname}}
+\renewcommand\author[2][]{%
+  \ifstrempty{#1}{}{%
+    \hypersetup{pdfauthor=#1}}%
+  \def\@author{#2}}
+\renewcommand\title[2][]{%
+  \ifstrempty{#1}{}{%
+    \hypersetup{pdftitle=#1}}%
+  \def\@title{#2}}
 \makeatother
 \usepackage{seealso}
 \usepackage{hypdoc}
@@ -101,7 +109,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{140}
+% \CheckSum{156}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -309,15 +317,16 @@
 % 可用的输出格式见表~\ref{tab:outstylezh}。
 % \begin{table}[htbp]
 % \centering
-% \begin{tabular}{lll}
+% \begin{tabular}{llll}
 % \hline
-% 选项 & 意义 & 默认值 \\
+% 选项 & 意义 & 参数 & 默认值 \\
 % \hline
-% |listsep| & 参见列表前的分隔符 & \stylemeaning{listsep} \\
-% |itemsep| & 参见列表项间的分隔符 & \stylemeaning{itemsep} \\
-% |nameformat| & 输出参见名“see also”的格式 & \stylemeaning{nameformat} \\
-% |itemformat| & 参见列表项的格式 & \stylemeaning{itemformat} \\
-% |pageformat| & 页码格式 & \stylemeaning{pageformat} \\
+% |name| & 输出参见列表的名称 & 无 & （不可用） \\
+% |listsep| & 参见列表前的分隔符 & 无 & \stylemeaning{listsep} \\
+% |itemsep| & 参见列表项间的分隔符 & 无 & \stylemeaning{itemsep} \\
+% |nameformat| & 输出参见名“see also”的格式 & |#1| & \stylemeaning{nameformat} \\
+% |itemformat| & 参见列表项的格式 & |#1| & \stylemeaning{itemformat} \\
+% |pageformat| & 页码格式 & |#1| & \stylemeaning{pageformat} \\
 % \hline
 % \end{tabular}
 % \def\tablename{表}
@@ -471,21 +480,47 @@
 % 表，|#3| 是列表输出时使用的名字。
 %    \begin{macrocode}
 \newcommand\DeclareSeealsoMacro[3]{%
+%    \end{macrocode}
+% 首先定义参见命令 |#1| 本身。
+%    \begin{macrocode}
   \newcommand#1[2]{%
     \seealso@setactivecr
     \ifinlistcs{##1}{seealso@#2@list}
       {}
       {\listcsgadd{seealso@#2@list}{##1}}%
     \csuse{seealso@#2@pageformat}{##2}}%
+%    \end{macrocode}
+% 将参见命令加入列表。
+%    \begin{macrocode}
   \listadd\seealso@macrolist{#2}%
+%    \end{macrocode}
+% 定义 |name| 选项，用来设置 |\|\meta{macro}|name|。如 |\seename| 和
+% |\alsoname|。
+%    \begin{macrocode}
+  \define@key{seealso@#2}{name}{%
+    \csdef{#2name}{##1}}%
+%    \end{macrocode}
+% 如果事先没有定义，则定义 |\|\meta{macro}|name| 为 |#3|。
+%    \begin{macrocode}
   \ifcsdef{#2name}
     {}
-    {\csdef{#2name}{#3}}%
+    {\setkeys{seealso@#2}{name=#3}}%
+%    \end{macrocode}
+% 定义无参选项。
+%    \begin{macrocode}
   \def\do##1{%
     \define@key{seealso@#2}{##1}{%
       \csdef{seealso@#2@##1}{####1}}%
     \setkeys{seealso@#2}{##1=\csuse{seealso@##1}}}%
-  \docsvlist{listsep,itemsep,nameformat,itemformat,pageformat}}
+  \docsvlist{listsep,itemsep}%
+%    \end{macrocode}
+% 定义有一个参数的选项。
+%    \begin{macrocode}
+  \def\do##1{%
+    \define@key{seealso@#2}{##1}{%
+      \csdef{seealso@#2@##1}########1{####1}}%
+      \setkeys{seealso@#2}{##1=\csuse{seealso@##1}{####1}}}%
+  \docsvlist{nameformat,itemformat,pageformat}}
 \@onlypreamble{\DeclareSeealsoMacro}
 %    \end{macrocode}
 % \end{macro}
@@ -555,16 +590,22 @@
 % \end{macro}
 %
 % \begin{macro}{\seealso@define@key}
+% \begin{macro}{\seealso@define@keyarg}
 % 定义 |seealso| 族的键，用于设置输出格式。
 %    \begin{macrocode}
 \def\seealso@define@key#1{%
   \define@key{seealso}{#1}{%
     \csdef{seealso@#1}{##1}}}
+\def\seealso@define@keyarg#1{%
+  \define@key{seealso}{#1}{%
+    \csdef{seealso@#1}####1{##1}}}
 %    \end{macrocode}
+% \end{macro}
 % \end{macro}
 % 为每个输出格式定义键。
 %    \begin{macrocode}
-\forcsvlist\seealso@define@key{listsep,itemsep,nameformat,itemformat,pageformat}
+\forcsvlist\seealso@define@key{listsep,itemsep}
+\forcsvlist\seealso@define@keyarg{nameformat,itemformat,pageformat}
 %    \end{macrocode}
 %
 % \subsection{定义用户接口}
@@ -572,15 +613,16 @@
 % \begin{macro}{\seealsosetup}
 % \changes{v1.0}{2014/04/05}{新增格式设置。}
 % 设置输出格式。可选参数是一个逗号列表：如果可选参数为空，用 |#2| 设置默认的输
-% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。
+% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。使用 |\forcsvlist| 而
+% 没有使用 |\docsvlist| 是为了避免因嵌套定义造成使用时参数不得不使用双重
+% |##|。
 %    \begin{macrocode}
 \newcommand\seealsosetup[2][]{%
   \ifstrempty{#1}{%
     \setkeys{seealso}{#2}%
   }{%
-    \def\do##1{%
-      \setkeys{seealso@##1}{#2}}%
-    \docsvlist{#1}}}
+    \def\do##1{\setkeys{seealso@##1}{#2}}%
+    \forcsvlist{\do}{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
