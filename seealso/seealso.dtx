@@ -681,7 +681,7 @@
 % \end{macro}
 %
 % \begin{macro}{\seealso@clearlists}
-% 清空列表 |\seealso@see@list| 与 |\seealso@also@list|。
+% 清空参见列表，如 |\seealso@see@list|、|\seealso@also@list|。
 %    \begin{macrocode}
 \def\seealso@clearlists{%
   \def\do##1{\cslet{seealso@##1@list}\empty}%
@@ -691,7 +691,7 @@
 % \end{macro}
 % 
 % \begin{macro}{\SeealsoPrintList}
-% 输出列表 |\seealso@see@list| 与 |\seealso@also@list|。
+% 输出参见列表，如 |\seealso@see@list|、|\seealso@also@list|。
 %    \begin{macrocode}
 \newcommand\SeealsoPrintList{%
   \forlistloop\seealso@printlist\seealso@macrolist
