@@ -338,6 +338,14 @@
 % \seealsosetup[also]{pageformat=\textit{#1}}
 % \end{verbatim}
 %
+% \DescribeMacro{\SeealsoGobble}
+% |\SeealsoGobble| 宏接受一个字符作为参数，它检查后面是否有此字符，如果是则吞
+% 掉此字符及后面的空格，否则什么都不做。在 |pageformat| 选项中使用这个宏可以用
+% 来禁止显示参见项的页码，像下面这样：
+% \begin{verbatim}
+% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
+% \end{verbatim}
+%
 % \section{已知问题}
 %
 % 以下是一些已知的问题和解决方案：
@@ -356,7 +364,7 @@
 % 解决此问题，可以设置特别的页码输出格式以示区分，或者设置不输出页码。例如禁止
 % 输出页码：
 % \begin{verbatim}
-% \seealsosetup[see,also]{pageformat=}
+% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
 % \end{verbatim}
 % \end{itemize}
 %
@@ -607,6 +615,21 @@
 \forcsvlist\seealso@define@key{listsep,itemsep}
 \forcsvlist\seealso@define@keyarg{nameformat,itemformat,pageformat}
 %    \end{macrocode}
+%
+% \begin{macro}{\SeealsoGobble}
+% \changes{v1.0}{2014/04/06}{支持吞掉分隔符的页码格式，即不显示页码。}
+% 检查后面的字符是否 |#1|，如果是则吞掉分隔符 |#1| 及后面的空格。这个宏可用于
+% 设置 |pageformat| 格式，吞掉一个类似 |,\space| 类型的分隔符。
+%    \beign{macrocode}
+\def\SeealsoGobble#1{\@ifnextchar#1{\seealso@gobbleignorespaces}{}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@gobbleignorespaces}
+% 吞掉参数并忽略后面的空格。
+%    \begin{macrocode}
+\def\seealso@gobbleignorespaces#1{\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
 %
 % \subsection{定义用户接口}
 %
