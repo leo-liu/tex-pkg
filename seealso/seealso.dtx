@@ -109,7 +109,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{156}
+% \CheckSum{163}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -131,13 +131,13 @@
 % \changes{v0.1}{2014/04/04}{初始版本。}
 % \changes{v1.0}{2014/04/05}{功能较完备的版本。}
 %
-% \DoNotIndex{\newcommand,\newenvironment,\^,\~,\@onlypreamble,\active,
-% \AtBeginDocument,\begingroup,\catcode, \csdef,\cslet,\cslet,\csuse,
+% \DoNotIndex{\newcommand,\newenvironment,\^,\~,\@ifnextchar,\@onlypreamble,
+% \active, \AtBeginDocument,\begingroup,\catcode, \csdef,\cslet,\cslet,\csuse,
 % \DeclareBoolOption,\def,\define@key,\do, \docsvlist, \dolistloop,\else,
 % \emph,\empty,\endgroup,\fi,\forcsvlist, \forlistcsloop, \forlistloop,
-% \ifcsdef,\ifcsempty, \ifinlistcs,\ifstrempty, \lccode,\let, \listadd,
-% \listcsgadd,\lowercase,\newif, \ProcessKeyvalOptions, \RequirePackage,
-% \setkeys,\SetupKeyvalOptions,\space,\unless}
+% \ifcsdef,\ifcsempty, \ifinlistcs,\ifstrempty,\ignorespaces,\lccode,\let,
+% \listadd, \listcsgadd,\lowercase,\newif, \ProcessKeyvalOptions,
+% \RequirePackage, \setkeys,\SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
 % \title[The seealso Package (\fileversion)]
@@ -620,7 +620,7 @@
 % \changes{v1.0}{2014/04/06}{支持吞掉分隔符的页码格式，即不显示页码。}
 % 检查后面的字符是否 |#1|，如果是则吞掉分隔符 |#1| 及后面的空格。这个宏可用于
 % 设置 |pageformat| 格式，吞掉一个类似 |,\space| 类型的分隔符。
-%    \beign{macrocode}
+%    \begin{macrocode}
 \def\SeealsoGobble#1{\@ifnextchar#1{\seealso@gobbleignorespaces}{}}
 %    \end{macrocode}
 % \end{macro}
