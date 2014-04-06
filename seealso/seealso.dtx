@@ -31,6 +31,7 @@
 %
 %<*driver>
 \documentclass{ltxdoc}
+\usepackage[a4paper,left=2in,right=1in,top=1in,bottom=1in]{geometry}
 \newcommand\pkg[1]{\textsf{#1}}
 \usepackage[UTF8,hyperref]{ctex}
 \makeatletter
@@ -95,6 +96,8 @@
   \def\@title{#2}}
 \makeatother
 \usepackage{seealso}
+\usepackage{fancyvrb}
+\fvset{gobble=2}
 \usepackage{hypdoc}
 \hypersetup{pdfstartview=FitH}
 \AtBeginDocument{\MakeShortVerb\|}
@@ -152,11 +155,249 @@
 %
 % \section{Introduction}
 %
+% When preparing index, the macros |\see| and |\seealso| define by \LaTeXe's
+% standard package \pkg{makeidx} are handy to use. They are used as special
+% page format command, to present cross reference of index entry. For example,
+% if we use
+% \begin{Verbatim}
+% \index{math|see{mathematics}}
+% \end{Verbatim}
+% to reference the index entry ``mathematics'', we will get
+% \begin{quote}
+% math, \emph{see} mathematics
+% \end{quote}
+% in the output index.
+%
+% However, |\see| and |\seealso| commands in \LaTeXe{} cannot produce page
+% numbers. Moreover, if we use multiple |\see| or |\seealso|'s for one entry,
+% there will be multiple reference targets produced. Therefore we may get
+% this unexpected output:
+% \begin{quote}
+% math, \emph{see} mathematics, \emph{see} mathematics, \emph{see} mathematics
+% \end{quote}
+% if we have used \verb=\index{math|see{mathematics}}= at 3 different places
+% in the document.
+%
+% The \pkg{seealso} package solve the problem. If we use
+% \begin{Verbatim}
+% \usepackage{seealso}
+% \end{Verbatim}
+% all cross references of index entry will produce page numbers, and the
+% reference targets, which we call \emph{see list}, will be merged. The
+% previous example will produce an output like this:
+% \begin{quote}
+% math, \seepage{mathematics}{2}, \seepage{mathematics}{4}, \seepage{mathematics}{5}
+% \end{quote}
+%
 % \section{Reference}
+%
+% \subsection{Package Loading}
+%
+% The basic usage of the package is to simply load the package
+% \begin{Verbatim}
+% \usepackage{seealso}
+% \end{Verbatim}
+% then |\see| and |\seealso| commands will be redefined to support page number
+% output and reference target merging.
+%
+% The \pkg{seealso} package should be loaded after \pkg{makeidx},
+% \pkg{imakeidx}, etc. Or the redefinition of |\see| and |\seealso| may be
+% broken.
+%
+% \subsection{Package Options}
+%
+% \DescribeOption{override}
+% |override| is a boolean option, with a default value |true|. When it is set
+% the original |\see| and |\seealso| will be overridden. However, when it is
+% set to be |false|, say
+% \begin{Verbatim}
+% \usepackage[override=false]{seealso}
+% \end{Verbatim}
+% then |\see| and |\seealso| will not be overridden, and |\seepage| and
+% |\seealsopage| should be used for page number output.
+%
+% \DescribeOption{activecr}
+% |activecr| is a boolean option, with a default value |true|. When it is set,
+% the see list will be output at the end of an index entry line (in a |.ind|
+% file). If we set |activecr=false|, however, the see list will not be output
+% automatically, one should use |\SeealsoPrintList| manually at the end of the
+% index entry instead. Usually |\SeealsoPrintList| is added via |delim_t|
+% style of Makeindex.
+%
+% \subsection{The \cs{see} and \cs{seealso} Commands}
+%
+% \DescribeMacro{\seepage}
+% \DescribeMacro{\seealsopage}
+% |\seepage| and |\seealsopage| provide the main functions of this package.
+% They provide the same faculty of cross reference, but output page numbers
+% and prevent redundancy. For example, suppose that there are
+% \begin{Verbatim}
+% \index{foo|seepage{bar}}
+% \end{Verbatim}
+% in page 1, 2, and 3, we will have a |.ind| file as below:
+% \begin{Verbatim}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
+% \end{Verbatim}
+% And the output of the index will be:
+% \begin{quote}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
+% \end{quote}
+% 
+% It is possible to use different references for one index entry. For example
+% we can use
+% \begin{Verbatim}
+% \index{foo|seepage{bar}}
+% \end{Verbatim}
+% and
+% \begin{Verbatim}
+% \index{foo|seepage{foobaz}}
+% \end{Verbatim}
+% several times, the generated |.ind| file may be:
+% \begin{Verbatim}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
+% \end{Verbatim}
+% And the output of the index will be:
+% \begin{quote}
+% foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
+% \end{quote}
+%
+% \DescribeMacro{\seenopage}
+% \DescribeMacro{\seealsonopage}
+% The macros |\seenopage| and |\seealsonopage| save the original definitions
+% of |\see| and |\seealso| before loading \pkg{seealso}, which do not produce
+% page numbers.
+%
+% \DescribeMacro{\see}
+% \DescribeMacro{\seealso}
+% When option |override| is |true|, which is the default, |\see| and
+% |\seealso| works just as |\seepage| and |\seealsopage|.
+% 
+% \DescribeMacro{\SeealsoPrintList}
+% |\seepage| and |\seealsopage| will collect the see lists, which will be
+% output at the end of the line under default |activecr| option. However, when
+% |activecr| is set to be |false|, the see lists won't be output at the end of
+% source line where |\seepage| and |\seealsopage| are. In the latter case, we
+% can add |\SeealsoPrintList| manually at the end of line to output the see
+% lists. Usually we can set |delim_t| variable in the style file of Makeindex,
+% for example:
+% \begin{Verbatim}
+% % example.ist
+% delim_t "\\SeealsoPrintList"
+% \end{Verbatim}
+% Then a |\SeealsoPrintList| will be appended at the end of every non-empty
+% index entry, and the see lists will be output properly.
+%
+% \DescribeMacro{\DeclareSeealsoMacro}
+% |\DeclareSeealsoMacro| can be used to define a new macro like |\see| and
+% |\seealso|. The syntax is
+% \begin{quote}
+% |\DeclareSeealsoMacro\|\meta{macro}|{|\meta{seelist}|}{|\meta{name}|}|
+% \end{quote}
+% where |\|\meta{macro} is the macro name, \meta{seelist} is the new see list,
+% and \meta{name} is the name of the see list to be output (like |\seename|).
+% Using |\DeclareSeealsoMacro|, two macros will be defined, the one is
+% |\|\meta{macro}, the other is |\|\meta{macro}|name|. If there has no
+% |\|\meta{macro}|name| predefined, it is defined to be \meta{name}, or the
+% definition remains unchanged.
+%
+% For example, |\seepage| and |\seealsopage| are defined like this:
+% \begin{Verbatim}
+% \DeclareSeealsoMacro\seepage{see}{see}
+% \DeclareSeealsoMacro\seealsopage{also}{see also}
+% \end{Verbatim}
+% The definitions above also provide the default value of |\seename| and
+% |\alsoname| to be |see| and |see also|, respectively.
+%
+% \subsection{Output Styles}
+%
+% \DescribeMacro{\seealsosetup}
+% The macro |\seealsosetup| is used to configure the output style of see
+% lists. The syntax is:
+% \begin{quote}
+% |\seealsosetup[|\meta{seelists}|]{|\meta{kv-options}|}|
+% \end{quote}
+% where \meta{seelists} is a comma separated list, each item of which is a see
+% list to be setup. \meta{seelists} can also be omitted or set to be empty,
+% which means we are setting up the default output style of all kind of see
+% lists. \meta{kv-options} is the options in key-value syntax.
+%
+% All possible output styles are summarized in table~\ref{tab:outstyleen}.
+% \begin{table}[htbp]
+% \centering
+% \begin{tabular}{lp{4cm}ll}
+% \hline
+% Key & Meaning & Argument & Default Value \\
+% \hline
+% |name| & The name of see list to be output, e.g. |\seename| & none
+%   & (invalid) \\
+% |listsep| & The separator before a see list & none
+%   & \stylemeaning{listsep} \\
+% |itemsep| & The separator between see list items & none
+%   & \stylemeaning{itemsep} \\
+% |nameformat| & Output format of the see list name & |#1|
+%   & \stylemeaning{nameformat} \\
+% |itemformat| & Output format of the see list items & |#1|
+%   & \stylemeaning{itemformat} \\
+% |pageformat| & Output format of the page numbers & |#1|
+%   & \stylemeaning{pageformat} \\
+% \hline
+% \end{tabular}
+% \caption{Output styles used by \cs{seealsosetup}}\label{tab:outstyleen}
+% \end{table}
+%
+% For example, if we want to set all page numbers produced by |\seealsopage|
+% to be italic, we can use:
+% \begin{Verbatim}
+% \seealsosetup[also]{pageformat=\textit{#1}}
+% \end{Verbatim}
+%
+% \DescribeMacro{\SeealsoGobble}
+% |\SeealsoGobble| takes a character \meta{c} as argument. It checks the
+% following character, gobble it and ignore spaces if it is \meta{c}, or do
+% nothing if it is not \meta{c}. This macro is useful in |pageformat| style
+% to prevent outputting the page numbers, like this:
+% \begin{Verbatim}
+% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
+% \end{Verbatim}
+% However, |\see| and |\seealso| will be encapsulated by |\hyperindexformat|
+% is we use \pkg{hyperref}, then |\SeealsoGobble| will be invalid.
 %
 % \section{Known Issues}
 %
+% Here are some known problems and their solutions:
+% \begin{itemize}
+% \item
+% Makeindex wraps the output lines with respect to |line_max| variable.  The
+% default value of |line_max| is only 72, therefore the entry line containing
+% |\see| and |\seealso| may be wrapped. However, |activecr| is |true| by
+% default, then package \pkg{seealso} will print the see lists at each end of
+% lines, and in the wrapped lines the see lists are output multiple times,
+% which is unexpected.
 %
+% To solve the problem, it is better to set larger |line_max| in the |.ist|
+% style file to prevent wrapping. Another approach is to set |activecr=false|
+% option, and set |delim_t| to be |\SeealsoPrintList| explicitly to output the
+% see lists.
+%
+% \item
+% Since the output format of page numbers of |\seepage|, |\seealsopage| is the
+% same as normal page numbers, it may be ambiguous if we use normal |\index|
+% and \verb=\index{...|seepage}= simultaneously. Usually we should avoid using
+% different style of |\index| with or without |\seepage| and |\seealsopage|.
+% If it is impossible, we can set special page number format to identify them,
+% or we can use |\SeealsoGobble| to disable page numbers.
+%
+% \item
+% When \pkg{hyperref} package is used, the function of avoiding page numbers
+% via |\SeealsoGobble| is invalid. That is because that |\see| and |\seealso|
+% will be encapsulated by |\hyperindexformat| in the |.ind| file. To solve the
+% problem, we can set |hyperindex=false| option of \pkg{hyperref} to disable
+% hyperlinks in the index, or some special patching of \pkg{hyperref} can be
+% considered.
+% \end{itemize}
+%
+%
+% \clearpage
 % \title{\hypertarget{Chinese}{\pkg{seealso} 宏包 (\fileversion)}
 %   \makebox[0pt][l]{\hspace{3cm}\large
 %     \hyperlink{English}{$\Rightarrow$ \textsf{English Version}}}}
@@ -170,9 +411,9 @@
 % 在索引生成时，\LaTeXe{} 的标准宏包 \pkg{makeidx} 定义了 |\see| 与 |\seealso|
 % 两个宏，它们通常是在 |\index| 中作为一种特殊的页码格式使用，表示索引项的引
 % 用。例如使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \index{math|see{mathematics}}
-% \end{verbatim}
+% \end{Verbatim}
 % 会使索引项 math 引用到 mathematics。生成类似
 % \begin{quote}
 % math, \emph{see} mathematics
@@ -188,11 +429,11 @@
 % 其中可能在三个不同的地方使用了 \verb=\index{math|see{mathematics}}=。
 %
 % \pkg{seealso} 宏包即为解决这种问题而编写。只要使用了
-% \begin{verbatim}
+% \begin{Verbatim}
 % \usepackage{seealso}
-% \end{verbatim}
-% 则交叉引用的索引项会同时显示页码，同时多个交叉引用的目标（我们称为参见列表）
-% 会合并显示。前面的例子就可能会输出：
+% \end{Verbatim}
+% 则交叉引用的索引项会同时显示页码，同时多个交叉引用的目标（我们称为\emph{参见
+% 列表}）会合并显示。前面的例子就可能会输出：
 % \begin{quote}
 % math, \seepage{mathematics}{2}, \seepage{mathematics}{4}, \seepage{mathematics}{5}
 % \end{quote}
@@ -203,9 +444,9 @@
 % \subsection{宏包载入}
 %
 % 基本的用法就是直接使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \usepackage{seealso}
-% \end{verbatim}
+% \end{Verbatim}
 % 这样 |\see| 和 |\seealso| 命令就会被重定义为支持输出页码和合并目标的格式。
 %
 % 注意 \pkg{seealso} 宏包的载入应该晚于 \pkg{makeidx}、\pkg{imakeidx} 等定义
@@ -216,16 +457,17 @@
 % \DescribeOption{override}
 % |override| 是布尔型选项，默认为 |true|。表示覆盖已有的 |\see| 与 |\seealso|
 % 定义。如果设置
-% \begin{verbatim}
+% \begin{Verbatim}
 % \usepackage[override=false]{seealso}
-% \end{verbatim}
+% \end{Verbatim}
 % 则不对 |\see| 与 |\seealso| 覆盖，要使用 |\seepage| 和
 % |\seealsopage| 命令调用相应的功能。
 %
 % \DescribeOption{activecr}
-% |activecr| 是布尔型选项，默认为 |true|。表示打开在索引项行末自动输出所有参见
-% 列表的功能。如果设置 |activecr=false|，则必须手工（通常通过设置 Makeindex 的
-% |delim_t| 格式）在索引项末加上 |\SeealsoPrintList| 输出参见列表。
+% |activecr| 是布尔型选项，默认为 |true|。表示打开在（|.ind| 文件中）索引项行
+% 末自动输出所有参见列表的功能。如果设置 |activecr=false|，则必须手工（通常通
+% 过设置 Makeindex 的 |delim_t| 格式）在索引项末加上 |\SeealsoPrintList| 输出
+% 参见列表。
 %
 % \subsection{\cs{see} 与 \cs{seealso} 命令}
 %
@@ -234,27 +476,30 @@
 % |\seepage| 与 |\seealsopage| 提供了宏包的主要功能，它们与原始的
 % |\see|、|\seealso| 命令类似提供索引项的交叉引用功能，但同时会输出页码，并避
 % 免重复输出交叉引用。例如，在文档中第 1, 2, 3 页分别多次使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \index{foo|seepage{bar}}
-% \end{verbatim}
+% \end{Verbatim}
 % 则在 |.ind| 文件中会生成：
-% \begin{verbatim}
+% \begin{Verbatim}
 % foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
-% \end{verbatim}
+% \end{Verbatim}
 % 而输出的结果将会是：
 % \begin{quote}
 % foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
 % \end{quote}
 %
 % 同一个词可以有不同的参见引用项目，例如在不同的位置几次使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \index{foo|seepage{bar}}
+% \end{Verbatim}
+% 和
+% \begin{Verbatim}
 % \index{foo|seepage{foobaz}}
-% \end{verbatim}
+% \end{Verbatim}
 % 则 |.ind| 文件中可能生成：
-% \begin{verbatim}
+% \begin{Verbatim}
 % foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
-% \end{verbatim}
+% \end{Verbatim}
 % 于是将得到输出结果
 % \begin{quote}
 % foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{foobaz}{3}
@@ -271,15 +516,15 @@
 % |\seepage|、|\seealsopage| 相同。
 %
 % \DescribeMacro{\SeealsoPrintList}
-% |\seepage| 和 |\seealsopage| 会产生参数列表，|\SeealsoPrintList| 如果设置了
-% |activecr| 选项为 |false|，则 |\seepage| 与 |\seealsopage| 所在行结束后不会
-% 自动输出参见列表。此时，可以手工在此行最后加上 |\SeealsoPrintList| 宏，输出
-% 参见列表。通常可以在 Makeindex 的格式文件中，输出格式选项 |delim_t| 里面加上
-% |\SeealsoPrintList| 宏，如：
-% \begin{verbatim}
+% |\seepage| 和 |\seealsopage| 会收集参见列表，在默认的 |activecr| 选项为
+% |ture| 时会在行末自动输出。但如果 |activecr| 选项设置为 |false|，则
+% |\seepage| 与 |\seealsopage| 所在行结束后不会自动输出参见列表。此时，可以手
+% 工在此行最后加上 |\SeealsoPrintList| 宏，输出参见列表。通常可以在 Makeindex
+% 的格式文件中，输出格式选项 |delim_t| 里面加上 |\SeealsoPrintList| 宏，如：
+% \begin{Verbatim}
 % % example.ist
 % delim_t "\\SeealsoPrintList"
-% \end{verbatim}
+% \end{Verbatim}
 % 这样，每个非空索引项输出的最后都会加上 |\SeealsoPrintList|，按需要输出参见列
 % 表。
 %
@@ -296,10 +541,10 @@
 % 变。
 %
 % 例如，|\seepage| 和 |\seealsopage| 就是这样定义的：
-% \begin{verbatim}
+% \begin{Verbatim}
 % \DeclareSeealsoMacro\seepage{see}{see}
 % \DeclareSeealsoMacro\seealsopage{also}{see also}
-% \end{verbatim}
+% \end{Verbatim}
 % 上述命令同时定义了 |\seename| 的备选值为 |see|，以及 |\alsoname| 的备选值为
 % |see also|。
 %
@@ -311,8 +556,8 @@
 % |\seealsosetup[|\meta{seelists}|]{|\meta{kv-options}|}|
 % \end{quote}
 % 其中，可选参数 \meta{seelists} 是一个逗号分隔的列表，每一项表示要设置其格式
-% 的参见列表，如果 \meta{seelists} 为空，则设置默认的输出格式。而选项
-% \meta{kv-options} 则是输出格式项。
+% 的参见列表，如果不设置 \meta{seelists} 或设为空，则设置默认的输出格式。而选
+% 项 \meta{kv-options} 则是输出格式项。
 %
 % 可用的输出格式见表~\ref{tab:outstylezh}。
 % \begin{table}[htbp]
@@ -334,17 +579,19 @@
 % \end{table}
 %
 % 例如，如果要让所有 |\seealsopage| 命令生成的页码以斜体显示，就可以使用
-% \begin{verbatim}
+% \begin{Verbatim}
 % \seealsosetup[also]{pageformat=\textit{#1}}
-% \end{verbatim}
+% \end{Verbatim}
 %
 % \DescribeMacro{\SeealsoGobble}
 % |\SeealsoGobble| 宏接受一个字符作为参数，它检查后面是否有此字符，如果是则吞
 % 掉此字符及后面的空格，否则什么都不做。在 |pageformat| 选项中使用这个宏可以用
 % 来禁止显示参见项的页码，像下面这样：
-% \begin{verbatim}
+% \begin{Verbatim}
 % \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
-% \end{verbatim}
+% \end{Verbatim}
+% 但注意使用 \pkg{hyperref} 时，|\see|、|\seealso| 等命令会被
+% |\hyperindexformat| 所包裹，使这种方法会失效。
 %
 % \section{已知问题}
 %
@@ -361,11 +608,14 @@
 % \item
 % 由于 |\seepage|, |\seealsopage| 的页码显示形式与普通页码相同，所以可能会造成
 % 页码重叠的情况。最好尽量避免交叉引用的项目有多种形式的索引。如果不能避免，为
-% 解决此问题，可以设置特别的页码输出格式以示区分，或者设置不输出页码。例如禁止
-% 输出页码：
-% \begin{verbatim}
-% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
-% \end{verbatim}
+% 解决此问题，可以设置特别的页码输出格式以示区分，或者借用 |\SeealsoGobble| 设
+% 置不输出页码。
+%
+% \item
+% 在使用 \pkg{hyperref} 功能时，用 |\SeealsoGobble| 禁止显示页码的功能会失效。
+% 这是因为 |\see|、|\seealso| 等命令会被 |\hyperindexformat| 包裹。为解决此问
+% 题，可以设置 \pkg{hyperref} 的选项 |hyperindex=false| 禁用索引的超链接，或者
+% 考虑对 \pkg{hyperref} 做特殊的补丁。
 % \end{itemize}
 %
 % \StopEventually{}
