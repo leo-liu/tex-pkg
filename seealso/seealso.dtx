@@ -785,14 +785,62 @@
   \fi}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 % \begin{macro}{\seealso@cr}
-% 是在 |activecr| 选项下，换行符的定义。它取消激活换行符为宏，并输出参见列表。
+% \changes{v1.1}{2014/04/07}{处理折行问题。}
+% 是在 |activecr| 选项下，换行符的定义。它检测后面的记号是否在
+% |\seealso@itemlist| 中，以判断是否处于折行状态，决定是否输出列表。
 %    \begin{macrocode}
 \def\seealso@cr{%
-  \catcode`\^^M=5
-  \seealso@iscractivefalse
-  \SeealsoPrintList}
+  \futurelet\next\seealso@cr@aux}
+%    \end{macrocode}
+% |\seealso@cr@aux| 是实际完成判断折行与输出的辅助过程。如果折行，则补全折行造
+% 成的空白；否则取消激活换行符为宏，并输出参见列表。
+%    \begin{macrocode}
+\def\seealso@cr@aux{%
+  \seealso@testwrap
+  \ifseealso@wrap
+    \space
+  \else
+    \catcode`\^^M=5
+    \seealso@iscractivefalse
+    \SeealsoPrintList
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifseealso@wrap}
+% 判断当前是否在折行的行尾。
+%    \begin{macrocode}
+\newif\ifseealso@wrap
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\seealso@testwrap}
+% 检查由 |\seealso@cr| 获取的下一记号 |\next| 是否在列表 |\seealso@itemlist|
+% 中，确定当前是否在折行行尾。
+%    \begin{macrocode}
+\def\seealso@testwrap{%
+  \seealso@wraptrue
+  \forlistloop\seealso@testwrap@aux\seealso@itemlist}
+\def\seealso@testwrap@aux#1{%
+  \ifx#1\next
+    \seealso@wrapfalse
+    \expandafter\listbreak
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\seealso@itemlist}
+% 表示索引项结束的记号列表。用于判断是否处于折行状态。
+%    \begin{macrocode}
+\let\seealso@itemlist\empty
+\listadd\seealso@itemlist{\seealso@cr}
+\listadd\seealso@itemlist{\indexspace}
+\listadd\seealso@itemlist{\item}
+\listadd\seealso@itemlist{\subitem}
+\listadd\seealso@itemlist{\subsubitem}
+\listadd\seealso@itemlist{\end}
 %    \end{macrocode}
 % \end{macro}
 %
