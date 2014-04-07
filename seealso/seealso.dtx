@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{seealso}
 %<*package>
-    [2014/04/06 v1.0 makeidx's see and seealso with page number support.]
+    [2014/04/07 v1.1 makeidx's see and seealso with page number support.]
 %</package>
 %
 %<*driver>
@@ -112,7 +112,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{163}
+% \CheckSum{175}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -359,8 +359,6 @@
 % \begin{Verbatim}
 % \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
 % \end{Verbatim}
-% However, |\see| and |\seealso| will be encapsulated by |\hyperindexformat|
-% is we use \pkg{hyperref}, then |\SeealsoGobble| will be invalid.
 %
 % \section{Known Issues}
 %
@@ -386,14 +384,6 @@
 % different style of |\index| with or without |\seepage| and |\seealsopage|.
 % If it is impossible, we can set special page number format to identify them,
 % or we can use |\SeealsoGobble| to disable page numbers.
-%
-% \item
-% When \pkg{hyperref} package is used, the function of avoiding page numbers
-% via |\SeealsoGobble| is invalid. That is because that |\see| and |\seealso|
-% will be encapsulated by |\hyperindexformat| in the |.ind| file. To solve the
-% problem, we can set |hyperindex=false| option of \pkg{hyperref} to disable
-% hyperlinks in the index, or some special patching of \pkg{hyperref} can be
-% considered.
 % \end{itemize}
 %
 %
@@ -590,8 +580,6 @@
 % \begin{Verbatim}
 % \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
 % \end{Verbatim}
-% 但注意使用 \pkg{hyperref} 时，|\see|、|\seealso| 等命令会被
-% |\hyperindexformat| 所包裹，使这种方法会失效。
 %
 % \section{已知问题}
 %
@@ -610,12 +598,6 @@
 % 页码重叠的情况。最好尽量避免交叉引用的项目有多种形式的索引。如果不能避免，为
 % 解决此问题，可以设置特别的页码输出格式以示区分，或者借用 |\SeealsoGobble| 设
 % 置不输出页码。
-%
-% \item
-% 在使用 \pkg{hyperref} 功能时，用 |\SeealsoGobble| 禁止显示页码的功能会失效。
-% 这是因为 |\see|、|\seealso| 等命令会被 |\hyperindexformat| 包裹。为解决此问
-% 题，可以设置 \pkg{hyperref} 的选项 |hyperindex=false| 禁用索引的超链接，或者
-% 考虑对 \pkg{hyperref} 做特殊的补丁。
 % \end{itemize}
 %
 % \StopEventually{}
@@ -868,10 +850,28 @@
 %
 % \begin{macro}{\SeealsoGobble}
 % \changes{v1.0}{2014/04/06}{支持吞掉分隔符的页码格式，即不显示页码。}
+% \changes{v1.1}{2014/04/07}{处理 \pkg{hyperref} 兼容性。}
 % 检查后面的字符是否 |#1|，如果是则吞掉分隔符 |#1| 及后面的空格。这个宏可用于
 % 设置 |pageformat| 格式，吞掉一个类似 |,\space| 类型的分隔符。
+%
+% 这里检查是否定义了 \pkg{hyperref} 的 |\hyperindexformat|（表示打开了索引的超
+% 链接功能），如果有 |\hyperindexformat|，则需要调整参数次序以解决
+% |\hyperindexformat| 与 |\see| 等命令嵌套的问题。
 %    \begin{macrocode}
-\def\SeealsoGobble#1{\@ifnextchar#1{\seealso@gobbleignorespaces}{}}
+\AtBeginDocument{%
+  \ifundef\hyperindexformat{%
+    \let\SeealsoGobble\seealso@gobble
+  }{%
+    \def\SeealsoGobble#1{\seealso@swap{\seealso@gobble{#1}}}%
+    \def\seealso@swap#1#2#3#4{#2#3#4#1}%
+  }}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\seealso@gobble}
+% 实际的 |\SeealsoGobble| 命令，检查后面的字符是否 |#1|，如果是则吞掉分隔符
+% |#1| 及后面的空格。
+%    \begin{macrocode}
+\def\seealso@gobble#1{\@ifnextchar#1{\seealso@gobbleignorespaces}{}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\seealso@gobbleignorespaces}
