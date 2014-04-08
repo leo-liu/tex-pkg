@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{seealso}
 %<*package>
-    [2014/04/07 v1.1 makeidx's see and seealso with page number support.]
+    [2014/04/08 v1.1 makeidx's see and seealso with page number support.]
 %</package>
 %
 %<*driver>
@@ -112,7 +112,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{175}
+% \CheckSum{226}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -641,13 +641,12 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\seealso@clearlists}
+% \begin{macro}{\seealso@clearlist}
 % 清空参见列表，如 |\seealso@see@list|、|\seealso@also@list|。
 %    \begin{macrocode}
-\def\seealso@clearlists{%
-  \def\do##1{\cslet{seealso@##1@list}\empty}%
-  \dolistloop\seealso@macrolist}
-\AtBeginDocument{\seealso@clearlists}
+\def\seealso@clearlist#1{%
+  \global\cslet{seealso@#1@list}\empty}
+\AtBeginDocument{\forlistloop\seealso@clearlist\seealso@macrolist}
 %    \end{macrocode}
 % \end{macro}
 % 
@@ -656,7 +655,7 @@
 %    \begin{macrocode}
 \newcommand\SeealsoPrintList{%
   \forlistloop\seealso@printlist\seealso@macrolist
-  \seealso@clearlists}
+  \forlistloop\seealso@clearlist\seealso@macrolist}
 %    \end{macrocode}
 % \end{macro}
 % 
