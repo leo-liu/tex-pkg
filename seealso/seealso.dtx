@@ -74,10 +74,17 @@
     \encapchar main}%
   \@esphack}
 \def\SpecialOptionIndex#1{\@bsphack
+  \begingroup
+    \HD@target
+    \let\HDorg@encapchar\encapchar
+    \edef\encapchar usage{%
+      \HDorg@encapchar hdclindex{\the\c@HD@hypercount}{usage}}%
     \index{#1\actualchar{\protect\ttfamily#1}
            (option)\encapchar usage}%
     \index{options:\levelchar#1\actualchar{\protect\ttfamily#1}\encapchar
-           usage}\@esphack}
+           usage}%
+  \endgroup
+  \@esphack}
 \def\DescribeOption{\leavevmode\@bsphack\begingroup\MakePrivateLetters
   \Describe@Option}
 \def\Describe@Option#1{\endgroup
