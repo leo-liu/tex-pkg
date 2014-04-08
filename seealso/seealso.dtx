@@ -365,19 +365,6 @@
 % Here are some known problems and their solutions:
 % \begin{itemize}
 % \item
-% Makeindex wraps the output lines with respect to |line_max| variable.  The
-% default value of |line_max| is only 72, therefore the entry line containing
-% |\see| and |\seealso| may be wrapped. However, |activecr| is |true| by
-% default, then package \pkg{seealso} will print the see lists at each end of
-% lines, and in the wrapped lines the see lists are output multiple times,
-% which is unexpected.
-%
-% To solve the problem, it is better to set larger |line_max| in the |.ist|
-% style file to prevent wrapping. Another approach is to set |activecr=false|
-% option, and set |delim_t| to be |\SeealsoPrintList| explicitly to output the
-% see lists.
-%
-% \item
 % Since the output format of page numbers of |\seepage|, |\seealsopage| is the
 % same as normal page numbers, it may be ambiguous if we use normal |\index|
 % and \verb=\index{...|seepage}= simultaneously. Usually we should avoid using
@@ -585,14 +572,6 @@
 %
 % 以下是一些已知的问题和解决方案：
 % \begin{itemize}
-% \item
-% Makeindex 会按输出选项 |line_max| 对输出的内容进行折行，默认的 |line_max| 只
-% 有 72，所以当项目较多时，可能在 |\see| 或 |\seealso| 等命令所在的项目中产生
-% 折行。但由于默认情况下（|activecr| 选项打开）\pkg{seealso} 包遇到换行符就会
-% 输出参见列表，会造成错误。一种解决方法是将 |line_max| 设置得很大，避免折行；
-% 另一种解决方法是设置 |activecr=false|，同时在 Makeindex 的格式文件中显式设置
-% |delim_t| 为 |\SeealsoPrintList| 来输出参见列表。
-% 
 % \item
 % 由于 |\seepage|, |\seealsopage| 的页码显示形式与普通页码相同，所以可能会造成
 % 页码重叠的情况。最好尽量避免交叉引用的项目有多种形式的索引。如果不能避免，为
@@ -923,9 +902,15 @@
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\seealso@gobbleignorespaces}
-% 吞掉参数并忽略后面的空格。
+% \changes{v1.1}{2014/04/08}{正确处理 \cs{SeealsoGobble} 在自动折行下的行为。}
+% 吞掉分隔符参数 |#1|（通常是一个逗号）并忽略后面的空格。
+%
+% 为了处理折行时会遇到的换行符宏 |\seealso@cr|，在发现后面的参数是
+% |\seealso@cr| 时就递归调用自身把 |\seealso@cr| 也清除掉。此时就好像直接把两
+% 行连接起来，不再调用 |\seealso@cr| 的复杂判断流程。
 %    \begin{macrocode}
-\def\seealso@gobbleignorespaces#1{\ignorespaces}
+\def\seealso@gobbleignorespaces#1{%
+  \@ifnextchar\seealso@cr{\seealso@gobbleignorespaces}{\ignorespaces}}
 %    \end{macrocode}
 % \end{macro}
 %
