@@ -119,7 +119,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{226}
+% \CheckSum{232}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -144,10 +144,11 @@
 % \DoNotIndex{\newcommand,\newenvironment,\^,\~,\@ifnextchar,\@onlypreamble,
 % \active, \AtBeginDocument,\begingroup,\catcode, \csdef,\cslet,\cslet,\csuse,
 % \DeclareBoolOption,\def,\define@key,\do, \docsvlist, \dolistloop,\else,
-% \emph,\empty,\endgroup,\fi,\forcsvlist, \forlistcsloop, \forlistloop,
-% \ifcsdef,\ifcsempty, \ifinlistcs,\ifstrempty,\ignorespaces,\lccode,\let,
-% \listadd, \listcsgadd,\lowercase,\newif, \ProcessKeyvalOptions,
-% \RequirePackage, \setkeys,\SetupKeyvalOptions,\space,\unless}
+% \emph,\empty,\endgroup,\expandafter,\fi,\forcsvlist, \forlistcsloop,
+% \forlistloop, \futurelet,\global, \ifcsdef,\ifcsempty,\ifinlist,\ifinlistcs,
+% \ifstrempty,\ifundef,\ifx,\ignorespaces,\lccode,\let, \listadd,\listbreak,
+% \listcsgadd, \lowercase,\newif, \next,\ProcessKeyvalOptions,
+% \RequirePackage, \setkeys, \SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
 % \title[The seealso Package (\fileversion)]
@@ -358,6 +359,18 @@
 % \seealsosetup[also]{pageformat=\textit{#1}}
 % \end{Verbatim}
 %
+% Besides the output styles, |\seealsosetup| accepts |enditem| and |enditem+|
+% options, which is a list of token that determines whether to output the see
+% list at the end of line, if |activecr| option is true. The default value of
+% the list includes some common macros in |theindex| environment:
+% |\indexspace|, |\item|, |\subitem|, |\subsubitem|, and |\end|. For example,
+% if we have a special index which supports 4th level item |\subsubsubitem|
+% and a special space |\myindexspace|, we can use
+% \begin{Verbatim}
+% \seealsosetup{enditem+={\subsubsubitem,\myindexspace}}
+% \end{Verbatim}
+% to add the new macros to the list.
+%
 % \DescribeMacro{\SeealsoGobble}
 % |\SeealsoGobble| takes a character \meta{c} as argument. It checks the
 % following character, gobble it and ignore spaces if it is \meta{c}, or do
@@ -567,6 +580,18 @@
 % \seealsosetup[also]{pageformat=\textit{#1}}
 % \end{Verbatim}
 %
+% 除了输出格式，|\seealsosetup| 还接受 |enditem| 和 |enditem+| 选项，用于设置
+% \pkg{seealso} 宏包在 |activecr| 选项设置时，进入行尾之后遇到什么记号时决定输
+% 出参见列表。通常情况下并不需要设置该选项，|enditem| 选项的默认值已经包括了在
+% 标准的 |theindex| 环境中会出现的一些宏：|\indexspace|、|\item|、|\subitem|、
+% |\subsubitem|、|\end|。使用 |enditem+| 选项则可以向列表中增加新的记号。例
+% 如，如果某种特殊的索引支持 4 级项 |\subsubsubitem| 和特殊的间隔
+% |\myindexspace|，就可以使用
+% \begin{Verbatim}
+% \seealsosetup{enditem+={\subsubsubitem,\myindexspace}}
+% \end{Verbatim}
+% 向列表中添加新的记号。
+%
 % \DescribeMacro{\SeealsoGobble}
 % |\SeealsoGobble| 宏接受一个字符作为参数，它检查后面是否有此字符，如果是则吞
 % 掉此字符及后面的空格，否则什么都不做。在 |pageformat| 选项中使用这个宏可以用
@@ -774,7 +799,7 @@
 % \begin{macro}{\seealso@cr}
 % \changes{v1.1}{2014/04/07}{处理折行问题。}
 % 是在 |activecr| 选项下，换行符的定义。它检测后面的记号是否在
-% |\seealso@itemlist| 中，以判断是否处于折行状态，决定是否输出列表。
+% |\seealso@enditemlist| 中，以判断是否处于折行状态，决定是否输出列表。
 %    \begin{macrocode}
 \def\seealso@cr{%
   \futurelet\next\seealso@cr@aux}
@@ -802,12 +827,12 @@
 % \end{macro}
 %
 % \begin{macro}{\seealso@testwrap}
-% 检查由 |\seealso@cr| 获取的下一记号 |\next| 是否在列表 |\seealso@itemlist|
-% 中，确定当前是否在折行行尾。
+% 检查由 |\seealso@cr| 获取的下一记号 |\next| 是否在列表
+% |\seealso@enditemlist| 中，确定当前是否在折行行尾。
 %    \begin{macrocode}
 \def\seealso@testwrap{%
   \seealso@wraptrue
-  \forlistloop\seealso@testwrap@aux\seealso@itemlist}
+  \forlistloop\seealso@testwrap@aux\seealso@enditemlist}
 \def\seealso@testwrap@aux#1{%
   \ifx#1\next
     \seealso@wrapfalse
@@ -816,18 +841,38 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\seealso@itemlist}
+% \begin{macro}{\seealso@enditemlist}
 % 表示索引项结束的记号列表。用于判断是否处于折行状态。
 %    \begin{macrocode}
-\let\seealso@itemlist\empty
-\listadd\seealso@itemlist{\seealso@cr}
-\listadd\seealso@itemlist{\indexspace}
-\listadd\seealso@itemlist{\item}
-\listadd\seealso@itemlist{\subitem}
-\listadd\seealso@itemlist{\subsubitem}
-\listadd\seealso@itemlist{\end}
+\let\seealso@enditemlist\empty
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\seealso@enditemlistadd}
+% 向结束记号列表中增加一项。
+%    \begin{macrocode}
+\def\seealso@enditemlistadd#1{%
+  \ifinlist{#1}\seealso@enditemlist
+    {}
+    {\listadd\seealso@enditemlist{#1}}}
+%    \end{macrocode}
+% \end{macro}
+% 下面定义结束记号列表的在 |seealso| 族下的键 |enditem| 与 |enditem+|，允许用
+% 户自定义此列表。这里要求列表总包含 |\seealso@cr|。
+%    \begin{macrocode}
+\define@key{seealso}{enditem}{%
+  \let\seealso@enditemlist\empty
+  \listadd\seealso@enditemlist{\seealso@cr}%
+  \forcsvlist\seealso@enditemlistadd{#1}}
+\define@key{seealso}{enditem+}{%
+  \forcsvlist\seealso@enditemlistadd{#1}}
+%    \end{macrocode}
+% 结束记号列表的默认值，除了 |\seealso@cr| 外，还包括通常在 |theindex| 等环境
+% 中出现的其他一些宏。
+%    \begin{macrocode}
+\setkeys{seealso}{%
+  enditem={\indexspace,\item,\subitem,\subsubitem,\end}}
+%    \end{macrocode}
 %
 % 下面定义参见列表的默认输出格式。以下宏给出的都是全局的默认值，可以单独修改每
 % 一项的输出格式。
