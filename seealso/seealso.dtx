@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{seealso}
 %<*package>
-    [2014/04/08 v1.1 makeidx's see and seealso with page number support.]
+    [2014/04/09 v1.1 makeidx's see and seealso with page number support.]
 %</package>
 %
 %<*driver>
@@ -119,7 +119,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{232}
+% \CheckSum{251}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -141,14 +141,15 @@
 % \changes{v0.1}{2014/04/04}{初始版本。}
 % \changes{v1.0}{2014/04/05}{功能较完备的版本。}
 %
-% \DoNotIndex{\newcommand,\newenvironment,\^,\~,\@ifnextchar,\@onlypreamble,
-% \active, \AtBeginDocument,\begingroup,\catcode, \csdef,\cslet,\cslet,\csuse,
-% \DeclareBoolOption,\def,\define@key,\do, \docsvlist, \dolistloop,\else,
-% \emph,\empty,\endgroup,\expandafter,\fi,\forcsvlist, \forlistcsloop,
-% \forlistloop, \futurelet,\global, \ifcsdef,\ifcsempty,\ifinlist,\ifinlistcs,
-% \ifstrempty,\ifundef,\ifx,\ignorespaces,\lccode,\let, \listadd,\listbreak,
-% \listcsgadd, \lowercase,\newif, \next,\ProcessKeyvalOptions,
-% \RequirePackage, \setkeys, \SetupKeyvalOptions,\space,\unless}
+% \DoNotIndex{\newcommand,\newenvironment,\^,\~,\@for,\@ifnextchar,
+% \@let@token,\@onlypreamble, \active, \AtBeginDocument,\begingroup,\catcode,
+% \csdef,\cslet,\cslet,\csuse, \DeclareBoolOption,\def,\define@key,\do,
+% \docsvlist, \dolistloop,\else, \emph,\empty,\endgroup,\expandafter,\fi,
+% \forcsvlist, \forlistcsloop, \forlistloop, \futurelet,\global, \ifcsdef,
+% \ifcsempty,\ifinlist,\ifinlistcs, \ifstrempty,\ifundef,\ifx,\ignorespaces,
+% \lccode,\let, \listadd,\listbreak, \listcsgadd, \lowercase,\newif, \next,
+% \ProcessKeyvalOptions, \RequirePackage,\reserved@a,\setkeys,
+% \SetupKeyvalOptions,\space,\unless}
 %
 % \GetFileInfo{seealso.dtx}
 % \title[The seealso Package (\fileversion)]
@@ -250,7 +251,7 @@
 % \begin{quote}
 % foo, \seepage{bar}{1}, \seepage{bar}{2}, \seepage{bar}{3}
 % \end{quote}
-% 
+%
 % It is possible to use different references for one index entry. For example
 % we can use
 % \begin{Verbatim}
@@ -279,7 +280,7 @@
 % \DescribeMacro{\seealso}
 % When option |override| is |true|, which is the default, |\see| and
 % |\seealso| works just as |\seepage| and |\seealsopage|.
-% 
+%
 % \DescribeMacro{\SeealsoPrintList}
 % |\seepage| and |\seealsopage| will collect the see lists, which will be
 % output at the end of the line under default |activecr| option. However, when
@@ -377,8 +378,9 @@
 % nothing if it is not \meta{c}. This macro is useful in |pageformat| style
 % to prevent outputting the page numbers, like this:
 % \begin{Verbatim}
-% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
+% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}}
 % \end{Verbatim}
+%
 %
 % \section{Known Issues}
 %
@@ -597,7 +599,7 @@
 % 掉此字符及后面的空格，否则什么都不做。在 |pageformat| 选项中使用这个宏可以用
 % 来禁止显示参见项的页码，像下面这样：
 % \begin{Verbatim}
-% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}, listsep=}
+% \seealsosetup[see,also]{pageformat=\SeealsoGobble{,}}
 % \end{Verbatim}
 %
 % \section{已知问题}
@@ -612,7 +614,7 @@
 % \end{itemize}
 %
 % \StopEventually{}
-% 
+%
 % \clearpage
 % \section{Implementation / 代码实现}
 %
@@ -681,7 +683,7 @@
 \AtBeginDocument{\forlistloop\seealso@clearlist\seealso@macrolist}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 % \begin{macro}{\SeealsoPrintList}
 % 输出参见列表，如 |\seealso@see@list|、|\seealso@also@list|。
 %    \begin{macrocode}
@@ -690,7 +692,14 @@
   \forlistloop\seealso@clearlist\seealso@macrolist}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
+% \begin{macro}{\ifseealso@gobblefirstlistsep}
+% 测试是否忽略第一个列表分隔符（因为前面使用了 |\SeealsoGobble|）。
+%    \begin{macrocode}
+\newif\ifseealso@gobblefirstlistsep
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\ifseealso@firstitem}
 % 测试是否是在输出参见列表的第一项。
 %    \begin{macrocode}
@@ -704,7 +713,11 @@
 \def\seealso@printlist#1{%
   \ifcsempty{seealso@#1@list}
     {}
-    {\csuse{seealso@#1@listsep}%
+    {\ifseealso@gobblefirstlistsep
+       \seealso@gobblefirstlistsepfalse
+     \else
+       \csuse{seealso@#1@listsep}%
+     \fi
      \csuse{seealso@#1@nameformat}{\csuse{#1name}}%
      \seealso@firstitemtrue
      \forlistcsloop{\seealso@listitem{#1}}{seealso@#1@list}}}
@@ -723,7 +736,7 @@
   \csuse{seealso@#1@itemformat}{#2}}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 % \begin{macro}{\DeclareSeealsoMacro}
 % \changes{v1.0}{2014/04/05}{新增以定义新的参见命令。}
 % 定义一个新的带页码的参见命令。|#1| 是命令名，|#2| 是该命令使用的参见列
@@ -781,7 +794,7 @@
 \newif\ifseealso@iscractive
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 % \begin{macro}{\seealso@setactivecr}
 % |activecr| 选项为真时，设置换行符为 |\seealso@cr| 并激活。
 %    \begin{macrocode}
@@ -929,6 +942,7 @@
 % \begin{macro}{\SeealsoGobble}
 % \changes{v1.0}{2014/04/06}{支持吞掉分隔符的页码格式，即不显示页码。}
 % \changes{v1.1}{2014/04/07}{处理 \pkg{hyperref} 兼容性。}
+% \changes{v1.1}{2014/04/09}{不再要求设置 \texttt{listsep} 为空。}
 % 检查后面的字符是否 |#1|，如果是则吞掉分隔符 |#1| 及后面的空格。这个宏可用于
 % 设置 |pageformat| 格式，吞掉一个类似 |,\space| 类型的分隔符。
 %
@@ -949,7 +963,22 @@
 % 实际的 |\SeealsoGobble| 命令，检查后面的字符是否 |#1|，如果是则吞掉分隔符
 % |#1| 及后面的空格。
 %    \begin{macrocode}
-\def\seealso@gobble#1{\@ifnextchar#1{\seealso@gobbleignorespaces}{}}
+\def\seealso@gobble#1{%
+  \@ifnextchar#1%
+    {\seealso@gobbleignorespaces}
+%    \end{macrocode}
+% 如果 |\SeealsoGobble| 后面即将输出，即为换行符或 |\SeealsoPrintList|，则决定
+% 后面不再输出第一个参见列表的 |listsep|。
+%    \begin{macrocode}
+    {\ifseealso@activecr
+       \ifx\@let@token\seealso@cr
+         \seealso@gobblefirstlistseptrue
+       \fi
+     \else
+       \ifx\@let@token\SeealsoPrintList
+         \seealso@gobblefirstlistseptrue
+       \fi
+     \fi}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\seealso@gobbleignorespaces}
@@ -969,17 +998,17 @@
 %
 % \begin{macro}{\seealsosetup}
 % \changes{v1.0}{2014/04/05}{新增格式设置。}
+% \changes{v1.1}{2014/04/09}{正确处理有参数的格式。}
 % 设置输出格式。可选参数是一个逗号列表：如果可选参数为空，用 |#2| 设置默认的输
-% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。使用 |\forcsvlist| 而
-% 没有使用 |\docsvlist| 是为了避免因嵌套定义造成使用时参数不得不使用双重
-% |##|。
+% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。使用 |\@for| 而没有使用
+% |\docsvlist| 是为了避免因嵌套定义造成使用时参数不得不使用双重 |##|。
 %    \begin{macrocode}
 \newcommand\seealsosetup[2][]{%
   \ifstrempty{#1}{%
     \setkeys{seealso}{#2}%
   }{%
-    \def\do##1{\setkeys{seealso@##1}{#2}}%
-    \forcsvlist{\do}{#1}}}
+    \@for\reserved@a:=#1\do{%
+      \setkeys{seealso@\reserved@a}{#2}}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1019,7 +1048,7 @@
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
-% 
+%
 % \iffalse
 %</package>
 % \fi
