@@ -119,7 +119,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{251}
+% \CheckSum{252}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -1000,15 +1000,16 @@
 % \changes{v1.0}{2014/04/05}{新增格式设置。}
 % \changes{v1.1}{2014/04/09}{正确处理有参数的格式。}
 % 设置输出格式。可选参数是一个逗号列表：如果可选参数为空，用 |#2| 设置默认的输
-% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。使用 |\@for| 而没有使用
-% |\docsvlist| 是为了避免因嵌套定义造成使用时参数不得不使用双重 |##|。
+% 出格式；否则对可选参数的每一项，设置参数 |#2| 的格式。为了避免因嵌套定义造
+% 成使用时参数不得不使用双重 |##|，这里作了特别的展开处理。
 %    \begin{macrocode}
 \newcommand\seealsosetup[2][]{%
   \ifstrempty{#1}{%
     \setkeys{seealso}{#2}%
   }{%
-    \@for\reserved@a:=#1\do{%
-      \setkeys{seealso@\reserved@a}{#2}}}}
+    \edef\do##1{%
+      \noexpand\setkeys{seealso@##1}{\unexpanded{#2}}}%
+    \docsvlist{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
