@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2012--2013 by Leo Liu <leoliu.pku@gmail.com>
+% Copyright (C) 2012--2014 by Leo Liu <leoliu.pku@gmail.com>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -154,7 +154,7 @@ If you are interested in the process of development you may observe
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{zhmCJK}
 %<*package>
-    [2013/08/10 v0.9 setup CJK fonts dynamically]
+    [2014/06/20 v0.9a setup CJK fonts dynamically]
 %</package>
 %
 %<*driver>
@@ -231,7 +231,7 @@ If you are interested in the process of development you may observe
 %</driver>
 % \fi
 %
-% \CheckSum{639}
+% \CheckSum{631}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -868,16 +868,17 @@ If you are interested in the process of development you may observe
 %    \end{macrocode}
 % \end{macro}
 %
-%
-% 在导言区和正文中分别开启 \pkg{CJK} 的功能。
+% \changes{v0.9a}{2014/06/20}{使用 \texttt{CJK*} 的环境头代替完整 \texttt{CJK*}
+% 环境，可以减少一个全局分组。（由李清建议）}
+% 在导言区和正文中分别开启 \pkg{CJK} 的功能。这里使用 "\CJK*" 代替原来的 "CJK"
+% 环境，可以避免在 "document" 环境内引入一层分组，同时全局使用也不需要在全文最
+% 后使用 "\end{CJK}"，最后也不需要 "\clearpage"。
 %    \begin{macrocode}
 \AtEndOfPackage{\CJK@makeActive}
 \edef\document{%
   \unexpanded\expandafter{\document}%
-  \unexpanded{\begin{CJK*}{\zhm@encoding}{\CJKfamilydefault}}}
-\edef\enddocument{%
-  \unexpanded{\clearpage\end{CJK*}}%
-  \unexpanded\expandafter{\enddocument}}
+  \unexpanded{%
+    \@nameuse{CJK*}{\zhm@encoding}{\CJKfamilydefault}}}
 %    \end{macrocode}
 %
 % \begin{macro}{\zhm@fontnum}
@@ -1095,6 +1096,8 @@ If you are interested in the process of development you may observe
 % \end{macro}
 %
 % \begin{macro}{\zhm@setfontmap}
+% \begin{macro}{\zhm@maplines}
+% \changes{v0.9a}{2014/06/20}{保存重复的字体映射。（李清）}
 % 设置字体映射，两个参数是字体编号和字体文件名。字体映射需要在输出例程初始处设
 % 置。同时将映射行完全展开后保存起来备用。
 %    \begin{macrocode}
@@ -1104,6 +1107,7 @@ If you are interested in the process of development you may observe
     \unexpanded\expandafter{\zhm@maplines}%
     \zhm@mapline{#1}{#2}}}
 %    \end{macrocode}
+% \end{macro}
 % \end{macro}
 %
 % 如果载入了 \pkg{atbegshi} 宏包，则还要处理修改了的输出例程。这会影响
