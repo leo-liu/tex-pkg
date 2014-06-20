@@ -231,7 +231,7 @@ If you are interested in the process of development you may observe
 %</driver>
 % \fi
 %
-% \CheckSum{631}
+% \CheckSum{723}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -1419,6 +1419,57 @@ If you are interested in the process of development you may observe
 \DeclareRobustCommand\ttfamily
         {\not@math@alphabet\ttfamily\mathtt
          \fontfamily\ttdefault\CJKfamily{\CJKttdefault}\selectfont}
+%    \end{macrocode}
+%
+% \begin{macro}{\zhm@setup@pinyin@UTF8}
+% \changes{v???}{2014/06/20}{处理 UTF-8 编码下的拼音符号输入。}
+% 下面简单处理 UTF-8 编码下的汉语拼音符号，让下列拼音符号
+% \begin{quote}
+%   āáǎàōóǒòēéěèêīíǐìūúǔùǖǘǚǜü
+% \end{quote}
+% 可以直接输入，不受 \pkg{CJK} 包影响。
+%    \begin{macrocode}
+\@namedef{zhm@setup@pinyin@UTF8}{%
+  \@namedef{u8:\detokenize{ā}}{\={a}}%
+  \@namedef{u8:\detokenize{á}}{\'{a}}%
+  \@namedef{u8:\detokenize{ǎ}}{\v{a}}%
+  \@namedef{u8:\detokenize{à}}{\`{a}}%
+  \@namedef{u8:\detokenize{ō}}{\={o}}%
+  \@namedef{u8:\detokenize{ó}}{\'{o}}%
+  \@namedef{u8:\detokenize{ǒ}}{\v{o}}%
+  \@namedef{u8:\detokenize{ò}}{\`{o}}%
+  \@namedef{u8:\detokenize{ē}}{\={e}}%
+  \@namedef{u8:\detokenize{é}}{\'{e}}%
+  \@namedef{u8:\detokenize{ě}}{\v{e}}%
+  \@namedef{u8:\detokenize{è}}{\`{e}}%
+  \@namedef{u8:\detokenize{ê}}{\^{e}}%
+  \@namedef{u8:\detokenize{ī}}{\={\i}}%
+  \@namedef{u8:\detokenize{í}}{\'{\i}}%
+  \@namedef{u8:\detokenize{ǐ}}{\v{\i}}%
+  \@namedef{u8:\detokenize{ì}}{\`{\i}}%
+  \@namedef{u8:\detokenize{ū}}{\={u}}%
+  \@namedef{u8:\detokenize{ú}}{\'{u}}%
+  \@namedef{u8:\detokenize{ǔ}}{\v{u}}%
+  \@namedef{u8:\detokenize{ù}}{\`{u}}%
+  \@namedef{u8:\detokenize{ǖ}}{\={\"{u}}}%
+  \@namedef{u8:\detokenize{ǘ}}{\'{\"{u}}}%
+  \@namedef{u8:\detokenize{ǚ}}{\v{\"{u}}}%
+  \@namedef{u8:\detokenize{ǜ}}{\`{\"{u}}}%
+  \@namedef{u8:\detokenize{ü}}{\"{u}}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\zhm@setup@pinyin}
+% 调用具体编码下的拼音设置。
+%    \begin{macrocode}
+\def\zhm@setup@pinyin{%
+  \@nameuse{zhm@setup@pinyin@\zhm@encoding}}
+\zhm@setup@pinyin
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macrocode}
 %</package>
 %    \end{macrocode}
 %
