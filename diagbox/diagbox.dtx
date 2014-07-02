@@ -63,7 +63,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{525}
+% \CheckSum{553}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -522,14 +522,19 @@
 \newdimen\diagbox@sepr
 %    \end{macrocode}
 %
-% 定义 "\diagbox" 的键值选项。
-% \changes{v2.1}{2014/07/03}{允许在 \texttt{width} 和 \texttt{height} 的选项中写
-% 表达式计算长度。}
+% 下面定义 "\diagbox" 的键值选项。
+%
+% \changes{v2.1}{2014/07/03}{允许在 \texttt{width} 和 \texttt{height} 的命令选项
+% 中写表达式计算长度。}
+% 盒子的内容宽度和高度。
 %    \begin{macrocode}
 \define@key{diagbox}{width}{%
   \setlength{\diagbox@wd}{\dimexpr#1\relax}}
 \define@key{diagbox}{height}{%
   \setlength{\diagbox@ht}{\dimexpr#1\relax}}
+%    \end{macrocode}
+% 盒子计算边界时是否忽略左右的空白。
+%    \begin{macrocode}
 \define@key{diagbox}{trim}{%
   \@tfor\@reserveda:=#1\do{%
     \ifcsname diagbox@sep\@reserveda\endcsname
@@ -537,6 +542,9 @@
     \else
       \PackageError{diagbox}{Unknown trim option `#1'.}{l, r, lr and rl are supported.}%
     \fi}}
+%    \end{macrocode}
+% 盒子的方向。
+%    \begin{macrocode}
 \define@key{diagbox}{dir}{%
   \def\diagbox@dir{#1}%
   \unless\ifcsname diagbox@dir@#1\endcsname
@@ -547,6 +555,23 @@
 \let\diagbox@dir@SW\relax
 \let\diagbox@dir@NE\relax
 \let\diagbox@dir@NW\relax
+%    \end{macrocode}
+% \changes{v2.1}{2014/07/03}{增加命令选项 \texttt{linewidth}, \texttt{linecolor}
+% 设置斜线宽度与颜色。}
+% 斜线宽度与颜色。
+%    \begin{macrocode}
+\define@key{diagbox}{linewidth}{%
+  \linethickness{\dimexpr#1\relax}}
+\define@key{diagbox}{linecolor}{%
+  \def\diagbox@setlinecolor{\color{#1}}}
+\let\diagbox@setlinecolor\empty
+%    \end{macrocode}
+% \changes{v2.1}{2014/07/03}{增加命令选项 \texttt{font} 支持设置内容字体。}
+% 设置内容字体。
+%    \begin{macrocode}
+\define@key{diagbox}{font}{%
+  \def\diagbox@font{#1}}
+\let\diagbox@font\empty
 %    \end{macrocode}
 %
 % \begin{macro}{\diagbox@pict}
@@ -569,6 +594,7 @@
 \def\diagbox@double@pict@SE{%
   \put(0,0) {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,\strip@pt\diagbox@ht)(\strip@pt\diagbox@wd,0)}
 %    \end{macrocode}
 % \end{macro}
@@ -586,6 +612,7 @@
 \def\diagbox@double@pict@NE{%
   \put(0,\strip@pt\diagbox@ht) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(\strip@pt\diagbox@wd,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,0)(\strip@pt\diagbox@wd,\strip@pt\diagbox@ht)}
 %    \end{macrocode}
 % \end{macro}
@@ -613,9 +640,13 @@
   \def\diagbox@part{double}%
   \setkeys{diagbox}{dir=NW,#1}%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+      \diagbox@font #2
+    \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}
+      \diagbox@font #3
+    \end{tabular}}%
   \ifdim\diagbox@wd=\z@
     \ifdim\wd\diagbox@boxa>\wd\diagbox@boxb
       \diagbox@wd=\dimexpr2\wd\diagbox@boxa+\diagbox@sepl+\diagbox@sepr\relax
@@ -635,11 +666,17 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@NW#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+      \diagbox@font#1
+    \end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#2\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+      \diagbox@font#2
+    \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}
+      \diagbox@font#3
+    \end{tabular}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -674,6 +711,7 @@
   \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxm}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,\yym)(\x,0)
   \Line(\xm,\y)(\x,0)}
 %    \end{macrocode}
@@ -686,6 +724,7 @@
   \put(0,\y)  {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxm}}
   \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,0)(\xxm,\y)
   \Line(0,0)(\x,\yym)}
 %    \end{macrocode}
@@ -698,6 +737,7 @@
   \put(0,\y) {\makebox(0,0)[tl]{\box\diagbox@boxa}}
   \put(0,0)  {\makebox(0,0)[bl]{\box\diagbox@boxm}}
   \put(\x,0) {\makebox(0,0)[br]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,\ym)(\x,\y)
   \Line(\xm,0)(\x,\y)}
 %    \end{macrocode}
@@ -710,6 +750,7 @@
   \put(0,0)   {\makebox(0,0)[bl]{\box\diagbox@boxa}}
   \put(\x,0)  {\makebox(0,0)[br]{\box\diagbox@boxm}}
   \put(\x,\y) {\makebox(0,0)[tr]{\box\diagbox@boxb}}
+  \diagbox@setlinecolor
   \Line(0,\y)(\xxm,0)
   \Line(0,\y)(\x,\ym)}
 %    \end{macrocode}
