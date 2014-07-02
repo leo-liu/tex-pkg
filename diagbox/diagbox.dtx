@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2011 by Leo Liu <leoliu.pku@gmail.com>
+% Copyright (C) 2011--2014 by Leo Liu <leoliu.pku@gmail.com>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{diagbox}
 %<*package>
-    [2011/11/23 v2.0 Making table heads with diagonal lines]
+    [2014/07/03 v2.1 Making table heads with diagonal lines]
 %</package>
 %
 %<*driver>
@@ -63,7 +63,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{521}
+% \CheckSum{525}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -176,10 +176,10 @@
 % \begin{description}
 % \item[width] Specify the width of the box explicitly. If it is omitted,
 % package will calculate a width automatically.
-% 
+%
 % \item[height] Specify the height of the box explicitly. If it is omitted,
 % package will calculate a height automatically.
-% 
+%
 % \item[dir] Specify the direction of the diagonal line. The value can be
 % "NW", "NE", "SW" and "SE". Default value is "NW". The meaning of the values
 % see below.
@@ -507,7 +507,7 @@
 %    \begin{macrocode}
 \RequirePackage[nomessages]{fp}
 %    \end{macrocode}
-% 
+%
 % 分配用到的盒子寄存器。它们分别对应于 "\diagbox" 三个必选参数的内容。
 %    \begin{macrocode}
 \newbox\diagbox@boxa
@@ -521,13 +521,15 @@
 \newdimen\diagbox@sepl
 \newdimen\diagbox@sepr
 %    \end{macrocode}
-% 
+%
 % 定义 "\diagbox" 的键值选项。
+% \changes{v2.1}{2014/07/03}{允许在 \texttt{width} 和 \texttt{height} 的选项中写
+% 表达式计算长度。}
 %    \begin{macrocode}
 \define@key{diagbox}{width}{%
-  \setlength{\diagbox@wd}{#1}}
+  \setlength{\diagbox@wd}{\dimexpr#1\relax}}
 \define@key{diagbox}{height}{%
-  \setlength{\diagbox@ht}{#1}}
+  \setlength{\diagbox@ht}{\dimexpr#1\relax}}
 \define@key{diagbox}{trim}{%
   \@tfor\@reserveda:=#1\do{%
     \ifcsname diagbox@sep\@reserveda\endcsname
