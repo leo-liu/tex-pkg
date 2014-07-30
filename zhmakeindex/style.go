@@ -12,7 +12,7 @@ import (
 	"unicode/utf8"
 	"code.google.com/p/go.text/transform"
 
-	"./kpathsea"
+	"code.google.com/p/leoliu-tex-pkg/zhmakeindex/kpathsea"
 )
 
 // 输入格式
