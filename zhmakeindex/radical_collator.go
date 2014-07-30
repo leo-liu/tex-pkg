@@ -8,7 +8,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"code.google.com/p/leoliu-tex-pkg/zhmakeindex/CJK"
+	"code.google.com/p/leoliu-tex-pkg/trunk/zhmakeindex/CJK"
 )
 
 // 汉字按部首-除部首笔画数排序，汉字按部首分组排在英文字母组后面
