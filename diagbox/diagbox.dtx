@@ -37,6 +37,7 @@
 \usepackage{diagbox}
 \usepackage[left=1.7in,top=1in,bottom=1in]{geometry}
 \usepackage{fvrb-ex}
+\usepackage{amsmath}
 \usepackage[UTF8]{ctex}
 \makeatletter
 \renewcommand\glossary@prologue{%
@@ -63,7 +64,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{553}
+% \CheckSum{612}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -494,6 +495,7 @@
 %<*package>
 % \fi
 %
+% \subsection{实现依赖的工具包}
 %
 % 使用 key-value 界面。
 %    \begin{macrocode}
@@ -505,8 +507,11 @@
 %    \end{macrocode}
 % 计算依赖 \pkg{fp} 宏包。
 %    \begin{macrocode}
-\RequirePackage[nomessages]{fp}
+\PassOptionsToPackage{nomessages}{fp}
+\RequirePackage{fp}
 %    \end{macrocode}
+%
+% \subsection{资源分配}
 %
 % 分配用到的盒子寄存器。它们分别对应于 "\diagbox" 三个必选参数的内容。
 %    \begin{macrocode}
@@ -518,31 +523,104 @@
 %    \begin{macrocode}
 \newdimen\diagbox@wd
 \newdimen\diagbox@ht
-\newdimen\diagbox@sepl
-\newdimen\diagbox@sepr
+\newdimen\diagbox@inwd
+\newdimen\diagbox@insepl
+\newdimen\diagbox@insepr
+\newdimen\diagbox@outsepl
+\newdimen\diagbox@outsepr
 %    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\diagbox@clear{%
+  \diagbox@wd=\z@
+  \diagbox@ht=\z@
+  \diagbox@inwd=\z@
+  \diagbox@insepl=\tabcolsep
+  \diagbox@insepr=\tabcolsep
+  \diagbox@outsepl=-\tabcolsep
+  \diagbox@outsepr=-\tabcolsep
+}
+%    \end{macrocode}
+%
+% \subsection{命令选项定义}
 %
 % 下面定义 "\diagbox" 的键值选项。
 %
 % \changes{v2.1}{2014/07/03}{允许在 \texttt{width} 和 \texttt{height} 的命令选项
 % 中写表达式计算长度。}
-% 盒子的内容宽度和高度。
+% 斜线盒子的总宽度和高度。
 %    \begin{macrocode}
 \define@key{diagbox}{width}{%
   \setlength{\diagbox@wd}{\dimexpr#1\relax}}
 \define@key{diagbox}{height}{%
   \setlength{\diagbox@ht}{\dimexpr#1\relax}}
 %    \end{macrocode}
-% 盒子计算边界时是否忽略左右的空白。
+%
+% \changes{v2.1}{2014/08/15}{盒子内容宽度 \texttt{innerwidth} 命令选项。}
+% 盒子内容的宽度。
+%    \begin{macrocode}
+\define@key{diagbox}{innerwidth}{%
+  \setlength{\diagbox@inwd}{\dimexpr#1\relax}}
+%    \end{macrocode}
+%
+% \changes{v2.1}{2014/08/15}{盒子内容与斜线框距离 \texttt{innerleftsep},
+% \texttt{innerrightsep} 命令选项。}
+% 盒子内容与斜线框距离。该内部距离与盒子内容宽度之和应为斜线盒子总宽度，即
+% \[
+%   "innerleftsep" + "innerwidth" + "innerrightsep" = "width".
+% \]
+%    \begin{macrocode}
+\define@key{diagbox}{innerleftsep}{%
+  \setlength{\diagbox@insepl}{\dimexpr#1\relax}}
+\define@key{diagbox}{innerrightsep}{%
+  \setlength{\diagbox@insepr}{\dimexpr#1\relax}}
+%    \end{macrocode}
+%
+% \changes{v2.1}{2014/08/15}{斜线盒子与表格单元边框距离 \texttt{outerleftsep},
+% \texttt{outerrightsep} 命令选项。}
+% 斜线盒子与表格单元边框距离。该外部间距应为实际表列内容与列分隔线之间距离的相
+% 反数，以此保证斜线与表格竖线能相接，即应输入参数保证
+% \begin{align*}
+%   "outerleftsep" + "LEFTtabcolsep" &= 0\,\mathrm{pt}, \\
+%   "outerrightsep" + "RIGHTtabcolsep" &= 0\,\mathrm{pt}.
+% \end{align*}
+%    \begin{macrocode}
+\define@key{diagbox}{outerleftsep}{%
+  \setlength{\diagbox@outsepl}{\dimexpr#1\relax}}
+\define@key{diagbox}{outerrightsep}{%
+  \setlength{\diagbox@outsepr}{\dimexpr#1\relax}}
+%    \end{macrocode}
+%
+% \changes{v2.1}{2014/08/15}{左右边距 \texttt{leftsep}, \texttt{rightsep} 命令
+% 选项。}
+% 设置左右边距，它将同时设置盒子内容与斜线框的内部间距，以及斜线盒子与表格单元
+% 边框的外部间距。有关系：
+% \begin{align*}
+% "innerleftsep" &:= "leftsep",  &  "innerrightsep" &:= "rightsep", \\
+% "outerleftsep" &:= -"leftsep",  &  "outerrightsep" &:= -"rightsep".
+% \end{align*}
+%    \begin{macrocode}
+\define@key{diagbox}{outerleftsep}{%
+  \setlength{\diagbox@insepl}{\dimexpr#1\relax}%
+  \setlength{\diagbox@outsepl}{-\dimexpr#1\relax}}
+\define@key{diagbox}{outerrightsep}{%
+  \setlength{\diagbox@insepr}{\dimexpr#1\relax}%
+  \setlength{\diagbox@outsepr}{-\dimexpr#1\relax}}
+%    \end{macrocode}
+%
+% 盒子计算边界时是否忽略左右的空白。"trim=l" 效果等同于 "leftsep=0pt"；"trim=r"
+% 效果等同于 "rightsep=0pt"。
 %    \begin{macrocode}
 \define@key{diagbox}{trim}{%
   \@tfor\@reserveda:=#1\do{%
-    \ifcsname diagbox@sep\@reserveda\endcsname
-      \setlength{\csname diagbox@sep\@reserveda\endcsname}{\z@}%
+    \ifcsname diagbox@insep\@reserveda\endcsname
+      \setlength{\csname diagbox@insep\@reserveda\endcsname}{\z@}%
+      \setlength{\csname diagbox@outsep\@reserveda\endcsname}{\z@}%
     \else
       \PackageError{diagbox}{Unknown trim option `#1'.}{l, r, lr and rl are supported.}%
     \fi}}
 %    \end{macrocode}
+%
 % 盒子的方向。
 %    \begin{macrocode}
 \define@key{diagbox}{dir}{%
@@ -556,6 +634,7 @@
 \let\diagbox@dir@NE\relax
 \let\diagbox@dir@NW\relax
 %    \end{macrocode}
+%
 % \changes{v2.1}{2014/07/03}{增加命令选项 \texttt{linewidth}, \texttt{linecolor}
 % 设置斜线宽度与颜色。}
 % 斜线宽度与颜色。
@@ -566,6 +645,7 @@
   \def\diagbox@setlinecolor{\color{#1}}}
 \let\diagbox@setlinecolor\empty
 %    \end{macrocode}
+%
 % \changes{v2.1}{2014/07/03}{增加命令选项 \texttt{font} 支持设置内容字体。}
 % 设置内容字体。
 %    \begin{macrocode}
@@ -574,14 +654,16 @@
 \let\diagbox@font\empty
 %    \end{macrocode}
 %
+% \subsection{绘制斜线盒子}
+%
 % \begin{macro}{\diagbox@pict}
 % 这是带斜线的盒子本身。由一个 "picture" 环境实现。
 %    \begin{macrocode}
 \def\diagbox@pict{%
   \unitlength\p@
   \begin{picture}
-    (\strip@pt\dimexpr\diagbox@wd-\diagbox@sepl-\diagbox@sepr\relax,\strip@pt\diagbox@ht)
-    (\strip@pt\diagbox@sepl,0)
+    (\strip@pt\dimexpr\diagbox@wd+\diagbox@outsepl+\diagbox@outsepr\relax,\strip@pt\diagbox@ht)
+    (\strip@pt\dimexpr-\diagbox@outsepl\relax,0)
       \@nameuse{diagbox@\diagbox@part @pict@\diagbox@dir}
   \end{picture}}
 %    \end{macrocode}
@@ -633,25 +715,22 @@
 %    \begin{macrocode}
 \def\diagbox@double#1#2#3{%
   \begingroup
-  \diagbox@wd=\z@
-  \diagbox@ht=\z@
-  \diagbox@sepl=\tabcolsep
-  \diagbox@sepr=\tabcolsep
+  \diagbox@clear
   \def\diagbox@part{double}%
   \setkeys{diagbox}{dir=NW,#1}%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
       \diagbox@font #2
     \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}
       \diagbox@font #3
     \end{tabular}}%
   \ifdim\diagbox@wd=\z@
     \ifdim\wd\diagbox@boxa>\wd\diagbox@boxb
-      \diagbox@wd=\dimexpr2\wd\diagbox@boxa+\diagbox@sepl+\diagbox@sepr\relax
+      \diagbox@wd=\dimexpr2\wd\diagbox@boxa+\diagbox@insepl+\diagbox@insepr\relax
     \else
-      \diagbox@wd=\dimexpr2\wd\diagbox@boxb+\diagbox@sepl+\diagbox@sepr\relax
+      \diagbox@wd=\dimexpr2\wd\diagbox@boxb+\diagbox@insepl+\diagbox@insepr\relax
     \fi
   \fi
   \ifdim\diagbox@ht=\z@
@@ -666,15 +745,15 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@NW#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
       \diagbox@font#1
     \end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
       \diagbox@font#2
     \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}
       \diagbox@font#3
     \end{tabular}}}
 %    \end{macrocode}
@@ -690,11 +769,11 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@SE#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@sepl}}l@{}}#1\end{tabular}}%
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}#1\end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#2\end{tabular}}%
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}#2\end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@sepr}}}#3\end{tabular}}}
+    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}#3\end{tabular}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -764,10 +843,7 @@
 %    \begin{macrocode}
 \def\diagbox@triple#1#2#3#4{%
   \begingroup
-  \diagbox@wd=\z@
-  \diagbox@ht=\z@
-  \diagbox@sepl=\tabcolsep
-  \diagbox@sepr=\tabcolsep
+  \diagbox@clear
   \def\diagbox@part{triple}%
   \setkeys{diagbox}{dir=NW,#1}%
   \@nameuse{diagbox@triple@setbox@\diagbox@dir}{#2}{#3}{#4}%
@@ -819,6 +895,7 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \subsection{用户命令}
 %
 % \begin{macro}{\diagbox}
 % \changes{v2.0}{2011/11/22}{判断参数个数，选择两部分或三部分盒子。}
