@@ -1,0 +1,13 @@
+syntax: glob
+diagbox/**.idx
+diagbox/z.*
+**.swp
+**.aux
+**~
+**.glo
+**.hd
+**.out
+**.pdf
+**.sty
+**.tmp
+**.zip
