@@ -133,8 +133,8 @@ type IndexItem struct {
 }
 
 type PageRange struct {
-	begin PageInput
-	end   PageInput
+	begin PageNumber
+	end   PageNumber
 }
 
 func (p *PageRange) diff() int {
