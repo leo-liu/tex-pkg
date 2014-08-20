@@ -132,6 +132,7 @@ type IndexItem struct {
 	page  []PageRange
 }
 
+// 用于输出的页码区间
 type PageRange struct {
 	begin PageNumber
 	end   PageNumber
