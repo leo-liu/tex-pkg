@@ -4,13 +4,13 @@ package main
 
 import (
 	"bufio"
+	"golang.org/x/text/transform"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
-	"code.google.com/p/go.text/transform"
 
 	"code.google.com/p/leoliu-tex-pkg/zhmakeindex/kpathsea"
 )

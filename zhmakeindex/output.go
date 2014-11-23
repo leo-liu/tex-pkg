@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	"code.google.com/p/go.text/transform"
+	"golang.org/x/text/transform"
 )
 
 // 输出索引
