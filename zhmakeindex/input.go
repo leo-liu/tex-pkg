@@ -4,13 +4,13 @@ package main
 
 import (
 	"errors"
+	"golang.org/x/text/transform"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"unicode"
-	"code.google.com/p/go.text/transform"
 
 	"github.com/yasushi-saito/rbtree"
 )
