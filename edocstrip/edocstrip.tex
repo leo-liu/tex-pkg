@@ -1,0 +1,87 @@
+\expandafter\ifx\csname edocstripversion\endcsname\relax\else
+  \endinput
+\fi
+
+\chardef\edocstripversion=1
+
+
+\expandafter\ifx\csname moduleOption\endcsname\relax % l3docstrip=false
+
+\expandafter\ifx\csname ydocstripversion\endcsname\relax % ydocstrip=false (and l3docstrip=false)
+
+  \input docstrip
+
+  \def\checkOption<#1{%
+    \ifcase
+      \ifx*#10\else \ifx/#11\else
+      \ifx+#12\else \ifx-#13\else
+      \ifx<#14\else \ifx.#15\else
+      6\fi\fi\fi\fi\fi\fi\relax
+    \expandafter\starOption\or
+    \expandafter\slashOption\or
+    \expandafter\plusOption\or
+    \expandafter\minusOption\or
+    \expandafter\verbOption\or
+    \expandafter\expOption\or
+    \expandafter\doOption\fi
+    #1}
+
+\else % ydocstrip=true
+
+  \def\checkOption<#1{%
+    \ifcase
+      \ifx*#10\else \ifx/#11\else
+      \ifx+#12\else \ifx-#13\else
+      \ifx<#14\else
+      \ifx=#15\else
+      \ifx!#16\else
+      \ifx.#17\else
+      10\fi\fi\fi\fi\fi\fi\fi\fi\relax
+    \expandafter\starOption\or
+    \expandafter\slashOption\or
+    \expandafter\plusOption\or
+    \expandafter\minusOption\or
+    \expandafter\verbOption\or
+    \expandafter\varOption\or
+    \expandafter\valueOption\or
+    \expandafter\expOption\else
+    \expandafter\doOption\fi
+    #1}
+
+\fi\else % l3docstrip=true
+
+  \def\checkOption<#1{%
+    \ifcase
+      \ifx*#10\else \ifx/#11\else
+      \ifx+#12\else \ifx-#13\else
+      \ifx<#14\else \ifx @#15\else
+      \ifx.#16\else
+      7\fi\fi\fi\fi\fi\fi\fi\relax
+    \expandafter\starOption\or
+    \expandafter\slashOption\or
+    \expandafter\plusOption\or
+    \expandafter\minusOption\or
+    \expandafter\verbOption\or
+    \expandafter\moduleOption\or
+    \expandafter\expOption\or
+    \expandafter\doOption\fi
+    #1%
+  }
+
+\fi % end of \checkOption
+
+
+\def\expOption .#1>#2\endLine{%
+  \maybeMsg{<.#1 . >}%
+  \Evaluate{#1}%
+  \begingroup
+    \catcode`\\=0 \catcode`\{=1 \catcode`\}=2
+    \xdef\expandedLineStuff{\scantokens{#2\noexpand}}%
+  \endgroup
+  \def\do##1##2##3{%
+    \if1\Expr{##2}\StreamPut##1{\expandedLineStuff}\fi
+    }%
+  \activefiles
+  }
+
+\endinput
