@@ -871,11 +871,14 @@ If you are interested in the process of development you may observe
 %
 % \changes{v0.9a}{2014/06/20}{使用 \texttt{CJK*} 的环境头代替完整 \texttt{CJK*}
 % 环境，可以减少一个全局分组。（由李清建议）}
-% 在导言区和正文中分别开启 \pkg{CJK} 的功能。这里使用 "\CJK*" 代替原来的 "CJK"
-% 环境，可以避免在 "document" 环境内引入一层分组，同时全局使用也不需要在全文最
-% 后使用 "\end{CJK}"，最后也不需要 "\clearpage"。
+% 在导言区和正文中分别开启 \pkg{CJK} 的功能。导言区使用 "\CJK@makeActive" 设置
+% 128 以上字符为活动字符，并用 "\CJK@@enc" 定义这些活动字符。这里使用 "\CJK*"
+% 代替原来的 "CJK" 环境，可以避免在 "document" 环境内引入一层分组，同时全局使
+% 用也不需要在全文最后使用 "\end{CJK}"，最后也不需要 "\clearpage"。
 %    \begin{macrocode}
-\AtEndOfPackage{\CJK@makeActive}
+\AtEndOfPackage{%
+  \CJK@makeActive
+  \CJK@@enc}
 \AtBeginDocument{%
   \@nameuse{CJK*}{\zhm@encoding}{\CJKfamilydefault}}
 %    \end{macrocode}
