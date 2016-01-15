@@ -21,4 +21,4 @@ Some personal TeX packages
 
   * *zhtex*: A very simple CJK font support macros for Plain TeX, mostly for MetaPost. Personal use only.
 
-**Note:** zhmakeindex has moved to https://github/leo-liu/zhmakeindex/
+**Note:** zhmakeindex has been moved to https://github.com/leo-liu/zhmakeindex
