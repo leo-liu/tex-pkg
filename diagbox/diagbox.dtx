@@ -65,7 +65,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{612}
+% \CheckSum{636}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -616,16 +616,16 @@
 % \changes{v2.1}{2014/08/15}{左右边距 \texttt{leftsep}, \texttt{rightsep} 命令
 % 选项。}
 % 设置左右边距，它将同时设置盒子内容与斜线框的内部间距，以及斜线盒子与表格单元
-% 边框的外部间距。有关系：
+% 边框的外部间距。并保持关系：
 % \begin{align*}
 % "innerleftsep" &:= "leftsep",  &  "innerrightsep" &:= "rightsep", \\
 % "outerleftsep" &:= -"leftsep",  &  "outerrightsep" &:= -"rightsep".
 % \end{align*}
 %    \begin{macrocode}
-\define@key{diagbox}{outerleftsep}{%
+\define@key{diagbox}{leftsep}{%
   \setlength{\diagbox@insepl}{\dimexpr#1\relax}%
   \setlength{\diagbox@outsepl}{-\dimexpr#1\relax}}
-\define@key{diagbox}{outerrightsep}{%
+\define@key{diagbox}{rightsep}{%
   \setlength{\diagbox@insepr}{\dimexpr#1\relax}%
   \setlength{\diagbox@outsepr}{-\dimexpr#1\relax}}
 %    \end{macrocode}
