@@ -511,6 +511,11 @@
 \PassOptionsToPackage{nomessages}{fp}
 \RequirePackage{fp}
 %    \end{macrocode}
+% 内部控制 \pkg{array} 宏包。
+%    \begin{macrocode}
+\RequirePackage{array}
+%    \end{macrocode}
+%
 %
 % \subsection{资源分配}
 %
@@ -720,12 +725,12 @@
   \def\diagbox@part{double}%
   \setkeys{diagbox}{dir=NW,#1}%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
-      \diagbox@font #2
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+      #2
     \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}
-      \diagbox@font #3
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+      #3
     \end{tabular}}%
   \ifdim\diagbox@wd=\z@
     \ifdim\wd\diagbox@boxa>\wd\diagbox@boxb
@@ -746,16 +751,16 @@
 %    \begin{macrocode}
 \def\diagbox@triple@setbox@NW#1#2#3{%
   \setbox\diagbox@boxa=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
-      \diagbox@font#1
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+      #1
     \end{tabular}}%
   \setbox\diagbox@boxm=\hbox{%
-    \begin{tabular}{@{\hspace{\diagbox@insepl}}l@{}}
-      \diagbox@font#2
+    \begin{tabular}{@{\hspace{\diagbox@insepl}}>{\diagbox@font}l@{}}
+      #2
     \end{tabular}}%
   \setbox\diagbox@boxb=\hbox{%
-    \begin{tabular}{@{}r@{\hspace{\diagbox@insepr}}}
-      \diagbox@font#3
+    \begin{tabular}{@{}>{\diagbox@font}r@{\hspace{\diagbox@insepr}}}
+      #3
     \end{tabular}}}
 %    \end{macrocode}
 % \end{macro}
