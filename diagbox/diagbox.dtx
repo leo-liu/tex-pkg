@@ -529,7 +529,6 @@
 %    \begin{macrocode}
 \newdimen\diagbox@wd
 \newdimen\diagbox@ht
-\newdimen\diagbox@inwd
 \newdimen\diagbox@insepl
 \newdimen\diagbox@insepr
 \newdimen\diagbox@outsepl
@@ -540,7 +539,6 @@
 \def\diagbox@clear{%
   \diagbox@wd=\z@
   \diagbox@ht=\z@
-  \diagbox@inwd=\z@
   \diagbox@insepl=\tabcolsep
   \diagbox@insepr=\tabcolsep
   \diagbox@outsepl=-\tabcolsep
@@ -554,32 +552,50 @@
 %
 % \changes{v2.1}{2014/07/03}{允许在 \texttt{width} 和 \texttt{height} 的命令选项
 % 中写表达式计算长度。}
-% 斜线盒子的总宽度和高度。
+% \changes{v2.1}{2016/02/24}{允许在 \texttt{height} 选项中使用
+% \texttt{\textbackslash line} 表示行高。}
+% 斜线盒子的总宽度。
 %    \begin{macrocode}
 \define@key{diagbox}{width}{%
+  \unless\ifdim\diagbox@wd=\z@
+    \PackageWarning{diagbox}%
+      {You should not set width/innerwidth option more than once.}%
+  \fi
   \setlength{\diagbox@wd}{\dimexpr#1\relax}}
-\define@key{diagbox}{height}{%
-  \setlength{\diagbox@ht}{\dimexpr#1\relax}}
 %    \end{macrocode}
-%
-% \changes{v2.1}{2014/08/15}{盒子内容宽度 \texttt{innerwidth} 命令选项。}
-% 盒子内容的宽度。
+% 斜线盒子的总高度，参数中可使用 "\line" 表示行高。
 %    \begin{macrocode}
-\define@key{diagbox}{innerwidth}{%
-  \setlength{\diagbox@inwd}{\dimexpr#1\relax}}
+\define@key{diagbox}{height}{%
+  \begingroup
+    \def\line{\normalbaselineskip}%
+    \edef\x{\setlength{\diagbox@ht}{\dimexpr#1\relax}}%
+  \expandafter\endgroup\x}
 %    \end{macrocode}
 %
 % \changes{v2.1}{2014/08/15}{盒子内容与斜线框距离 \texttt{innerleftsep},
 % \texttt{innerrightsep} 命令选项。}
-% 盒子内容与斜线框距离。该内部距离与盒子内容宽度之和应为斜线盒子总宽度，即
-% \[
-%   "innerleftsep" + "innerwidth" + "innerrightsep" = "width".
-% \]
+% 盒子内容与斜线框左右的距离。
 %    \begin{macrocode}
 \define@key{diagbox}{innerleftsep}{%
   \setlength{\diagbox@insepl}{\dimexpr#1\relax}}
 \define@key{diagbox}{innerrightsep}{%
   \setlength{\diagbox@insepr}{\dimexpr#1\relax}}
+%    \end{macrocode}
+%
+% \changes{v2.1}{2016/02/24}{盒子内容宽度 \texttt{innerwidth} 命令选项。}
+% 设置盒子内容的宽度（与列格式 "p{宽度}" 对应）。盒子内容宽度加上盒子与斜线框
+% 左右距离之和应为斜线盒子总宽度，即有
+% \[
+%   "innerleftsep" + "innerwidth" + "innerrightsep" = "width".
+% \]
+% "innerwidth" 选项将通过设置盒子总宽度，维护上面的关系式。
+%    \begin{macrocode}
+\define@key{diagbox}{innerwidth}{%
+  \unless\ifdim\diagbox@wd=\z@
+    \PackageWarning{diagbox}%
+      {You should not set width/innerwidth option more than once.}%
+  \fi
+  \setlength{\diagbox@wd}{\dimexpr#1+\diagbox@insepl+\diagbox@insepr\relax}}
 %    \end{macrocode}
 %
 % \changes{v2.1}{2014/08/15}{斜线盒子与表格单元边框距离 \texttt{outerleftsep},
