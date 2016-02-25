@@ -66,7 +66,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{632}
+% \CheckSum{634}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -693,7 +693,7 @@
 \define@key{diagbox}{height}{%
   \begingroup
     \def\line{\normalbaselineskip}%
-    \edef\x{\setlength{\diagbox@ht}{\dimexpr#1\relax}}%
+    \edef\x{\noexpand\setlength{\diagbox@ht}{\the\dimexpr#1\relax}}%
   \expandafter\endgroup\x}
 %    \end{macrocode}
 %
