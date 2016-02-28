@@ -27,7 +27,6 @@ for %%i in (diagbox.dtx diagbox.ins diagbox.pdf README) do (
 )
 if exist diagbox.zip del diagbox.zip
 zip -r diagbox.zip diagbox\
-zip diagbox.zip diagbox.tds.zip
 rd /s /q diagbox
 
 del diagbox.sty diagbox.pdf
