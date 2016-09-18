@@ -48,7 +48,7 @@ do
 	done
 
 	echo %% Map file for TrueType font ${fontname}.ttf > map/${fontname}/${fontname}-ttf.map
-	echo %% Family name: ${fontame} >> map/${fontname}/${fontname}-ttf.map
+	echo %% Family name: ${fontname} >> map/${fontname}/${fontname}-ttf.map
 	ttf2tfm ${fontname}.ttf -q tfm/${fontname}/${fontname}@Unicode@.tfm >> map/${fontname}/${fontname}-ttf.map
 
 	echo %% Map file for Type1 fonts from ${fontname}.ttf > map/${fontname}/${fontname}-pt1.map
