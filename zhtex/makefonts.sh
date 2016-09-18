@@ -34,10 +34,10 @@ do
 	fi
 done
 
-function convert_ttf {
-	local fontname=$1
-	local psname=`otfinfo -p $fontname.ttf`
-	local familyname=`otfinfo -a $fontname.ttf`
+for fontname in $@
+do
+	psname=`otfinfo -p $fontname.ttf`
+	familyname=`otfinfo -a $fontname.ttf`
 
 	for i in tfm map type1
 	do
@@ -48,7 +48,7 @@ function convert_ttf {
 	done
 
 	echo %% Map file for TrueType font ${fontname}.ttf > map/${fontname}/${fontname}-ttf.map
-	echo %% Family name: ${fontname} >> map/${fontname}/${fontname}-ttf.map
+	echo %% Family name: ${fontame} >> map/${fontname}/${fontname}-ttf.map
 	ttf2tfm ${fontname}.ttf -q tfm/${fontname}/${fontname}@Unicode@.tfm >> map/${fontname}/${fontname}-ttf.map
 
 	echo %% Map file for Type1 fonts from ${fontname}.ttf > map/${fontname}/${fontname}-pt1.map
@@ -57,18 +57,13 @@ function convert_ttf {
 
 	for i in 0 1 2 3 4 5 6 7 8 9 a b c d e f
 	do
-  		for j in 0 1 2 3 4 5 6 7 8 9 a b c d e f
+		for j in 0 1 2 3 4 5 6 7 8 9 a b c d e f
 		do
-			if [ -e tfm/$fontname/$fontname$i$j.tfm ]
+			if [ -e tfm/${fontname}/${fontname}$i$j.tfm ]
 			then
-				ttf2pt1 -b -GFae -l plane+0x$i$j -p ttf $fontname.ttf type1/$fontname/$fontname$i$j
-				echo $fontname$i$j $psname-$i$j \<$fontname$i$j.pfb >> map/$fontname/$fontname-pt1.map
+				ttf2pt1 -b -GFae -l plane+0x$i$j -p ttf ${fontname}.ttf type1/${fontname}/$fontname$i$j
+				echo ${fontname}$i$j ${psname}-$i$j \<${fontname}$i$j.pfb >> map/${fontname}/${fontname}-pt1.map
 			fi
 		done
 	done
-}
-
-for f
-do
-	convert_ttf $f
 done
