@@ -1,4 +1,9 @@
 @echo off
+
+::
+:: TODO：脚本已过时
+::
+
 if "%1"=="clean" goto clean
 
 texlua zhmCJK.lua map

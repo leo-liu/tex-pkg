@@ -15,12 +15,13 @@
 -- This work consists of the files zhmCJK.dtx,
 --                                 zhmCJK.ins,
 --                                 zhmCJK.lua,
+--                                 zhmCJK-addmap.pl,
 --           and the derived files zhmCJK.sty,
 --                                 zhmCJK.pdf,
 --                                 zhmCJK-test.tex,
 --                                 README,                    (from zhmCJK.dtx)
 --                                 zhmCJK.map,
---                                 texfonts.map,
+--                                 texfonts.map.template,
 --                                 zhmCJK.tfm,
 --                                 miktex-tfm/zhm*/zhm**.tfm. (from zhmCJK.lua)
 --
@@ -121,7 +122,7 @@ end
 ---------------------------------------------
 
 -- For TeX Live and other TeX distributions where texfonts.map is supported,
--- we generate texfonts.map, zhmCJK.map, and zhmCJK.tfm.
+-- we generate texfonts.map.template, zhmCJK.map, and zhmCJK.tfm.
 function generate_with_fontmap()
     local f_map = io.open("zhmCJK.map", "w")
     for fam = 1, 32 do
@@ -133,7 +134,7 @@ function generate_with_fontmap()
     f_map:write("\n")
     f_map:close()
 
-    f_map = io.open("texfonts.map", "w")
+    f_map = io.open("texfonts.map.template", "w")
     f_map:write("include zhmCJK.map\n\n")
     f_map:close()
 

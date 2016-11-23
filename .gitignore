@@ -20,7 +20,7 @@ seealso/seealso.dvi
 seealso/seealso.pdf
 seealso/z.*
 zhmCJK/README
-zhmCJK/texfonts.map
+zhmCJK/texfonts.map.template
 zhmCJK/zhmCJK-test.pdf
 zhmCJK/zhmCJK-test.tex
 zhmCJK/zhmCJK.dvi
@@ -28,6 +28,7 @@ zhmCJK/zhmCJK.idx
 zhmCJK/zhmCJK.map
 zhmCJK/zhmCJK.pdf
 zhmCJK/zhmCJK.tfm
+zhmCJK/miktex-tfm.tar.bz2
 zhmakeindex/bin/darwin_x64/zhmakeindex
 zhmakeindex/bin/darwin_x86/zhmakeindex
 zhmakeindex/bin/linux_x64/zhmakeindex

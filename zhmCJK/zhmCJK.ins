@@ -15,14 +15,15 @@
 %% This work consists of the files zhmCJK.dtx,
 %%                                 zhmCJK.ins,
 %%                                 zhmCJK.lua,
+%%                                 zhmCJK-addmap.pl,
 %%           and the derived files zhmCJK.sty,
 %%                                 zhmCJK.pdf,
 %%                                 zhmCJK-test.tex,
-%%                                 README,                  (from zhmCJK.dtx)
+%%                                 README,                   (from zhmCJK.dtx)
 %%                                 zhmCJK.map,
-%%                                 texfonts.map,
+%%                                 texfonts.map.template,
 %%                                 zhmCJK.tfm,
-%%                                 fallback/zhm*/zhm**.tfm  (from zhmCJK.lua)
+%%                                 miktex-tfm/zhm*/zhm**.tfm (from zhmCJK.lua)
 %%
 
 \input docstrip.tex
@@ -59,8 +60,11 @@ version 2005/12/01 or later.
 \Msg{*                                                           *}
 \Msg{*     zhmCJK.sty           into tex/latex/zhmCJK/           *}
 \Msg{*     zhmCJK.map           into fonts/map/fontname/         *}
-\Msg{*     texfonts.map         into fonts/map/fontname/         *}
 \Msg{*     zhmCJK.tfm           into fonts/tfm/zhmCJK/           *}
+\Msg{*                                                           *}
+\Msg{* And merge the file       texfonts.map.template            *}
+\Msg{*               into       fonts/map/fontname/texfonts.map  *}
+\Msg{* Or run                   zhmCJK-addmap.pl                 *}
 \Msg{*                                                           *}
 \Msg{* To produce the documentation run the file zhmCJK.dtx      *}
 \Msg{* through LaTeX.                                            *}
