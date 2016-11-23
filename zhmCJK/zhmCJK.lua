@@ -1,4 +1,4 @@
--- Copyright (C) 2012 by Leo Liu <leoliu.pku@gmail.com>
+-- Copyright (C) 2012--2016 by Leo Liu <leoliu.pku@gmail.com>
 -----------------------------------------------------------------------------
 -- This work may be distributed and/or modified under the
 -- conditions of the LaTeX Project Public License, either version 1.3
@@ -18,11 +18,11 @@
 --           and the derived files zhmCJK.sty,
 --                                 zhmCJK.pdf,
 --                                 zhmCJK-test.tex,
---                                 README.txt,              (from zhmCJK.dtx)
+--                                 README,                    (from zhmCJK.dtx)
 --                                 zhmCJK.map,
 --                                 texfonts.map,
 --                                 zhmCJK.tfm,
---                                 fallback/zhm*/zhm**.tfm. (from zhmCJK.lua)
+--                                 miktex-tfm/zhm*/zhm**.tfm. (from zhmCJK.lua)
 --
 -----------------------------------------------------------------------------
 -- This lua script is used to generate zhm*.tfm and zhmCJK.map.
@@ -130,7 +130,7 @@ function generate_with_fontmap()
                 fam, sid))
         end
     end
-	f_map:write("\n")
+    f_map:write("\n")
     f_map:close()
 
     f_map = io.open("texfonts.map", "w")
@@ -143,9 +143,9 @@ end
 -- For MiKTeX and other TeX distributions where texfonts.map is not supported,
 -- we generate a lot of zhmXYY.tfm, where X from 1 to 32, Y from 0x00 to 0xff.
 function generate_without_fontmap()
-    lfs.mkdir("fallback")
+    lfs.mkdir("miktex-tfm")
     for fam = 1, 32 do
-        local path = string.format("fallback" .. path_slash .. "zhm%d", fam)
+        local path = string.format("miktex-tfm" .. path_slash .. "zhm%d", fam)
         lfs.mkdir(path)
         print(path)
         for sid = 0, 0xff do
@@ -167,11 +167,11 @@ Usage:
     map:    Generate a public TFM shared by all CJK fonts with mapping files.
             It is suggested for TeX Live and other web2c distributions.
 
-    nomap:  Generate all TFM files for CJK fonts into "fallback" directory.
+    nomap:  Generate all TFM files for CJK fonts into "miktex-tfm" directory.
             MiKTeX needs this since it does not support TFM mappings.
 ]]
 
-if #arg ~= 1 then 
+if #arg ~= 1 then
     print(help_info)
 else
     if arg[1] == "map" then
@@ -198,6 +198,6 @@ end
 --
 -- For more information of zhmetrics, see the ctex-kit project:
 --
---        http://code.google.com/p/ctex-kit/
+--        https://github.com/CTeX-org/ctex-kit
 --
 

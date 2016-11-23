@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 chomp ( my $texmfdist = `kpsewhich -var-value=TEXMFDIST` ) ;
-$texfontsmap = "$texmfdist/fonts/map/fontname/texfonts.map";
+my $texfontsmap = "$texmfdist/fonts/map/fontname/texfonts.map";
 
 my $absent = 1;
 

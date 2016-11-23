@@ -23,7 +23,7 @@ goto end
 :zip
 call :clean_zip
 zip zhmCJK zhmCJK.dtx zhmCJK.ins zhmCJK.lua README zhmCJK.sty zhmCJK.pdf zhmCJK.tfm texfonts.map zhmCJK.map zhmCJK-test.tex
-if exist fallback.tar.bz2 zip zhmCJK fallback.tar.bz2
+if exist miktex-tfm.tar.bz2 zip zhmCJK miktex-tfm.tar.bz2
 exit /b
 
 :clean_zip
@@ -48,7 +48,7 @@ copy zhmCJK.map fonts\map\fontname\
 copy texfonts.map fonts\map\fontname\
 mkdir fonts\tfm\zhmCJK
 copy zhmCJK.tfm fonts\tfm\zhmCJK\
-if exist fallback.tar.bz2 copy fallback.tar.bz2 fonts\tfm\zhmCJK\
+if exist miktex-tfm.tar.bz2 copy miktex-tfm.tar.bz2 fonts\tfm\zhmCJK\
 zip -r zhmCJK-tds source tex doc fonts
 exit /b
 

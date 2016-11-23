@@ -1,6 +1,10 @@
 *.aux
 *.glo
+*.gls
 *.hd
+*.ilg
+*.ind
+*.log
 *.out
 *.sty
 *.swp
