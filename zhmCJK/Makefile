@@ -3,42 +3,42 @@ MAP = zhmCJK.map texfonts.map.template
 SOURCE = zhmCJK.dtx zhmCJK.ins zhmCJK.lua zhmCJK-addmap.pl Makefile
 
 .PHONY: all
-all: zhmCJK.zip
+all: zhmcjk.zip
 
-zhmCJK.zip: $(SOURCE) zhmCJK.sty $(MAP) zhmCJK.tfm doc zhmCJK-addmap.pl miktex-tfm.tar.bz2 zhmCJK.tds.zip
-	rm -rf zhmCJK
-	mkdir zhmCJK
-	cp README zhmCJK/
-	mkdir zhmCJK/source
-	cp $(SOURCE) zhmCJK/source/
-	mkdir zhmCJK/tex
-	cp zhmCJK.sty zhmCJK/tex/
-	mkdir zhmCJK/fontname
-	cp $(MAP) zhmCJK/fontname/
-	mkdir zhmCJK/tfm
-	cp zhmCJK.tfm zhmCJK/tfm/
-	mkdir zhmCJK/doc
-	cp zhmCJK.pdf zhmCJK-test.tex zhmCJK/doc/
-	cp miktex-tfm.tar.bz2 zhmCJK/
-	rm -f zhmCJK.zip
-	zip -r zhmCJK.zip zhmCJK/
-	zip zhmCJK.zip zhmCJK.tds.zip
-	rm -r zhmCJK
+zhmcjk.zip: $(SOURCE) zhmCJK.sty $(MAP) zhmCJK.tfm doc zhmCJK-addmap.pl miktex-tfm.tar.bz2 zhmcjk.tds.zip
+	rm -rf zhmcjk
+	mkdir zhmcjk
+	cp README zhmcjk/
+	mkdir zhmcjk/source
+	cp $(SOURCE) zhmcjk/source/
+	mkdir zhmcjk/tex
+	cp zhmCJK.sty zhmcjk/tex/
+	mkdir zhmcjk/fontname
+	cp $(MAP) zhmcjk/fontname/
+	mkdir zhmcjk/tfm
+	cp zhmcjk.tfm zhmcjk/tfm/
+	mkdir zhmcjk/doc
+	cp zhmCJK.pdf zhmCJK-test.tex zhmcjk/doc/
+	cp miktex-tfm.tar.bz2 zhmcjk/
+	rm -f zhmcjk.zip
+	zip -r zhmcjk.zip zhmcjk/
+	zip zhmcjk.zip zhmcjk.tds.zip
+	rm -r zhmcjk
 
-zhmCJK.tds.zip: $(SOURCE) zhmCJK.sty $(MAP) zhmCJK.tfm doc
+zhmcjk.tds.zip: $(SOURCE) zhmCJK.sty $(MAP) zhmCJK.tfm doc
 	rm -rf tds
-	mkdir -p tds/source/latex/zhmCJK
-	cp $(SOURCE) tds/source/latex/zhmCJK/
-	mkdir -p tds/tex/latex/zhmCJK
-	cp zhmCJK.sty tds/tex/latex/zhmCJK/
-	mkdir -p tds/doc/latex/zhmCJK
-	cp zhmCJK.pdf zhmCJK-test.tex README tds/doc/latex/zhmCJK/
+	mkdir -p tds/source/latex/zhmcjk
+	cp $(SOURCE) tds/source/latex/zhmcjk/
+	mkdir -p tds/tex/latex/zhmcjk
+	cp zhmCJK.sty tds/tex/latex/zhmcjk/
+	mkdir -p tds/doc/latex/zhmcjk
+	cp zhmCJK.pdf zhmCJK-test.tex README tds/doc/latex/zhmcjk/
 	mkdir -p tds/fonts/map/fontname
 	cp $(MAP) tds/fonts/map/fontname/
-	mkdir -p tds/fonts/tfm/zhmCJK
-	cp zhmCJK.tfm tds/fonts/tfm/zhmCJK/
-	rm -f zhmCJK.tds.zip
-	cd tds && zip -r ../zhmCJK.tds.zip source tex doc fonts
+	mkdir -p tds/fonts/tfm/zhmcjk
+	cp zhmCJK.tfm tds/fonts/tfm/zhmcjk/
+	rm -f zhmcjk.tds.zip
+	cd tds && zip -r ../zhmcjk.tds.zip source tex doc fonts
 	rm -r tds
 
 .PHONY: doc
@@ -69,4 +69,4 @@ zhmCJK.pdf: zhmCJK.sty $(MAP)
 .PHONY: clean
 clean:
 	rm -f $(AUXFILES)
-	rm -f zhmCJK.sty zhmCJK-test.tex README zhmCJK.pdf zhmCJK.tfm miktex-tfm.tar.bz2 $(MAP) zhmCJK.zip zhmCJK.tds.zip
+	rm -f zhmCJK.sty zhmCJK-test.tex README zhmCJK.pdf zhmCJK.tfm miktex-tfm.tar.bz2 $(MAP) zhmcjk.zip zhmcjk.tds.zip
