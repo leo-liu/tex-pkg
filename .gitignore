@@ -2,6 +2,7 @@
 *.glo
 *.gls
 *.hd
+*.idx
 *.ilg
 *.ind
 *.log
