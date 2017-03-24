@@ -1,0 +1,11 @@
+The seealso package
+
+Copyright (C) 2014, 2017 by Leo Liu <leoliu.pku@gmail.com>
+
+The package amends the \see and \seealso macros that are used in building
+indexes with makeindex, to deal with repetitions, and to ensure page numbers
+are present in the actual index entries.
+
+This work is released under the LPPL v1.3c or later.
+
+The project is hosted on https://github.com/leo-liu/tex-pkg

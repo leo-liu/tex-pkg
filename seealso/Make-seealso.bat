@@ -7,5 +7,5 @@ makeindex -s gglo -o seealso.gls seealso.glo
 xelatex seealso.dtx
 xelatex seealso.dtx
 if exist seealso.zip del seealso.zip
-zip seealso seealso.dtx seealso.ins seealso.sty seealso.pdf
+zip seealso README seealso.dtx seealso.ins seealso.sty seealso.pdf
 del seealso.aux seealso.log seealso.glo seealso.gls seealso.idx seealso.ind seealso.ilg seealso.out seealso.tmp seealso.hd  seealso.*~

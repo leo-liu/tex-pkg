@@ -1,5 +1,5 @@
 AUXFILES = *.aux *.log *.glo *.gls *.idx *.ind *.ilg *.out *.tmp *.hd *~
-SOURCE = seealso.dtx seealso.ins
+SOURCE = seealso.dtx seealso.ins README
 
 .PHONY: all
 all: seealso.zip
