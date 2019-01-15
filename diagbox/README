@@ -1,6 +1,6 @@
 The diagbox package
 
-Copyright (C) 2011--2016 by Leo Liu <leoliu.pku@gmail.com>
+Copyright (C) 2011--2019 by Leo Liu <leoliu.pku@gmail.com>
 
 The diagbox package is used for making table heads with diagonal lines.
 And it is compatible with old slashbox package with many improvements.
