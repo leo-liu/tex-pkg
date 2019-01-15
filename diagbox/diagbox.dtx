@@ -757,10 +757,10 @@
 %    \begin{macrocode}
 \define@key{diagbox}{leftsep}{%
   \setlength{\diagbox@insepl}{#1}%
-  \setlength{\diagbox@outsepl}{-(#1)}}
+  \setlength{\diagbox@outsepl}{(#1)*-1}}
 \define@key{diagbox}{rightsep}{%
   \setlength{\diagbox@insepr}{#1}%
-  \setlength{\diagbox@outsepr}{-(#1)}}
+  \setlength{\diagbox@outsepr}{(#1)*-1}}
 %    \end{macrocode}
 %
 % 盒子计算边界时是否忽略左右的空白。"trim=l" 效果等同于 "leftsep=0pt"；"trim=r"
