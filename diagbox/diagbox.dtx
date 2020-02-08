@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2011--2019 by Leo Liu <leoliu.pku@gmail.com>
+% Copyright (C) 2011--2020 by Leo Liu <leoliu.pku@gmail.com>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -26,7 +26,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{diagbox}
 %<*package>
-    [2016/12/28 v2.2 Making table heads with diagonal lines]
+    [2020/02/09 v2.3 Making table heads with diagonal lines]
 %</package>
 %
 %<*driver>
@@ -40,6 +40,9 @@
 \usepackage{fancyvrb-ex}
 \usepackage{amsmath}
 \usepackage[UTF8]{ctex}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Latin Modern Mono}
 \makeatletter
 \renewcommand\glossary@prologue{%
   \section*{版本历史}
@@ -66,7 +69,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{615}
+% \CheckSum{661}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -159,7 +162,7 @@
 % \medskip
 %
 % "\diagbox" can also take three arguments, to draw a table head with two
-% diagbox lines. For example,
+% diagonal lines. For example,
 % \begin{Example}[frame=single,numbers=left]
 % \begin{tabular}{|l|ccc|}
 % \hline
@@ -340,6 +343,11 @@
 % This is not a bug. Usually the width calculated by \pkg{diagbox} is more
 % safe than \pkg{slashbox}.
 %
+% \item For a triple box (a table head with two diagonal lines), the first
+% argument must not be too wide and the third argument must not be too high.
+% Otherwise, the layout algorithm cannot calculate the proper width and height
+% of the table head, and a warning will be issued. (Thanks to Frank Mittelbach.)
+%
 % \item
 % The cell with "\diagbox" should be the widest one of the column. Otherwise
 % the slash line cannot exceeds the boundary. For example,\\[1ex]
@@ -351,14 +359,6 @@
 % \end{SideBySideExample}
 % \\[1ex]
 % This can be solved by setting a wider "width" option of "\diagbox" manually.
-% \end{itemize}
-%
-% TODO:
-% \begin{itemize}
-% \item
-% Improve the document of the source code. The algorithm of "\diagbox@triple"
-% should be explained in detail. However, the explanations would be only
-% available in Chinese, I'm sorry.
 % \end{itemize}
 %
 %
@@ -592,6 +592,10 @@
 % 这不是 bug。通常 \pkg{diagbox} 计算出的宽度比 \pkg{slashbox} 的结果更安全一
 % 些。
 %
+% \item 有两条斜线的三部分表头，其所采用的自动布局算法是受限的。特别是，最左的
+% 部分不能过宽，最右的部分不能过高，否则将无法计算出合理的结果，宏包会发出警
+% 告。（感谢 Frank Mittelbach 指出该问题。）
+%
 % \item
 % "\diagbox" 生成的单元格必须是表列中最宽的一个。如果不能达到最宽，则画出的斜
 % 线不能保证在正确的位置。例如：\\[1ex]
@@ -603,12 +607,6 @@
 % \end{SideBySideExample}
 % \\[1ex]
 % 此时可以手工设置较宽的 "\diagbox" 的 "width" 选项，解决此问题。
-% \end{itemize}
-%
-% 未尽的工作：
-% \begin{itemize}
-% \item 源代码的文档需要改进。特别是在 "\diagbox@triple" 中的宽度和高度计算算
-% 法需要详细说明。
 % \end{itemize}
 %
 % \StopEventually{}
@@ -868,6 +866,9 @@
 % 与 \pkg{slashbox} 的行为不同。}
 % 分成两部分的盒子。三个参数，分别为 key-value 格式的可选项、左半边内容、右半边
 % 内容。这里的主要工作是读入参数并计算斜线盒子的大小。
+%
+% 这里自动计算斜线盒子大小的算法为：斜线盒子的宽度取两个子盒宽度较大值的二倍，
+% 而高度则直接取两个子盒的总高度。
 %    \begin{macrocode}
 \def\diagbox@double#1#2#3{%
   \begingroup
@@ -1000,8 +1001,35 @@
 %
 % \begin{macro}{\diagbox@triplebox}
 % \changes{v2.0}{2011/11/22}{新增三部分双斜线的盒子}
+% \changes{v2.3}{2020/02/09}{检测二次方程无解、异常解的情形}
 % 分成三部分的盒子。四个参数，分别为 key-value 格式的可选项、左半边内容、中间
 % 内容、右半边内容。
+%
+% 这里计算双斜线盒子宽、高的算法是简单而直观的。如下图所示，将 A、M、B 三个子盒
+% 子分别放在斜线盒的三个角后，斜线正好使 M 盒、A 或 B 盒、斜线盒的一角三点共
+% 线。
+% \[
+%   \tabcolsep=0pt
+%   \linespread{1}\selectfont
+%   \begin{tabular}{|c|}\hline
+%   \diagbox{\fbox{A}}{\fbox{M}}{\fbox{B}}\\ \hline
+%   \end{tabular}
+% \]
+% 在 A、M、B 三个盒子内容确定后，斜线盒的宽、高即可通过相似三角形的比例关系求
+% 解。设斜线盒的宽、高为 $x$, $y$，而 A、M、B 盒的宽、高分别为 $(x_a, y_a)$,
+% $(x_m, y_m)$, $(x_b, y_b)$。则有：
+% \begin{align*}
+%   \frac{x}{x_a} &= \frac{y - y_m}{y - y_m - y_a}, \\
+%   \frac{y}{y_b} &= \frac{x - x_m}{x - x_m - x_b}.
+% \end{align*}
+% 该方程组通常可化简为一个一元二次方程求解，两组共轭根中可以只需要较大的一组。
+% 但须注意上面的方程组并非总有正的实根，经过简单的代数分析可知，要给出几何直观
+% 的可行解（正实根），需要同时满足以下条件：
+% \begin{align*}
+%   x_a &< x_m + x_b, \\
+%   y_b &< y_m + y_a.
+% \end{align*}
+% 该条件需要在计算中予以检查。
 %    \begin{macrocode}
 \def\diagbox@triple#1#2#3#4{%
   \begingroup
@@ -1019,7 +1047,7 @@
   \edef\xm{\strip@pt\wd\diagbox@boxm}%
   \edef\ym{\strip@pt\dimexpr\ht\diagbox@boxm+\dp\diagbox@boxm\relax}%
 %    \end{macrocode}
-% 列方程，求方程系数
+% 列方程，计算方程系数
 %    \begin{macrocode}
   \FPneg\bi\yb
   \FPadd\ci\xb\xm  \FPneg\ci\ci
@@ -1028,30 +1056,51 @@
   \FPneg\cj\xa
   \FPmul\dj\xa\ym
 %    \end{macrocode}
-% 解方程
+% 检查可行解条件，解二次方程。这里对于无正实根的情形，会给出一个宽松的值作为斜
+% 线盒子的宽高：
+% \begin{align*}
+%  x &= 2 \max(x_a + x_m, x_b + x_m),\\
+%  y &= 2 \max(y_a + y_m, y_b + y_m).
+% \end{align*}
 %    \begin{macrocode}
   \FPsub\u\dj\di
   \FPupn{v}{bj ci * bi cj * -}%
-  \FPupn{delta}{bi dj * bj di * - cj ci - * 4 * %
-    v u + copy * %
-    - 2 swap root}%
+  \FPupn{delta}{bi dj * bj di * - cj ci - * 4 * v u + copy * -}%
+  \newif\ifdeltapositive
+  \FPifneg\delta \deltapositivefalse \else \deltapositivetrue \fi
+  \FPset\x{0}%
+  \FPset\y{0}%
   \ifdim\diagbox@wd=\z@
-    \FPupn{x}{2 bj bi - delta v u - + / /}%
+    \ifdim\bi\p@>\bj\p@\ifdeltapositive
+      \FPupn{x}{2 bj bi - 2 delta root v u - + / /}%
+    \fi\fi
+    \ifdim\x\p@=\z@
+      \FPupn{x}{xa xm + xb xm + max 2 *}%
+      \PackageWarning{diagbox}{Cannot calculate proper width of triple diagbox.\MessageBreak
+        Use \x pt instead.}%
+    \fi
     \diagbox@wd=\x\p@
   \else
     \edef\x{\strip@pt\diagbox@wd}%
   \fi
   \ifdim\diagbox@ht=\z@
-    \FPupn{y}{2 cj ci - delta v u + - / /}%
+    \ifdim\ci\p@<\cj\p@\ifdeltapositive
+      \FPupn{y}{2 cj ci - 2 delta root v u + - / /}%
+    \fi\fi
+    \ifdim\y\p@=\z@
+      \FPupn{y}{ya ym + yb ym + max 2 *}%
+      \PackageWarning{diagbox}{Cannot calculate proper height of triple diagbox.\MessageBreak
+        Use \y pt instead.}%
+    \fi
     \diagbox@ht=\y\p@
   \else
     \edef\y{\strip@pt\diagbox@ht}%
   \fi
-  \FPsub\xxm\x\xm
-  \FPsub\yym\y\ym
 %    \end{macrocode}
 % 画盒子
 %    \begin{macrocode}
+  \FPsub\xxm\x\xm
+  \FPsub\yym\y\ym
   $\vcenter{\hbox{\diagbox@pict}}$%
   \endgroup}
 %    \end{macrocode}
