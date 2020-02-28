@@ -69,7 +69,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{661}
+% \CheckSum{899}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -97,7 +97,8 @@
 % \newbox, \newdimen, \p@, \PackageError, \pkg, \put, \relax, \RequirePackage,
 % \setbox, \setkeys, \setlength, \strip@pt, \unexpanded, \unitlength,
 % \vcenter, \wd, \xdef, \z@, \@ifnextchar, \bgroup, \FPadd, \FPmul, \FPneg,
-% \FPsub, \FPupn, \let, \unless, \hspace}
+% \FPsub, \FPupn, \let, \unless, \hspace, \@tempskipa, \newif, \detokenize,
+% \@@, \\, \c, \l, \cs, \fp, \dim, \msg, \scan}
 %
 % \providecommand*{\pkg}{\textsf}
 % \GetFileInfo{diagbox.dtx}
@@ -629,13 +630,8 @@
 %    \begin{macrocode}
 \RequirePackage{pict2e}
 %    \end{macrocode}
-% 计算依赖 \pkg{fp} 宏包。
 % \changes{v2.2}{2016/12/28}{避免 \pkg{fp} 包的 \texttt{nomessages} 选项在使用
 % \pkg{catoptions} 包时冲突}
-%    \begin{macrocode}
-\RequirePackage{fp}
-\FPmessagesfalse
-%    \end{macrocode}
 % 长度计算 \pkg{calc} 宏包。
 % \changes{v2.2}{2016/12/28}{使用 \pkg{calc} 包计算选项参数，以支持
 % \cs{widthof} 等命令。}
@@ -1004,32 +1000,6 @@
 % \changes{v2.3}{2020/02/09}{检测二次方程无解、异常解的情形}
 % 分成三部分的盒子。四个参数，分别为 key-value 格式的可选项、左半边内容、中间
 % 内容、右半边内容。
-%
-% 这里计算双斜线盒子宽、高的算法是简单而直观的。如下图所示，将 A、M、B 三个子盒
-% 子分别放在斜线盒的三个角后，斜线正好使 M 盒、A 或 B 盒、斜线盒的一角三点共
-% 线。
-% \[
-%   \tabcolsep=0pt
-%   \linespread{1}\selectfont
-%   \begin{tabular}{|c|}\hline
-%   \diagbox{\fbox{A}}{\fbox{M}}{\fbox{B}}\\ \hline
-%   \end{tabular}
-% \]
-% 在 A、M、B 三个盒子内容确定后，斜线盒的宽、高即可通过相似三角形的比例关系求
-% 解。设斜线盒的宽、高为 $x$, $y$，而 A、M、B 盒的宽、高分别为 $(x_a, y_a)$,
-% $(x_m, y_m)$, $(x_b, y_b)$。则有：
-% \begin{align*}
-%   \frac{x}{x_a} &= \frac{y - y_m}{y - y_m - y_a}, \\
-%   \frac{y}{y_b} &= \frac{x - x_m}{x - x_m - x_b}.
-% \end{align*}
-% 该方程组通常可化简为一个一元二次方程求解，两组共轭根中可以只需要较大的一组。
-% 但须注意上面的方程组并非总有正的实根，经过简单的代数分析可知，要给出几何直观
-% 的可行解（正实根），需要同时满足以下条件：
-% \begin{align*}
-%   x_a &< x_m + x_b, \\
-%   y_b &< y_m + y_a.
-% \end{align*}
-% 该条件需要在计算中予以检查。
 %    \begin{macrocode}
 \def\diagbox@triple#1#2#3#4{%
   \begingroup
@@ -1038,69 +1008,9 @@
   \setkeys{diagbox}{dir=NW,#1}%
   \@nameuse{diagbox@triple@setbox@\diagbox@dir}{#2}{#3}{#4}%
 %    \end{macrocode}
-% 取长宽
+% 在宏包最后定义，需要返回 "\x", "\xm", "\xxm", "\y", "\ym" 和 "\yym"。
 %    \begin{macrocode}
-  \edef\xa{\strip@pt\wd\diagbox@boxa}%
-  \edef\ya{\strip@pt\dimexpr\ht\diagbox@boxa+\dp\diagbox@boxa\relax}%
-  \edef\xb{\strip@pt\wd\diagbox@boxb}%
-  \edef\yb{\strip@pt\dimexpr\ht\diagbox@boxb+\dp\diagbox@boxb\relax}%
-  \edef\xm{\strip@pt\wd\diagbox@boxm}%
-  \edef\ym{\strip@pt\dimexpr\ht\diagbox@boxm+\dp\diagbox@boxm\relax}%
-%    \end{macrocode}
-% 列方程，计算方程系数
-%    \begin{macrocode}
-  \FPneg\bi\yb
-  \FPadd\ci\xb\xm  \FPneg\ci\ci
-  \FPmul\di\xm\yb
-  \FPadd\bj\ya\ym  \FPneg\bj\bj
-  \FPneg\cj\xa
-  \FPmul\dj\xa\ym
-%    \end{macrocode}
-% 检查可行解条件，解二次方程。这里对于无正实根的情形，会给出一个宽松的值作为斜
-% 线盒子的宽高：
-% \begin{align*}
-%  x &= 2 \max(x_a + x_m, x_b + x_m),\\
-%  y &= 2 \max(y_a + y_m, y_b + y_m).
-% \end{align*}
-%    \begin{macrocode}
-  \FPsub\u\dj\di
-  \FPupn{v}{bj ci * bi cj * -}%
-  \FPupn{delta}{bi dj * bj di * - cj ci - * 4 * v u + copy * -}%
-  \newif\ifdeltapositive
-  \FPifneg\delta \deltapositivefalse \else \deltapositivetrue \fi
-  \FPset\x{0}%
-  \FPset\y{0}%
-  \ifdim\diagbox@wd=\z@
-    \ifdim\bi\p@>\bj\p@\ifdeltapositive
-      \FPupn{x}{2 bj bi - 2 delta root v u - + / /}%
-    \fi\fi
-    \ifdim\x\p@=\z@
-      \FPupn{x}{xa xm + xb xm + max 2 *}%
-      \PackageWarning{diagbox}{Cannot calculate proper width of triple diagbox.\MessageBreak
-        Use \x pt instead.}%
-    \fi
-    \diagbox@wd=\x\p@
-  \else
-    \edef\x{\strip@pt\diagbox@wd}%
-  \fi
-  \ifdim\diagbox@ht=\z@
-    \ifdim\ci\p@<\cj\p@\ifdeltapositive
-      \FPupn{y}{2 cj ci - 2 delta root v u + - / /}%
-    \fi\fi
-    \ifdim\y\p@=\z@
-      \FPupn{y}{ya ym + yb ym + max 2 *}%
-      \PackageWarning{diagbox}{Cannot calculate proper height of triple diagbox.\MessageBreak
-        Use \y pt instead.}%
-    \fi
-    \diagbox@ht=\y\p@
-  \else
-    \edef\y{\strip@pt\diagbox@ht}%
-  \fi
-%    \end{macrocode}
-% 画盒子
-%    \begin{macrocode}
-  \FPsub\xxm\x\xm
-  \FPsub\yym\y\ym
+  \diagbox@solve@equations
   $\vcenter{\hbox{\diagbox@pict}}$%
   \endgroup}
 %    \end{macrocode}
@@ -1166,10 +1076,273 @@
     \unexpanded\expandafter{\diagbox@slashbox@options}%
     \unexpanded{trim=#1,}}%
   \expandafter\diagbox\expandafter[\diagbox@slashbox@options]{#2}{#3}}
-\endinput
 %    \end{macrocode}
 % \end{macro}
 %
+% \changes{v2.4}{2020/02/28}{利用 \pkg{l3fp} 解方程组。}
+%
+% \subsection{解方程组}
+%
+% 这里计算双斜线盒子宽、高的算法是简单而直观的。如下图所示，将 A、M、B 三个子盒
+% 子分别放在斜线盒的三个角后，斜线正好使 M 盒、A 或 B 盒、斜线盒的一角三点共
+% 线。
+% \[
+%   \tabcolsep=0pt
+%   \linespread{1}\selectfont
+%   \begin{tabular}{|c|}\hline
+%   \diagbox{\fbox{A}}{\fbox{M}}{\fbox{B}}\\ \hline
+%   \end{tabular}
+% \]
+% 在 A、M、B 三个盒子内容确定后，斜线盒的宽、高即可通过相似三角形的比例关系求
+% 解。设斜线盒的宽、高为 $x$, $y$，而 A、M、B 盒的宽、高分别为 $(x_a, y_a)$,
+% $(x_m, y_m)$, $(x_b, y_b)$。则有：
+% \begin{align*}
+%   \frac{x}{x_a} &= \frac{y - y_m}{y - y_m - y_a}, \\
+%   \frac{y}{y_b} &= \frac{x - x_m}{x - x_m - x_b}.
+% \end{align*}
+% 该方程组通常可化简为一个一元二次方程求解，两组共轭根中可以只需要较大的一组。
+% 通过 Mathematica 软件，容易得到方程组的解为：
+% \begin{align*}
+% x & = \frac{u + v \pm \sqrt{\Delta}} {2(y_a - y_b + y_m)}, \\
+% y & = \frac{u - v \mp \sqrt{\Delta}} {2(x_a - x_b - x_m)}, \\
+% \Delta & := (u + v)^2 + 4 x_a (y_a - y_b + y_m)
+%                          \bigl(x_m (y_b - y_m) - x_b y_m\bigr), \\
+%      u & := x_a y_m - x_m y_b, \\
+%      v & := (x_b + x_m) (y_a + y_m) - x_a y_b.
+% \end{align*}
+% 但须注意上面的方程组并非总有正的实根，经过简单的代数分析可知，要给出几何直观
+% 的可行解（正实根），需要同时满足以下条件：
+% \begin{align*}
+%   x_a &< x_m + x_b, \\
+%   y_b &< y_m + y_a.
+% \end{align*}
+% 该条件需要在计算中予以检查。
+%
+% \begin{macro}{\diagbox@solve@equations}
+% 如果 \pkg{expl3} 环境可用，就使用 \pkg{l3fp} 计算，否则使用 \pkg{fp} 包。
+%    \begin{macrocode}
+\ifcsname\detokenize{fp_eval:n}\endcsname
+\ExplSyntaxOn
+%<@@=diagbox>
+\cs_new_protected:Npn \@@_solve_equations:
+  {
+%    \end{macrocode}
+% 取长宽。
+%    \begin{macrocode}
+    \fp_set:Nn \l_@@_xa_fp
+      { \dim_to_fp:n { \wd \diagbox@boxa } }
+    \fp_set:Nn \l_@@_ya_fp
+      { \dim_to_fp:n { \ht \diagbox@boxa + \dp \diagbox@boxa } }
+    \fp_set:Nn \l_@@_xb_fp
+      { \dim_to_fp:n { \wd \diagbox@boxb } }
+    \fp_set:Nn \l_@@_yb_fp
+      { \dim_to_fp:n { \ht \diagbox@boxb + \dp \diagbox@boxb } }
+    \fp_set:Nn \l_@@_xm_fp
+      { \dim_to_fp:n { \wd \diagbox@boxm } }
+    \fp_set:Nn \l_@@_ym_fp
+      { \dim_to_fp:n { \ht \diagbox@boxm + \dp \diagbox@boxm } }
+%    \end{macrocode}
+% 如果宽度和长度都被指定了，就不需要列方程组求解。
+%    \begin{macrocode}
+    \fp_set_eq:NN \l_@@_delta_fp \c_nan_fp
+    \dim_compare:nNnTF \diagbox@wd = \c_zero_dim
+      { \@@_calculate_width: }
+      { \fp_set:Nn \l_@@_x_fp { \dim_to_fp:n { \diagbox@wd } } }
+    \dim_compare:nNnTF \diagbox@ht = \c_zero_dim
+      { \@@_calculate_height: }
+      { \fp_set:Nn \l_@@_y_fp { \dim_to_fp:n { \diagbox@ht } } }
+    \edef \x   { \fp_use:N \l_@@_x_fp }
+    \edef \y   { \fp_use:N \l_@@_y_fp }
+    \edef \xm  { \fp_use:N \l_@@_xm_fp }
+    \edef \ym  { \fp_use:N \l_@@_ym_fp }
+    \edef \xxm { \fp_eval:n { \l_@@_x_fp - \l_@@_xm_fp } }
+    \edef \yym { \fp_eval:n { \l_@@_y_fp - \l_@@_ym_fp } }
+  }
+%    \end{macrocode}
+% 检查可行解条件，解二次方程。这里对于无正实根的情形，会给出一个宽松的值作为斜
+% 线盒子的宽高：
+% \begin{align*}
+%  x &= 2 \max(x_a + x_m, x_b + x_m),\\
+%  y &= 2 \max(y_a + y_m, y_b + y_m).
+% \end{align*}
+%    \begin{macrocode}
+\cs_new_protected:Npn \@@_calculate_width:
+  {
+    \fp_zero:N \l_@@_x_fp
+    \fp_compare:nNnT \l_@@_xa_fp < { \l_@@_xm_fp + \l_@@_xb_fp }
+      {
+        \@@_calculate_coefficient:
+        \fp_if_nan:nF { \l_@@_sqrt_fp }
+          {
+            \fp_set:Nn \l_@@_x_fp
+              {
+                ( \l_@@_u_fp + \l_@@_v_fp + \l_@@_sqrt_fp ) /
+                ( 2 * ( \l_@@_ya_fp - \l_@@_yb_fp + \l_@@_ym_fp ) )
+              }
+          }
+      }
+    \fp_compare:nNnT \l_@@_x_fp = \c_zero_fp
+      {
+        \fp_set:Nn \l_@@_x_fp
+          {
+            2 * max(
+              \l_@@_xa_fp + \l_@@_xm_fp ,
+              \l_@@_xb_fp + \l_@@_xm_fp )
+          }
+        \msg_warning:nnxx { diagbox } { calculate-error }
+          { width } { \fp_use:N \l_@@_x_fp }
+      }
+    \diagbox@wd = \fp_to_dim:N \l_@@_x_fp \scan_stop:
+  }
+\cs_new_protected:Npn \@@_calculate_height:
+  {
+    \fp_set_eq:NN \l_@@_y_fp \c_zero_fp
+    \fp_compare:nNnT \l_@@_yb_fp < { \l_@@_ym_fp + \l_@@_ya_fp }
+      {
+        \@@_calculate_coefficient:
+        \fp_if_nan:nF { \l_@@_sqrt_fp }
+          {
+            \fp_set:Nn \l_@@_y_fp
+              {
+                ( \l_@@_u_fp - \l_@@_v_fp - \l_@@_sqrt_fp ) /
+                ( 2 * ( \l_@@_xa_fp - \l_@@_xb_fp - \l_@@_xm_fp ) )
+              }
+          }
+      }
+    \fp_compare:nNnT \l_@@_y_fp = \c_zero_fp
+      {
+        \fp_set:Nn \l_@@_y_fp
+          {
+            2 * max(
+              \l_@@_ya_fp + \l_@@_ym_fp ,
+              \l_@@_yb_fp + \l_@@_ym_fp )
+          }
+        \msg_warning:nnxx { diagbox } { calculate-error }
+          { height } { \fp_use:N \l_@@_y_fp }
+      }
+    \diagbox@ht = \fp_to_dim:N \l_@@_y_fp \scan_stop:
+  }
+\cs_new_protected:Npn \@@_calculate_coefficient:
+  {
+    \fp_if_nan:nT { \l_@@_delta_fp }
+      { \@@_calculate_coefficient_aux: }
+  }
+\cs_new_protected:Npn \@@_calculate_coefficient_aux:
+  {
+    \fp_set:Nn \l_@@_u_fp
+      {
+        \l_@@_xa_fp * \l_@@_ym_fp -
+        \l_@@_xm_fp * \l_@@_yb_fp
+      }
+    \fp_set:Nn \l_@@_v_fp
+      {
+        ( \l_@@_xb_fp + \l_@@_xm_fp ) *
+        ( \l_@@_ya_fp + \l_@@_ym_fp ) -
+        \l_@@_xa_fp * \l_@@_yb_fp
+      }
+    \fp_set:Nn \l_@@_delta_fp
+      {
+        ( \l_@@_u_fp + \l_@@_v_fp )^2 + 4 * \l_@@_xa_fp *
+        ( \l_@@_ya_fp - \l_@@_yb_fp + \l_@@_ym_fp ) *
+        ( \l_@@_xm_fp * ( \l_@@_yb_fp - \l_@@_ym_fp ) -
+          \l_@@_xb_fp * \l_@@_ym_fp )
+      }
+    \fp_compare:nNnTF \l_@@_delta_fp < \c_zero_fp
+      { \fp_set_eq:NN \l_@@_sqrt_fp \c_nan_fp }
+      { \fp_set:Nn \l_@@_sqrt_fp { sqrt(\l_@@_delta_fp) } }
+  }
+\fp_new:N \l_@@_xa_fp
+\fp_new:N \l_@@_ya_fp
+\fp_new:N \l_@@_xb_fp
+\fp_new:N \l_@@_yb_fp
+\fp_new:N \l_@@_xm_fp
+\fp_new:N \l_@@_ym_fp
+\fp_new:N \l_@@_x_fp
+\fp_new:N \l_@@_y_fp
+\fp_new:N \l_@@_u_fp
+\fp_new:N \l_@@_v_fp
+\fp_new:N \l_@@_sqrt_fp
+\fp_new:N \l_@@_delta_fp
+\msg_new:nnn { diagbox } { calculate-error }
+  {
+    Cannot~calculate~proper~#1~of~triple~diagbox~
+    \msg_line_context:. \\
+    Use~#2pt~instead.
+  }
+\cs_new_eq:NN \diagbox@solve@equations \@@_solve_equations:
+\ExplSyntaxOff
+\expandafter \endinput \fi
+%    \end{macrocode}
+%
+% 若 \pkg{l3fp} 不可用，则引入 \pkg{fp} 包计算。
+%    \begin{macrocode}
+\RequirePackage{fp}
+\FPmessagesfalse
+\def\diagbox@solve@equations{%
+%    \end{macrocode}
+% 取长宽
+%    \begin{macrocode}
+  \edef\xa{\strip@pt\wd\diagbox@boxa}%
+  \edef\ya{\strip@pt\dimexpr\ht\diagbox@boxa+\dp\diagbox@boxa\relax}%
+  \edef\xb{\strip@pt\wd\diagbox@boxb}%
+  \edef\yb{\strip@pt\dimexpr\ht\diagbox@boxb+\dp\diagbox@boxb\relax}%
+  \edef\xm{\strip@pt\wd\diagbox@boxm}%
+  \edef\ym{\strip@pt\dimexpr\ht\diagbox@boxm+\dp\diagbox@boxm\relax}%
+%    \end{macrocode}
+% 列方程，计算方程系数
+%    \begin{macrocode}
+  \FPneg\bi\yb
+  \FPadd\ci\xb\xm  \FPneg\ci\ci
+  \FPmul\di\xm\yb
+  \FPadd\bj\ya\ym  \FPneg\bj\bj
+  \FPneg\cj\xa
+  \FPmul\dj\xa\ym
+%    \end{macrocode}
+% 检查可行解条件，解二次方程。这里对于无正实根的情形，会给出一个宽松的值作为斜
+% 线盒子的宽高：
+% \begin{align*}
+%  x &= 2 \max(x_a + x_m, x_b + x_m),\\
+%  y &= 2 \max(y_a + y_m, y_b + y_m).
+% \end{align*}
+%    \begin{macrocode}
+  \FPsub\u\dj\di
+  \FPupn{v}{bj ci * bi cj * -}%
+  \FPupn{delta}{bi dj * bj di * - cj ci - * 4 * v u + copy * -}%
+  \newif\ifdeltapositive
+  \FPifneg\delta \deltapositivefalse \else \deltapositivetrue \fi
+  \FPset\x{0}%
+  \FPset\y{0}%
+  \ifdim\diagbox@wd=\z@
+    \ifdim\bi\p@>\bj\p@\ifdeltapositive
+      \FPupn{x}{2 bj bi - 2 delta root v u - + / /}%
+    \fi\fi
+    \ifdim\x\p@=\z@
+      \FPupn{x}{xa xm + xb xm + max 2 *}%
+      \PackageWarning{diagbox}{Cannot calculate proper width of triple diagbox.\MessageBreak
+        Use \x pt instead.}%
+    \fi
+    \diagbox@wd=\x\p@
+  \else
+    \edef\x{\strip@pt\diagbox@wd}%
+  \fi
+  \ifdim\diagbox@ht=\z@
+    \ifdim\ci\p@<\cj\p@\ifdeltapositive
+      \FPupn{y}{2 cj ci - 2 delta root v u + - / /}%
+    \fi\fi
+    \ifdim\y\p@=\z@
+      \FPupn{y}{ya ym + yb ym + max 2 *}%
+      \PackageWarning{diagbox}{Cannot calculate proper height of triple diagbox.\MessageBreak
+        Use \y pt instead.}%
+    \fi
+    \diagbox@ht=\y\p@
+  \else
+    \edef\y{\strip@pt\diagbox@ht}%
+  \fi
+  \FPsub\xxm\x\xm
+  \FPsub\yym\y\ym
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % \iffalse
 %</package>
