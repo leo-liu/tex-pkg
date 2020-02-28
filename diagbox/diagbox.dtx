@@ -69,7 +69,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{899}
+% \CheckSum{896}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -1169,7 +1169,7 @@
 \cs_new_protected:Npn \@@_calculate_width:
   {
     \fp_zero:N \l_@@_x_fp
-    \fp_compare:nNnT \l_@@_xa_fp < { \l_@@_xm_fp + \l_@@_xb_fp }
+    \fp_compare:nNnT \l_@@_yb_fp < { \l_@@_ya_fp + \l_@@_ym_fp }
       {
         \@@_calculate_coefficient:
         \fp_if_nan:nF { \l_@@_sqrt_fp }
@@ -1177,18 +1177,14 @@
             \fp_set:Nn \l_@@_x_fp
               {
                 ( \l_@@_u_fp + \l_@@_v_fp + \l_@@_sqrt_fp ) /
-                ( 2 * ( \l_@@_ya_fp - \l_@@_yb_fp + \l_@@_ym_fp ) )
+                ( 2 ( \l_@@_ya_fp - \l_@@_yb_fp + \l_@@_ym_fp ) )
               }
           }
       }
-    \fp_compare:nNnT \l_@@_x_fp = \c_zero_fp
+    \fp_compare:nNnF \l_@@_x_fp > \c_zero_fp
       {
         \fp_set:Nn \l_@@_x_fp
-          {
-            2 * max(
-              \l_@@_xa_fp + \l_@@_xm_fp ,
-              \l_@@_xb_fp + \l_@@_xm_fp )
-          }
+          { 2 ( max( \l_@@_xa_fp , \l_@@_xb_fp ) + \l_@@_xm_fp ) }
         \msg_warning:nnxx { diagbox } { calculate-error }
           { width } { \fp_use:N \l_@@_x_fp }
       }
@@ -1196,8 +1192,8 @@
   }
 \cs_new_protected:Npn \@@_calculate_height:
   {
-    \fp_set_eq:NN \l_@@_y_fp \c_zero_fp
-    \fp_compare:nNnT \l_@@_yb_fp < { \l_@@_ym_fp + \l_@@_ya_fp }
+    \fp_zero:N \l_@@_y_fp
+    \fp_compare:nNnT \l_@@_xa_fp < { \l_@@_xb_fp + \l_@@_xm_fp }
       {
         \@@_calculate_coefficient:
         \fp_if_nan:nF { \l_@@_sqrt_fp }
@@ -1205,18 +1201,14 @@
             \fp_set:Nn \l_@@_y_fp
               {
                 ( \l_@@_u_fp - \l_@@_v_fp - \l_@@_sqrt_fp ) /
-                ( 2 * ( \l_@@_xa_fp - \l_@@_xb_fp - \l_@@_xm_fp ) )
+                ( 2 ( \l_@@_xa_fp - \l_@@_xb_fp - \l_@@_xm_fp ) )
               }
           }
       }
-    \fp_compare:nNnT \l_@@_y_fp = \c_zero_fp
+    \fp_compare:nNnF \l_@@_y_fp > \c_zero_fp
       {
         \fp_set:Nn \l_@@_y_fp
-          {
-            2 * max(
-              \l_@@_ya_fp + \l_@@_ym_fp ,
-              \l_@@_yb_fp + \l_@@_ym_fp )
-          }
+          { 2 ( max( \l_@@_ya_fp , \l_@@_yb_fp ) + \l_@@_ym_fp ) }
         \msg_warning:nnxx { diagbox } { calculate-error }
           { height } { \fp_use:N \l_@@_y_fp }
       }
