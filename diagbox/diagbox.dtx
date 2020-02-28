@@ -58,6 +58,7 @@
 \makeatother
 \usepackage[numbered]{hypdoc}
 \hypersetup{pdfstartview=FitH}
+\fvset{gobble=1} %% 删除例子代码开头的 %
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -1123,6 +1124,7 @@
 % 如果 \pkg{expl3} 环境可用，就使用 \pkg{l3fp} 计算，否则使用 \pkg{fp} 包。
 %    \begin{macrocode}
 \ifcsname\detokenize{fp_eval:n}\endcsname
+\csname fi\endcsname
 \ExplSyntaxOn
 %<@@=diagbox>
 \cs_new_protected:Npn \@@_solve_equations:
@@ -1245,6 +1247,7 @@
       { \fp_set_eq:NN \l_@@_sqrt_fp \c_nan_fp }
       { \fp_set:Nn \l_@@_sqrt_fp { sqrt(\l_@@_delta_fp) } }
   }
+\cs_new_eq:NN \diagbox@solve@equations \@@_solve_equations:
 \fp_new:N \l_@@_xa_fp
 \fp_new:N \l_@@_ya_fp
 \fp_new:N \l_@@_xb_fp
@@ -1265,13 +1268,12 @@
     \msg_line_context:. \\
     Use~#2pt~instead.
   }
-\cs_new_eq:NN \diagbox@solve@equations \@@_solve_equations:
-\ExplSyntaxOff
-\expandafter \endinput \fi
+\file_input_stop:
 %    \end{macrocode}
 %
 % 若 \pkg{l3fp} 不可用，则引入 \pkg{fp} 包计算。
 %    \begin{macrocode}
+\fi
 \RequirePackage{fp}
 \FPmessagesfalse
 \def\diagbox@solve@equations{%
